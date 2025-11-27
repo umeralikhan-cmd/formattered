@@ -38,7 +38,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .page-container {
   width: 100%;
@@ -63,3 +62,4 @@ export default {
   color: #9CA3AF;
 }
 </style>
+

@@ -377,7 +377,6 @@ const getIconColor = (msg) => {
   return "grey";
 };
 </script>
-
 <style scoped>
 .upload-container {
   min-height: 100vh;
@@ -899,3 +898,4 @@ const getIconColor = (msg) => {
   background: #6B7280;
 }
 </style>
+
