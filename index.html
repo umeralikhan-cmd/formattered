@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formattered - Application Management System</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+    <script>
+      // Handle OAuth 2.0 callback in popup window
+      if (window.opener && window.location.hash) {
+        const params = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = params.get('access_token');
+        const expiresIn = params.get('expires_in');
+
+        if (accessToken) {
+          // Send token to parent window
+          window.opener.postMessage({
+            type: 'google_auth_success',
+            access_token: accessToken,
+            expires_in: expiresIn
+          }, window.location.origin);
+
+          // Close popup
+          window.close();
+        }
+      }
+    </script>
+  </body>
+</html>
