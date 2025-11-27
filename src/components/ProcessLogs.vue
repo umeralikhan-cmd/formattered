@@ -109,7 +109,7 @@ const currentTabName = computed(() => {
   return tabNames[activeTab.value] || 'Applications';
 });
 
-// Fetch logs using TanStack Query
+// Fetch logs using TanStack Query (refetch on tab change)
 const { data: logsData, isLoading, isFetching, refetch } = useQuery({
   queryKey: ['processLogs', currentTabName],
   queryFn: async () => {
@@ -125,11 +125,14 @@ const { data: logsData, isLoading, isFetching, refetch } = useQuery({
     return response.data.grouped_logs || [];
   },
   enabled: computed(() => currentTabName.value !== 'Applications'),
-  staleTime: 1000 * 60 * 30, // 30 minutes - data stays fresh
-  gcTime: 1000 * 60 * 60, // 60 minutes - data stays in cache
+  staleTime: 1000 * 60 * 3, // 3 minutes - logs data stays fresh
+  gcTime: 1000 * 60 * 15, // 15 minutes in cache
   refetchOnWindowFocus: false,
-  refetchOnMount: false,
+  refetchOnMount: false, // ✅ Don't refetch on mount - only when tab changes
   refetchOnReconnect: false,
+  select: (data) => data || [], // Ensure always returns array
+  placeholderData: [], // Show empty array while loading
+  keepPreviousData: true, // Keep showing old data while switching tabs
 });
 
 const currentLogs = computed(() => {

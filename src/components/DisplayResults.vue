@@ -44,23 +44,26 @@
               variant="outlined"
               density="comfortable"
             clearable
+            :loading="facilitiesLoading"
+            :disabled="facilitiesLoading"
               hide-details
               :menu-props="{ maxHeight: 400, closeOnContentClick: true }"
+            no-filter
+            auto-select-first
           >
             <template v-slot:selection="{ item }">
-              <span v-if="item" class="text-truncate">
-                {{ item.raw.facility_name }}
+              <span v-if="item && item.raw" class="text-truncate">
+                {{ item.raw.facility_name || 'Unknown' }}
               </span>
             </template>
             <template v-slot:item="{ item, props }">
-              <v-list-item v-bind="props" class="facility-list-item">
+              <v-list-item v-bind="props" class="facility-list-item" :key="item.raw.facility_id">
                 <v-list-item-title class="facility-name">
-                  {{ item.raw.facility_name }}
+                  {{ item.raw.facility_name || 'Unknown Facility' }}
                 </v-list-item-title>
                 <v-list-item-subtitle 
-                  v-for="(address, idx) in item.raw.mailing_addresses" 
-                  :key="idx" 
-                  v-if="item.raw.mailing_addresses && item.raw.mailing_addresses.length"
+                  v-for="(address, idx) in (item.raw.mailing_addresses || [])" 
+                  :key="`${item.raw.facility_id}-${idx}`"
                   class="facility-address"
                 >
                     {{ address }}
@@ -186,6 +189,7 @@
             v-model="selectedIDS"
               :headers="headers"
               :items="paginatedItems"
+              :loading="loader || isFetching"
               :items-per-page="-1"
               show-expand
               item-value="result_uid"
@@ -421,47 +425,60 @@ const { data: questionTypesData } = useQuery({
     const res = await api.post("/get-question-types");
     return ["All", ...res.data];
   },
-  staleTime: 1000 * 60 * 30, // 30 minutes - data stays fresh
+  staleTime: Infinity, // Never goes stale - this data rarely changes
   gcTime: 1000 * 60 * 60, // 60 minutes - data stays in cache
   refetchOnWindowFocus: false,
-  refetchOnMount: false,
+  refetchOnMount: false, // Only fetch once, never refetch
   refetchOnReconnect: false,
 });
 
 const questionTypes = computed(() => questionTypesData.value || ["All"]);
 
-// TanStack Query for facilities (cached, fetches once)
-const { data: facilitiesData } = useQuery({
-  queryKey: ['facilities'],
+// TanStack Query for facilities (cached, rarely changes)
+const { data: facilitiesData, isLoading: facilitiesLoading } = useQuery({
+  queryKey: ['facilityProfiles'], // UNIQUE KEY - different from Facilities page
   queryFn: async () => {
     const res = await api.get("/get-facility-profile");
-    return res.data.map((facility) => ({
-      facility_id: facility["Facility ID"],
-      facility_name: facility["Facility Name"],
+    // Ensure consistent data structure
+    const normalized = res.data.map((facility) => ({
+      facility_id: facility["Facility ID"] || facility.facility_id,
+      facility_name: facility["Facility Name"] || facility.facility_name,
       id: facility.id,
-      mailing_addresses: facility.mailing_addresses || [],
+      mailing_addresses: Array.isArray(facility.mailing_addresses) 
+        ? facility.mailing_addresses 
+        : facility.mailing_addresses 
+        ? [facility.mailing_addresses] 
+        : [],
     }));
+    console.log('Facility profiles loaded:', normalized.length);
+    return normalized;
   },
-  staleTime: 1000 * 60 * 30, // 30 minutes - data stays fresh
-  gcTime: 1000 * 60 * 60, // 60 minutes - data stays in cache
+  staleTime: 1000 * 60 * 30, // 30 minutes - facilities don't change often
+  gcTime: 1000 * 60 * 60, // 60 minutes in cache
   refetchOnWindowFocus: false,
-  refetchOnMount: false,
+  refetchOnMount: false, // ✅ Don't refetch on mount - use cached data
   refetchOnReconnect: false,
+  select: (data) => data || [], // Ensure always returns array
+  placeholderData: [], // Show empty array while loading to prevent undefined errors
 });
 
-const facilityOptions = computed(() => facilitiesData.value || []);
+const facilityOptions = computed(() => {
+  const options = facilitiesData.value || [];
+  console.log('Facility options updated:', options.length);
+  return options;
+});
 
-// TanStack Query for Edovo answer keys (cached, fetches once)
+// TanStack Query for Edovo answer keys (cached, rarely changes)
 const { data: edovoAnswerKeysData } = useQuery({
   queryKey: ['edovoAnswerKeys'],
   queryFn: async () => {
     const res = await api.post("/get-edovo-answer-key");
     return res.data;
   },
-  staleTime: 1000 * 60 * 30, // 30 minutes - data stays fresh
-  gcTime: 1000 * 60 * 60, // 60 minutes - data stays in cache
+  staleTime: Infinity, // Never goes stale - this data rarely changes
+  gcTime: 1000 * 60 * 60, // 60 minutes in cache
   refetchOnWindowFocus: false,
-  refetchOnMount: false,
+  refetchOnMount: false, // Only fetch once
   refetchOnReconnect: false,
 });
 
@@ -469,22 +486,33 @@ const edovoAnswerKeys = computed(() => edovoAnswerKeysData.value || {});
 
 // TanStack Query for results (refetches when filters change)
 const { data: resultsData, isLoading: loader, isFetching, refetch: refetchResults } = useQuery({
-  queryKey: ['results', selectedQuestionType, selectedFacility], // Reactive query key
+  queryKey: ['markedResults', selectedQuestionType, selectedFacility], // Reactive query key
   queryFn: async () => {
+    console.log('Fetching results:', {
+      question_type: selectedQuestionType.value,
+      facility_id: selectedFacility.value
+    });
     const res = await api.post("/get-marked-results", {
       question_type: selectedQuestionType.value,
       facility_id: selectedFacility.value,
     });
+    console.log('Results fetched:', res.data?.length || 0, 'items');
     return res.data;
   },
-  staleTime: 1000 * 60 * 30, // 30 minutes - data stays fresh
-  gcTime: 1000 * 60 * 60, // 60 minutes - data stays in cache
+  staleTime: 1000 * 60 * 5, // 5 minutes - data stays fresh, no unnecessary refetches
+  gcTime: 1000 * 60 * 30, // 30 minutes in cache for back/forward navigation
   refetchOnWindowFocus: false,
-  refetchOnMount: false,
+  refetchOnMount: false, // ✅ Don't refetch on mount - only when queryKey changes
   refetchOnReconnect: false,
+  select: (data) => data || [], // Ensure always returns array
+  keepPreviousData: true, // Keep showing old data while fetching new
 });
 
-const items = computed(() => resultsData.value || []);
+const items = computed(() => {
+  const data = resultsData.value || [];
+  console.log('Items computed:', data.length);
+  return data;
+});
 
 // Watch for refresh prop
 watch(() => props.refresh, (newValue) => {

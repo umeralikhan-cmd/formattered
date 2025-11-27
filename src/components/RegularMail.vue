@@ -1011,6 +1011,32 @@ const STATUS_PROCESSED = "Processed";
 const STATUS_COMPLETED = "Completed";
 const STATUS_FAILED = "Failed";
 
+// Cache for mail records - persists across component mounts
+const mailCache = {
+  data: null,
+  timestamp: null,
+  filters: { showArchived: false, filterStatus: null },
+  STALE_TIME: 3 * 60 * 1000, // 3 minutes
+  
+  isStale(showArchived, filterStatus) {
+    if (!this.timestamp || !this.data) return true;
+    const now = Date.now();
+    const filtersChanged = this.filters.showArchived !== showArchived || 
+                          this.filters.filterStatus !== filterStatus;
+    return filtersChanged || (now - this.timestamp) > this.STALE_TIME;
+  },
+  
+  set(data, showArchived, filterStatus) {
+    this.data = data;
+    this.timestamp = Date.now();
+    this.filters = { showArchived, filterStatus };
+  },
+  
+  get() {
+    return this.data;
+  }
+};
+
 export default {
   name: "RegularMail",
 
@@ -1123,8 +1149,37 @@ export default {
     }
   },
 
+  watch: {
+    showArchived() {
+      // Only fetch when filter changes (not on mount)
+      if (this._isMounted) {
+        this.invalidateCache();
+        this.fetchRegularMail();
+      }
+    },
+    filterStatus() {
+      // Only fetch when filter changes (not on mount)
+      if (this._isMounted) {
+        this.invalidateCache();
+        this.fetchRegularMail();
+      }
+    }
+  },
+
   mounted() {
-    this.fetchRegularMail();
+    // Check if we have fresh cached data
+    if (!mailCache.isStale(this.showArchived, this.filterStatus)) {
+      // Use cached data
+      const cached = mailCache.get();
+      if (cached) {
+        this.mailRecords = cached;
+        console.log('Using cached mail data:', cached.length, 'items');
+      }
+    } else {
+      // Fetch fresh data
+      this.fetchRegularMail();
+    }
+    this._isMounted = true;
   },
 
   beforeUnmount() {
@@ -1207,6 +1262,10 @@ export default {
           ? this.filterAndSortFiles(allUnprocessedFiles, processedFiles, true)
           : this.filterAndSortFiles(allUnprocessedFiles, processedFiles, false);
         
+        // Cache the results
+        mailCache.set(this.mailRecords, this.showArchived, this.filterStatus);
+        console.log('Mail data cached:', this.mailRecords.length, 'items');
+        
       } catch (error) {
         console.error("Error fetching regular mail:", error);
       } finally {
@@ -1239,6 +1298,12 @@ export default {
       );
     },
 
+    invalidateCache() {
+      // Invalidate cache to force fresh fetch
+      mailCache.timestamp = null;
+      mailCache.data = null;
+    },
+
     async processFile(item, index) {
       this.itemLoading[index] = true;
 
@@ -1247,12 +1312,11 @@ export default {
         
         if (response.data.status === "success") {
           item.status = STATUS_PROCESSED;
+          this.invalidateCache();
           await this.fetchRegularMail();
         }
       } catch (error) {
         console.error("Error processing:", error);
-        );
-        await this.fetchRegularMail();
       } finally {
         this.itemLoading[index] = false;
       }
@@ -1299,7 +1363,6 @@ export default {
         estimatedRemainingSeconds: null,
         errors: []
       };
-      );
 
       try {
         const response = await api.post('/process-regular-mail-batch', {
@@ -1315,7 +1378,6 @@ export default {
         }
       } catch (error) {
         console.error("Error starting batch processing:", error);
-        );
         this.progressDialog = false;
         this.processingAll = false;
       }
@@ -1371,6 +1433,7 @@ export default {
       this.stopStatusPolling();
       
       this.selectedItems = [];
+      this.invalidateCache();
       await this.fetchRegularMail();
       
       this.progressDialog = false;
@@ -1401,12 +1464,11 @@ export default {
         const response = await api.post(`/process-regular-mail/${item.document_id}`);
         
         if (response.data.status === "success") {
+          this.invalidateCache();
           await this.fetchRegularMail();
         }
       } catch (error) {
         console.error("Error retrying file:", error);
-        );
-        await this.fetchRegularMail();
       } finally {
         this.itemLoading[index] = false;
       }
@@ -1425,6 +1487,7 @@ export default {
         });
         
         this.selectedMail.status = STATUS_COMPLETED;
+        this.invalidateCache();
         await this.fetchRegularMail();
       } catch (error) {
         console.error("Error marking as completed:", error);
@@ -1438,6 +1501,7 @@ export default {
         });
         
         this.detailsDialog = false;
+        this.invalidateCache();
         await this.fetchRegularMail();
       } catch (error) {
         console.error("Error archiving:", error);
@@ -1450,6 +1514,7 @@ export default {
         this.showArchived = false;
       }
       this.selectedItems = [];
+      this.invalidateCache();
       this.fetchRegularMail();
     },
 
@@ -1480,10 +1545,10 @@ export default {
           ? `Scanned folder: ${totalFound} file(s) found`
           : "No files found in folder";
         
+        this.invalidateCache();
         await this.fetchRegularMail();
       } catch (error) {
         console.error("Scan error:", error);
-        );
       } finally {
         this.scanning = false;
       }
@@ -1503,14 +1568,13 @@ export default {
         this.uploadFiles.forEach(file => formData.append("files", file));
         
         await api.post("/upload-to-google-drive", formData);
-        );
         
         this.uploadDialog = false;
         this.uploadFiles = [];
+        this.invalidateCache();
         await this.fetchRegularMail();
       } catch (error) {
         console.error("Upload error:", error);
-        );
       } finally {
         this.uploading = false;
       }

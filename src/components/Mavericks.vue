@@ -71,6 +71,7 @@
             <v-data-table
               :headers="headers"
               :items="items"
+              :loading="isLoading || isFetching"
               :items-per-page="itemsPerPage"
               item-value="id"
               v-model="selected"
@@ -299,11 +300,14 @@ const { data: mavericksData, isLoading, isFetching, refetch } = useQuery({
     });
     return response.data;
   },
-  staleTime: 1000 * 60 * 30, // 30 minutes - data stays fresh
-  gcTime: 1000 * 60 * 60, // 60 minutes - data stays in cache
-  refetchOnWindowFocus: false, // Don't refetch on tab focus
-  refetchOnMount: false, // Use cached data if available
-  refetchOnReconnect: false, // Don't refetch on network reconnect
+  staleTime: 1000 * 60 * 3, // 3 minutes - mavericks data stays fresh
+  gcTime: 1000 * 60 * 15, // 15 minutes in cache
+  refetchOnWindowFocus: false,
+  refetchOnMount: false, // ✅ Don't refetch on mount - only when page/search changes
+  refetchOnReconnect: false,
+  select: (data) => data || { items: [], totalItems: 0 }, // Ensure always returns proper structure
+  placeholderData: { items: [], totalItems: 0 }, // Show empty structure while loading
+  keepPreviousData: true, // Keep showing old data while paginating/searching
 });
 
 const items = computed(() => mavericksData.value?.items || []);

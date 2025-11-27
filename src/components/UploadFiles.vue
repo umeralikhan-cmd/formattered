@@ -154,7 +154,7 @@ const selectedFiles = ref(null);
 const manualScan = ref(false); // Track if user manually clicked scan
 const hasAutoProcessed = ref(false); // Track if auto-processing already happened
 
-// TanStack Query - Fetch Google Drive files
+// TanStack Query - Fetch Google Drive files (check for new files)
 const { data: driveFilesData, refetch: refetchDrive, isError, error } = useQuery({
   queryKey: ['googleDriveFiles'],
   queryFn: async () => {
@@ -164,11 +164,13 @@ const { data: driveFilesData, refetch: refetchDrive, isError, error } = useQuery
     }
     return [];
   },
-  staleTime: 1000 * 60 * 30, // 30 minutes
-  gcTime: 1000 * 60 * 60, // 60 minutes
+  staleTime: 1000 * 60, // 1 minute - check for new files when stale
+  gcTime: 1000 * 60 * 10, // 10 minutes in cache
   refetchOnWindowFocus: false,
-  refetchOnMount: false, // Use cached data if available
+  refetchOnMount: false, // ✅ Only refetch if data is stale (older than 1 minute)
   refetchOnReconnect: false,
+  select: (data) => data || [], // Ensure always returns array
+  placeholderData: [], // Show empty array while loading
 });
 
 // Watch for data changes from query

@@ -3,12 +3,14 @@
     <v-data-table
       :headers="headers"
       :items="items"
-      :server-items-length="totalItems"
-      :options.sync="options"
+      :loading="loading"
+      :items-per-page="itemsPerPage"
+      v-model:page="page"
       class="elevation-1"
       :footer-props="{
         'items-per-page-options': [10, 20, 50, 100]
       }"
+      @update:items-per-page="(val) => itemsPerPage = val"
     >
       <!-- Full Name -->
       <template v-slot:item.full_name="{ item }">
@@ -318,151 +320,156 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, watch } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
 
-export default {
-  name: 'ApplicationsTable',
-  props: {
-    searchProp: {
-      type: String,
-      default: ''
-    }
-  },
-  data() {
-    return {
-      searchTimeout: null,
-      loading: false,
-      items: [],
-      totalItems: 0,
-      options: {
-        page: 1,
-        itemsPerPage: 500
+// Props
+const props = defineProps({
+  searchProp: {
+    type: String,
+    default: ''
+  }
+});
+
+// State
+const page = ref(1);
+const itemsPerPage = ref(500);
+const mailingAddressDialog = ref(false);
+const selectedMailingAddress = ref(null);
+const detailsDialog = ref(false);
+const selectedApplicant = ref(null);
+const loadingDocuments = ref(false);
+const documentUrls = ref(null);
+const searchDebounced = ref('');
+const searchTimeout = ref(null);
+
+// Headers
+const headers = [
+  { title: 'ID', key: 'id', width: 80 },
+  { title: 'Full Name', key: 'full_name', width: 150 },
+  { title: 'First Name', key: 'first_name', width: 120 },
+  { title: 'Last Name', key: 'last_name', width: 120 },
+  { title: 'DOC #', key: 'doc_number', width: 100 },
+  { title: 'Facility', key: 'facility_name', width: 200 },
+  { title: 'Document Type', key: 'document_type', width: 150 },
+  { title: 'Maverick ID', key: 'maverick_profile_id', width: 120 },
+  { title: 'Facility ID', key: 'facility_id', width: 100 },
+  { title: 'Mailing', key: 'mailing_address', width: 100 },
+  { title: 'Created', key: 'created_at', width: 150 },
+  { title: 'Actions', key: 'actions', sortable: false, width: 100 }
+];
+
+const questionHeaders = [
+  { title: '#', key: 'question_number', width: 80 },
+  { title: 'Lesson', key: 'lesson', width: 150 },
+  { title: 'Question', key: 'question', width: 400 },
+  { title: 'Answer', key: 'answer', width: 150 }
+];
+
+// Debounce search
+watch(() => props.searchProp, (newVal) => {
+  clearTimeout(searchTimeout.value);
+  searchTimeout.value = setTimeout(() => {
+    searchDebounced.value = newVal;
+    page.value = 1; // Reset to first page on search
+  }, 500);
+});
+
+// TanStack Query for applicants
+const { data: applicantsData, isLoading: loading, isFetching, refetch } = useQuery({
+  queryKey: ['applicants', page, itemsPerPage, searchDebounced],
+  queryFn: async () => {
+    const response = await api.post('/local-dash', {
+      instructions: {
+        action: 'get_new_applicants'
       },
-      headers: [
-        { title: 'ID', key: 'id', width: 80 },
-        { title: 'Full Name', key: 'full_name', width: 150 },
-        { title: 'First Name', key: 'first_name', width: 120 },
-        { title: 'Last Name', key: 'last_name', width: 120 },
-        { title: 'DOC #', key: 'doc_number', width: 100 },
-        { title: 'Facility', key: 'facility_name', width: 200 },
-        { title: 'Document Type', key: 'document_type', width: 150 },
-        { title: 'Maverick ID', key: 'maverick_profile_id', width: 120 },
-        { title: 'Facility ID', key: 'facility_id', width: 100 },
-        { title: 'Mailing', key: 'mailing_address', width: 100 },
-        { title: 'Created', key: 'created_at', width: 150 },
-        { title: 'Actions', key: 'actions', sortable: false, width: 100 }
-      ],
-      mailingAddressDialog: false,
-      selectedMailingAddress: null,
-      detailsDialog: false,
-      selectedApplicant: null,
-      loadingDocuments: false,
-      documentUrls: null,
-      questionHeaders: [
-        { title: '#', key: 'question_number', width: 80 },
-        { title: 'Lesson', key: 'lesson', width: 150 },
-        { title: 'Question', key: 'question', width: 400 },
-        { title: 'Answer', key: 'answer', width: 150 }
-      ]
+      page: page.value,
+      itemsPerPage: itemsPerPage.value,
+      search: searchDebounced.value || ''
+    });
+    return response.data;
+  },
+  staleTime: 1000 * 60 * 3, // 3 minutes - applicants data stays fresh
+  gcTime: 1000 * 60 * 15, // 15 minutes in cache
+  refetchOnWindowFocus: false,
+  refetchOnMount: false, // ✅ Don't refetch on mount - only when page/search changes
+  refetchOnReconnect: false,
+  keepPreviousData: true, // Keep previous data while loading new page
+});
+
+const items = computed(() => applicantsData.value?.items || []);
+const totalItems = computed(() => applicantsData.value?.totalItems || 0);
+
+// Options object for v-data-table compatibility
+const options = computed({
+  get: () => ({
+    page: page.value,
+    itemsPerPage: itemsPerPage.value
+  }),
+  set: (val) => {
+    if (val.page !== undefined) page.value = val.page;
+    if (val.itemsPerPage !== undefined) itemsPerPage.value = val.itemsPerPage;
+  }
+});
+
+// Methods
+const refreshData = () => {
+  refetch();
+};
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleString();
+};
+
+const showMailingAddressDialog = (mailingAddress) => {
+  try {
+    if (typeof mailingAddress === 'string') {
+      selectedMailingAddress.value = JSON.parse(mailingAddress);
+    } else {
+      selectedMailingAddress.value = mailingAddress;
+    }
+    mailingAddressDialog.value = true;
+  } catch (e) {
+    console.error('Error parsing mailing address:', e);
+    selectedMailingAddress.value = { error: 'Invalid mailing address format' };
+    mailingAddressDialog.value = true;
+  }
+};
+
+const viewDetails = async (item) => {
+  selectedApplicant.value = item;
+  detailsDialog.value = true;
+  documentUrls.value = null;
+
+  // Fetch document URLs if document_parent_id and document_type exist
+  if (item.document_parent_id && item.document_type) {
+    await fetchDocumentUrls(item.document_parent_id, item.document_type);
+  }
+};
+
+const fetchDocumentUrls = async (documentParentId, documentType) => {
+  loadingDocuments.value = true;
+  try {
+    const response = await api.post('/local-dash', {
+      instructions: {
+        action: 'get_document'
+      },
+      document_parent_id: String(documentParentId),
+      document_type: documentType
+    });
+
+    documentUrls.value = response.data;
+  } catch (error) {
+    console.error('Error fetching document URLs:', error);
+    documentUrls.value = {
+      document_url: null,
+      image_url: null
     };
-  },
-  watch: {
-    options: {
-      handler() {
-        this.fetchApplicants();
-      },
-      deep: true
-    },
-    searchProp: {
-      handler() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(() => {
-          this.options.page = 1;
-          this.fetchApplicants();
-        }, 500);
-      }
-    }
-  },
-  mounted() {
-    this.fetchApplicants();
-  },
-  methods: {
-    async fetchApplicants() {
-      this.loading = true;
-      try {
-        const response = await api.post('/local-dash', {
-          instructions: {
-            action: 'get_new_applicants'
-          },
-          page: this.options.page,
-          itemsPerPage: this.options.itemsPerPage,
-          search: this.searchProp || ''
-        });
-
-        this.items = response.data.items || [];
-        this.totalItems = response.data.totalItems || 0;
-      } catch (error) {
-        console.error('Error fetching applicants:', error);
-        this.$emit('error', `Failed to fetch applicants: ${error.message}`);
-      } finally {
-        this.loading = false;
-      }
-    },
-    refreshData() {
-      this.fetchApplicants();
-    },
-    formatDate(dateString) {
-      if (!dateString) return 'N/A';
-      const date = new Date(dateString);
-      return date.toLocaleString();
-    },
-    showMailingAddressDialog(mailingAddress) {
-      try {
-        if (typeof mailingAddress === 'string') {
-          this.selectedMailingAddress = JSON.parse(mailingAddress);
-        } else {
-          this.selectedMailingAddress = mailingAddress;
-        }
-        this.mailingAddressDialog = true;
-      } catch (e) {
-        console.error('Error parsing mailing address:', e);
-        this.selectedMailingAddress = { error: 'Invalid mailing address format' };
-        this.mailingAddressDialog = true;
-      }
-    },
-    async viewDetails(item) {
-      this.selectedApplicant = item;
-      this.detailsDialog = true;
-      this.documentUrls = null;
-
-      // Fetch document URLs if document_parent_id and document_type exist
-      if (item.document_parent_id && item.document_type) {
-        await this.fetchDocumentUrls(item.document_parent_id, item.document_type);
-      }
-    },
-    async fetchDocumentUrls(documentParentId, documentType) {
-      this.loadingDocuments = true;
-      try {
-        const response = await api.post('/local-dash', {
-          instructions: {
-            action: 'get_document'
-          },
-          document_parent_id: String(documentParentId),
-          document_type: documentType
-        });
-
-        this.documentUrls = response.data;
-      } catch (error) {
-        console.error('Error fetching document URLs:', error);
-        this.documentUrls = {
-          document_url: null,
-          image_url: null
-        };
-      } finally {
-        this.loadingDocuments = false;
-      }
-    }
+  } finally {
+    loadingDocuments.value = false;
   }
 };
 </script>

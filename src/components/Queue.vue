@@ -183,7 +183,7 @@ const headers = [
   { title: 'Actions', key: 'actions', sortable: false, align: 'center' }
 ];
 
-// TanStack Query - Fetch queue
+// TanStack Query - Fetch queue (refetch on tab change)
 const { data: queueData, isLoading, isFetching, error, refetch: refetchCurrentQueue } = useQuery({
   queryKey: ['queue', activeTab],
   queryFn: async () => {
@@ -199,11 +199,14 @@ const { data: queueData, isLoading, isFetching, error, refetch: refetchCurrentQu
     }
     return [];
   },
-  staleTime: 1000 * 60 * 30, // 30 minutes - data stays fresh
-  gcTime: 1000 * 60 * 60, // 60 minutes - data stays in cache
-  refetchOnWindowFocus: false, // Don't refetch on tab focus
-  refetchOnMount: false, // Use cached data if available
-  refetchOnReconnect: false, // Don't refetch on network reconnect
+  staleTime: 1000 * 60 * 3, // 3 minutes - queue data stays fresh
+  gcTime: 1000 * 60 * 15, // 15 minutes in cache
+  refetchOnWindowFocus: false,
+  refetchOnMount: false, // ✅ Don't refetch on mount - only when tab changes
+  refetchOnReconnect: false,
+  select: (data) => data || [], // Ensure always returns array
+  placeholderData: [], // Show empty array while loading
+  keepPreviousData: true, // Keep showing old data while switching tabs
 });
 
 // Computed properties

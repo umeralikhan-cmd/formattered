@@ -135,110 +135,106 @@
   </v-dialog>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
 import api from "@/plugins/axios";
 
-export default {
-  name: "RosterReport",
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: false,
-    },
-    facilityId: {
-      type: [Number, String],
-      default: null,
-    },
-    facilityFacilityId: {
-      type: String,
-      default: "",
-    },
+// Props
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    default: false,
   },
-  emits: ['update:modelValue', 'close'],
-  data() {
-    return {
-      loading: false,
-      error: null,
-      rosterData: null,
-      headers: [
-        { title: "First Name", key: "first_name", width: "10%" },
-        { title: "Last Name", key: "last_name", width: "10%" },
-        { title: "Doc Number", key: "doc_number", width: "10%" },
-        { title: "Application", key: "application", width: "10%" },
-        { title: "TYH", key: "tyh", width: "12%" },
-        { title: "Preseason", key: "preseason", width: "12%" },
-        { title: "Book One", key: "book_one", width: "12%" },
-        { title: "Book Two", key: "book_two", width: "12%" },
-        { title: "Notes", key: "notes", width: "12%" },
-      ],
+  facilityId: {
+    type: [Number, String],
+    default: null,
+  },
+  facilityFacilityId: {
+    type: String,
+    default: "",
+  },
+});
+
+// Emits
+const emit = defineEmits(['update:modelValue', 'close']);
+
+// Headers
+const headers = [
+  { title: "First Name", key: "first_name", width: "10%" },
+  { title: "Last Name", key: "last_name", width: "10%" },
+  { title: "Doc Number", key: "doc_number", width: "10%" },
+  { title: "Application", key: "application", width: "10%" },
+  { title: "TYH", key: "tyh", width: "12%" },
+  { title: "Preseason", key: "preseason", width: "12%" },
+  { title: "Book One", key: "book_one", width: "12%" },
+  { title: "Book Two", key: "book_two", width: "12%" },
+  { title: "Notes", key: "notes", width: "12%" },
+];
+
+// TanStack Query for roster report
+const { data: rosterData, isLoading: loading, error: queryError, refetch } = useQuery({
+  queryKey: ['rosterReport', computed(() => props.facilityId)],
+  queryFn: async () => {
+    if (!props.facilityId) {
+      throw new Error("Facility ID is required");
+    }
+
+    const payload = {
+      instructions: {
+        action: "get_roster_report"
+      },
+      facility_id: props.facilityId
     };
-  },
-  watch: {
-    modelValue(newVal) {
-      if (newVal && this.facilityId) {
-        this.fetchRosterReport();
-      }
-    },
-  },
-  methods: {
-    async fetchRosterReport() {
-      if (!this.facilityId) {
-        this.error = "Facility ID is required";
-        return;
-      }
 
-      try {
-        this.loading = true;
-        this.error = null;
-        this.rosterData = null;
-
-        const payload = {
-          instructions: {
-            action: "get_roster_report"
-          },
-          facility_id: this.facilityId
-        };
-
-        const response = await api.post('/local-dash', payload);
-        this.rosterData = response.data;
-      } catch (err) {
-        console.error('Error fetching roster report:', err);
-        this.error = err.response?.data?.detail || 'Error fetching roster report';
-      } finally {
-        this.loading = false;
-      }
-    },
-    getLogColor(status) {
-      if (!status) return 'grey';
-      const statusLower = status.toLowerCase();
-      if (statusLower === 'complete') return 'success';
-      if (statusLower === 'pending') return 'warning';
-      if (statusLower === 'failed' || statusLower === 'error') return 'error';
-      return 'info';
-    },
-    getChipColor(displayText) {
-      if (!displayText) return 'grey';
-      if (displayText === 'Completed') return 'success';
-      if (displayText.includes('2nd chance')) return 'warning';
-      return 'info';
-    },
-    getStatusChipColor(status) {
-      if (!status) return 'grey';
-      const statusLower = status.toLowerCase();
-      if (statusLower === 'complete') return 'success';
-      if (statusLower === 'approved') return 'success';
-      if (statusLower === 'fail') return 'error';
-      if (statusLower === 'pending') return 'warning';
-      if (statusLower === 'n/a') return 'grey';
-      return 'info';
-    },
-    close() {
-      this.$emit('close');
-      this.$emit('update:modelValue', false);
-      this.error = null;
-      this.rosterData = null;
-    },
+    const response = await api.post('/local-dash', payload);
+    return response.data;
   },
+  enabled: computed(() => !!props.modelValue && !!props.facilityId), // Only fetch when dialog is open and has facilityId
+  staleTime: 0, // Always fetch fresh data when dialog opens
+  gcTime: 1000 * 60 * 5, // 5 minutes in cache
+  refetchOnWindowFocus: false,
+  refetchOnMount: false,
+  refetchOnReconnect: false,
+});
+
+const error = computed(() => {
+  if (!props.facilityId) return "Facility ID is required";
+  if (queryError.value) return queryError.value.response?.data?.detail || 'Error fetching roster report';
+  return null;
+});
+
+// Methods
+const getLogColor = (status) => {
+  if (!status) return 'grey';
+  const statusLower = status.toLowerCase();
+  if (statusLower === 'complete') return 'success';
+  if (statusLower === 'pending') return 'warning';
+  if (statusLower === 'failed' || statusLower === 'error') return 'error';
+  return 'info';
+};
+
+const getChipColor = (displayText) => {
+  if (!displayText) return 'grey';
+  if (displayText === 'Completed') return 'success';
+  if (displayText.includes('2nd chance')) return 'warning';
+  return 'info';
+};
+
+const getStatusChipColor = (status) => {
+  if (!status) return 'grey';
+  const statusLower = status.toLowerCase();
+  if (statusLower === 'complete') return 'success';
+  if (statusLower === 'approved') return 'success';
+  if (statusLower === 'fail') return 'error';
+  if (statusLower === 'pending') return 'warning';
+  if (statusLower === 'n/a') return 'grey';
+  return 'info';
+};
+
+const close = () => {
+  emit('close');
+  emit('update:modelValue', false);
 };
 </script>
 

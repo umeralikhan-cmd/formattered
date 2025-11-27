@@ -124,6 +124,7 @@
             <v-data-table
               :headers="headers"
               :items="filteredItems"
+              :loading="loader || isFetching"
               :items-per-page="20"
               show-expand
               show-select
@@ -659,14 +660,16 @@ const selectedFacilityFacilityId = ref(null);
 const reportExportsDialog = ref(false);
 const selectedReportFacility = ref(null);
 
-// TanStack Query - Fetch facilities
+// TanStack Query - Fetch facilities (smart caching)
 const { data: facilitiesData, isLoading: loader, isFetching, refetch: refetchFacilities, error: facilitiesError } = useQuery({
-  queryKey: ['facilities'],
+  queryKey: ['facilitiesSupabase'], // UNIQUE KEY - different from DisplayResults
   queryFn: async () => {
     const res = await api.get("/get-facilities-supabase");
-    return Array.isArray(res.data)
+    const facilities = Array.isArray(res.data)
       ? res.data.map((f) => ({
           ...f,
+          facility_id: f.facility_id || f["Facility ID"],
+          facility_name: f.facility_name || f["Facility Name"],
           mailing_addresses: Array.isArray(f.mailing_addresses)
             ? f.mailing_addresses
             : f.mailing_addresses
@@ -674,12 +677,17 @@ const { data: facilitiesData, isLoading: loader, isFetching, refetch: refetchFac
             : [],
         }))
       : [];
+    console.log('Facilities (Supabase) loaded:', facilities.length);
+    return facilities;
   },
-  staleTime: 1000 * 60 * 30, // 30 minutes - data stays fresh
-  gcTime: 1000 * 60 * 60, // 60 minutes - data stays in cache
-  refetchOnMount: false, // Use cached data if available
+  staleTime: 1000 * 60 * 15, // 15 minutes - facilities don't change often
+  gcTime: 1000 * 60 * 60, // 60 minutes in cache
+  refetchOnMount: false, // ✅ Don't refetch on mount - use cached data
   refetchOnWindowFocus: false, // Don't refetch on tab focus
   refetchOnReconnect: false, // Don't refetch on network reconnect
+  select: (data) => data || [], // Ensure always returns array
+  placeholderData: [], // Show empty array while loading to prevent undefined errors
+  keepPreviousData: true, // Keep showing old data while refetching
 });
 
 // Watch for errors
@@ -690,7 +698,11 @@ watch(facilitiesError, (error) => {
 });
 
 // Computed properties
-const items = computed(() => facilitiesData.value || []);
+const items = computed(() => {
+  const data = facilitiesData.value || [];
+  console.log('Facilities items computed:', data.length);
+  return data;
+});
 
 const isFacilityValid = computed(() => {
   const d = editFacilityData.value || {};
