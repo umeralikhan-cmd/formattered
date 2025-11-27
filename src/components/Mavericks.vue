@@ -245,24 +245,6 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-
-  <!-- Snackbar for notifications -->
-  <v-snackbar
-    v-model="snackbar"
-    :color="snackbarColor"
-    :timeout="3000"
-    location="top"
-  >
-    {{ snackbarMessage }}
-    <template v-slot:actions>
-      <v-btn
-        variant="text"
-        @click="snackbar = false"
-      >
-        Close
-      </v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <script setup>
@@ -290,9 +272,6 @@ const scholarshipDialog = ref(false);
 const selectedDocument = ref(null);
 const selectedMaverick = ref(null);
 const selectedDocumentType = ref(null);
-const snackbar = ref(false);
-const snackbarMessage = ref('');
-const snackbarColor = ref('success');
 const debounceTimeout = ref(null);
 
 // Constants
@@ -376,7 +355,6 @@ const openScholarshipDialog = (item) => {
 
 const addToScholarshipQueue = async () => {
   if (!selectedDocumentType.value) {
-    showSnackbar('Please select a document type', 'error');
         return;
       }
 
@@ -390,21 +368,11 @@ const addToScholarshipQueue = async () => {
         });
 
         if (res.data.success) {
-      showSnackbar('Successfully added to scholarship queue', 'success');
       scholarshipDialog.value = false;
-        } else {
-      showSnackbar(res.data.message || 'Failed to add to scholarship queue', 'error');
         }
       } catch (err) {
         console.error(err);
-    showSnackbar('Error: ' + (err.response?.data?.detail || err.message), 'error');
   }
-};
-
-const showSnackbar = (message, color = 'success') => {
-  snackbarMessage.value = message;
-  snackbarColor.value = color;
-  snackbar.value = true;
 };
 </script>
 

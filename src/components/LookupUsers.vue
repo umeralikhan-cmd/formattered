@@ -427,22 +427,6 @@
       </v-row>
     </v-card-text>
   </v-card>
-
-  <v-snackbar
-    v-model="snackbar"
-    :timeout="3000"
-    :color="snackbarColor"
-    multi-line
-    rounded="pill"
-    location="top"
-  >
-    {{ snackbarText }}
-    <template v-slot:actions>
-      <v-btn color="white" variant="text" @click="snackbar = false">
-        Close
-      </v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <script>
@@ -459,9 +443,6 @@ export default {
     return {
       facilityOptions: [],
       facilityAddressesV2: [],
-      snackbar: false,
-      snackbarColor: "success",
-      snackbarText: "",
       applicantOptions: [],
       searchQuery: null,
       loading: false,
@@ -642,9 +623,6 @@ export default {
             text: message
           };
 
-          this.snackbarText = message;
-          this.snackbarColor = "success";
-          this.snackbar = true;
           this.$emit("update-user", this.user);
         } else {
           this.matchMaverickMessage = {
@@ -652,9 +630,6 @@ export default {
             text: res.data.error || 'Failed to match maverick.'
           };
 
-          this.snackbarText = res.data.error || "Failed to match maverick.";
-          this.snackbarColor = "error";
-          this.snackbar = true;
         }
       } catch (err) {
         console.error("Error matching maverick:", err);
@@ -663,9 +638,6 @@ export default {
           text: 'Error matching maverick.'
         };
 
-        this.snackbarText = "Error matching maverick.";
-        this.snackbarColor = "error";
-        this.snackbar = true;
       } finally {
         this.matchMaverickLoading = false;
       }
@@ -822,9 +794,6 @@ export default {
           }
         } catch (err) {
           console.error("Error searching applicants:", err);
-          this.snackbarText = "Error searching for applicants";
-          this.snackbarColor = "error";
-          this.snackbar = true;
         } finally {
           this.loading = false;
         }
@@ -1006,10 +975,6 @@ export default {
             text: 'Please fill in required fields: First Name, Last Name, DOC Number, and Facility'
           };
 
-          this.snackbarText =
-            "Please fill in required fields: First Name, Last Name, DOC Number, and Facility";
-          this.snackbarColor = "error";
-          this.snackbar = true;
           return;
         }
 
@@ -1042,9 +1007,6 @@ export default {
             text: `New maverick created successfully! ID: ${res.data.user?.id || 'N/A'}`
           };
 
-          this.snackbarText = `New maverick created successfully! ID: ${res.data.user?.id || 'N/A'}`;
-          this.snackbarColor = "success";
-          this.snackbar = true;
           this.$emit("update-user", this.user);
 
           this.setOriginalMaverickData();
@@ -1056,9 +1018,6 @@ export default {
             text: res.data?.error || 'Failed to save maverick'
           };
 
-          this.snackbarText = res.data?.error || "Failed to save maverick";
-          this.snackbarColor = "error";
-          this.snackbar = true;
         }
       } catch (err) {
         console.error("Error saving new maverick:", err);
@@ -1067,9 +1026,6 @@ export default {
           text: 'Error saving new maverick'
         };
 
-        this.snackbarText = "Error saving new maverick";
-        this.snackbarColor = "error";
-        this.snackbar = true;
       } finally {
         this.saveNewMaverickLoading = false;
       }
@@ -1090,10 +1046,6 @@ export default {
             text: 'Please fill in required fields: First Name, Last Name, DOC Number, and Facility'
           };
 
-          this.snackbarText =
-            "Please fill in required fields: First Name, Last Name, DOC Number, and Facility";
-          this.snackbarColor = "error";
-          this.snackbar = true;
           return;
         }
 
@@ -1132,9 +1084,6 @@ export default {
             text: message
           };
 
-          this.snackbarText = message;
-          this.snackbarColor = "success";
-          this.snackbar = true;
           this.$emit("update-user", this.user);
 
           this.setOriginalMaverickData();
@@ -1147,9 +1096,6 @@ export default {
             text: res.data?.error || 'Failed to save maverick'
           };
 
-          this.snackbarText = res.data?.error || "Failed to save maverick";
-          this.snackbarColor = "error";
-          this.snackbar = true;
         }
       } catch (err) {
         console.error("Error saving new maverick:", err);
@@ -1158,9 +1104,6 @@ export default {
           text: 'Error saving new maverick'
         };
 
-        this.snackbarText = "Error saving new maverick";
-        this.snackbarColor = "error";
-        this.snackbar = true;
       } finally {
         this.saveMaverickChangesLoading = false;
       }

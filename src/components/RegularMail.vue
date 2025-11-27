@@ -352,14 +352,9 @@
             <div class="text-caption mt-2">Loading...</div>
           </div>
 
-          <v-alert
-            v-else-if="mailRecords.length === 0"
-            type="info"
-            variant="tonal"
-            class="my-4"
-          >
+          <div v-else-if="mailRecords.length === 0" class="text-center py-8 text-body-2 text-grey">
             No {{ showPending ? 'pending' : 'processed' }} mail found
-          </v-alert>
+          </div>
 
           <div v-else>
             <v-card
@@ -621,18 +616,10 @@
 
           <v-card-text class="py-6 dialog-content">
             <p class="text-body-1">{{ confirmMessage }}</p>
-            <v-alert
-              v-if="confirmType === 'batch'"
-              type="info"
-              variant="tonal"
-              class="mt-4"
-              density="compact"
-            >
-              <template v-slot:prepend>
-                <v-icon>mdi-information-outline</v-icon>
-              </template>
+            <p v-if="confirmType === 'batch'" class="text-body-2 mt-4 text-grey">
+              <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
               This will process documents in parallel for faster completion.
-            </v-alert>
+            </p>
           </v-card-text>
 
           <v-card-actions :class="$vuetify.display.xs ? 'flex-column-reverse ga-2 pa-3' : ''" class="dialog-actions">
@@ -737,18 +724,10 @@
               </v-card-text>
             </v-card>
 
-            <v-alert
-              v-if="batchProgress.errors && batchProgress.errors.length > 0"
-              type="warning"
-              variant="tonal"
-              density="compact"
-              class="mt-4"
-            >
-              <template v-slot:prepend>
-                <v-icon>mdi-alert</v-icon>
-              </template>
+            <p v-if="batchProgress.errors && batchProgress.errors.length > 0" class="text-body-2 mt-4 text-warning">
+              <v-icon size="small" class="mr-1">mdi-alert</v-icon>
               {{ batchProgress.errors.length }} document(s) failed. Details will be available after completion.
-            </v-alert>
+            </p>
           </v-card-text>
 
           <v-divider></v-divider>
@@ -958,16 +937,6 @@
         </v-card>
       </v-dialog>
 
-    <!-- Snackbar -->
-  <v-snackbar
-    v-model="snackbar"
-    :timeout="3000"
-    :color="snackbarColor"
-    location="top"
-  >
-    {{ snackbarText }}
-  </v-snackbar>
-
   <!-- Batch Status Button -->
   <v-btn
     v-if="processingAll && currentTaskId"
@@ -1087,9 +1056,6 @@ export default {
         errors: []
       },
 
-      snackbar: false,
-      snackbarColor: "success",
-      snackbarText: "",
 
       mainFolder: MAIN_FOLDER,
 
@@ -1168,7 +1134,6 @@ export default {
   methods: {
     confirmProcessSelected() {
       if (this.selectedItems.length === 0) {
-        this.showSnackbar("Please select files to process", "warning");
         return;
       }
 
@@ -1244,7 +1209,6 @@ export default {
         
       } catch (error) {
         console.error("Error fetching regular mail:", error);
-        this.showSnackbar("Error fetching regular mail", "error");
       } finally {
         this.tableLoading = false;
       }
@@ -1277,26 +1241,16 @@ export default {
 
     async processFile(item, index) {
       this.itemLoading[index] = true;
-      this.showSnackbar("Processing document...", "info");
 
       try {
         const response = await api.post(`/process-regular-mail/${item.document_id}`);
         
         if (response.data.status === "success") {
           item.status = STATUS_PROCESSED;
-          const message = response.data.maverick_matched 
-            ? 'Document processed successfully - Maverick matched!' 
-            : 'Document processed successfully';
-          this.showSnackbar(message, "success");
           await this.fetchRegularMail();
-        } else if (response.data.status === "already_exists") {
-          this.showSnackbar("Document already processed", "info");
         }
       } catch (error) {
         console.error("Error processing:", error);
-        this.showSnackbar(
-          "Error: " + (error.response?.data?.detail || error.message),
-          "error"
         );
         await this.fetchRegularMail();
       } finally {
@@ -1310,7 +1264,6 @@ export default {
         .filter(id => id);
       
       if (documentIds.length === 0) {
-        this.showSnackbar("No valid document IDs found in selection", "error");
         return;
       }
 
@@ -1325,7 +1278,6 @@ export default {
       const documentIds = pendingFiles.map(f => f.document_id);
       
       if (documentIds.length === 0) {
-        this.showSnackbar("No pending files to process", "warning");
         return;
       }
 
@@ -1347,10 +1299,6 @@ export default {
         estimatedRemainingSeconds: null,
         errors: []
       };
-
-      this.showSnackbar(
-        `Started batch processing of ${documentIds.length} file(s). Click the status button to view progress.`,
-        "info"
       );
 
       try {
@@ -1367,9 +1315,6 @@ export default {
         }
       } catch (error) {
         console.error("Error starting batch processing:", error);
-        this.showSnackbar(
-          error.response?.data?.detail || "Error starting batch process",
-          "error"
         );
         this.progressDialog = false;
         this.processingAll = false;
@@ -1423,10 +1368,6 @@ export default {
 
     async handleBatchComplete(data) {
       const { total, successful, failed } = data;
-      const message = this.buildBatchResultMessage(total, successful, failed);
-      
-      this.showSnackbar(message, failed > 0 ? "warning" : "success");
-      
       this.stopStatusPolling();
       
       this.selectedItems = [];
@@ -1455,22 +1396,15 @@ export default {
 
     async retryProcessing(item, index) {
       this.itemLoading[index] = true;
-      this.showSnackbar("Retrying processing...", "info");
 
       try {
         const response = await api.post(`/process-regular-mail/${item.document_id}`);
         
         if (response.data.status === "success") {
-          this.showSnackbar("File reprocessed successfully!", "success");
           await this.fetchRegularMail();
-        } else if (response.data.status === "already_exists") {
-          this.showSnackbar("Document already processed", "info");
         }
       } catch (error) {
         console.error("Error retrying file:", error);
-        this.showSnackbar(
-          error.response?.data?.detail || "Error reprocessing file",
-          "error"
         );
         await this.fetchRegularMail();
       } finally {
@@ -1491,11 +1425,9 @@ export default {
         });
         
         this.selectedMail.status = STATUS_COMPLETED;
-        this.showSnackbar("Mail marked as completed", "success");
         await this.fetchRegularMail();
       } catch (error) {
         console.error("Error marking as completed:", error);
-        this.showSnackbar("Failed to mark as completed", "error");
       }
     },
 
@@ -1506,11 +1438,9 @@ export default {
         });
         
         this.detailsDialog = false;
-        this.showSnackbar("Mail archived", "success");
         await this.fetchRegularMail();
       } catch (error) {
         console.error("Error archiving:", error);
-        this.showSnackbar("Failed to archive", "error");
       }
     },
 
@@ -1525,9 +1455,8 @@ export default {
 
     async scanForNewMail() {
       this.scanning = true;
-      this.showSnackbar("Scanning folder for new mail...", "info");
 
-      try {
+      try{
         const scanResponse = await api.post("/scan-google-drive", null, {
           params: { is_regular_mail: true }
         });
@@ -1551,13 +1480,9 @@ export default {
           ? `Scanned folder: ${totalFound} file(s) found`
           : "No files found in folder";
         
-        this.showSnackbar(message, totalFound > 0 ? "success" : "info");
         await this.fetchRegularMail();
       } catch (error) {
         console.error("Scan error:", error);
-        this.showSnackbar(
-          "Error scanning folder: " + (error.response?.data?.detail || error.message),
-          "error"
         );
       } finally {
         this.scanning = false;
@@ -1566,12 +1491,10 @@ export default {
 
     async uploadToGoogleDrive() {
       if (this.uploadFiles.length === 0) {
-        this.showSnackbar("No files selected", "warning");
         return;
       }
 
       this.uploading = true;
-      this.showSnackbar(`Uploading ${this.uploadFiles.length} file(s)...`, "info");
 
       try {
         const formData = new FormData();
@@ -1579,11 +1502,7 @@ export default {
         
         this.uploadFiles.forEach(file => formData.append("files", file));
         
-        const response = await api.post("/upload-to-google-drive", formData);
-        
-        this.showSnackbar(
-          `${response.data.uploaded.length} file(s) uploaded successfully`,
-          "success"
+        await api.post("/upload-to-google-drive", formData);
         );
         
         this.uploadDialog = false;
@@ -1591,9 +1510,6 @@ export default {
         await this.fetchRegularMail();
       } catch (error) {
         console.error("Upload error:", error);
-        this.showSnackbar(
-          "Upload failed: " + (error.response?.data?.detail || error.message), 
-          "error"
         );
       } finally {
         this.uploading = false;
@@ -1606,9 +1522,8 @@ export default {
       );
 
       if (validFiles.length !== files.length) {
-        this.showSnackbar(
-          `${files.length - validFiles.length} file(s) skipped (invalid type)`,
-          "warning"
+        console.warn(
+          `${files.length - validFiles.length} file(s) skipped (invalid type)`
         );
       }
 
@@ -1651,11 +1566,6 @@ export default {
       e.target.value = '';
     },
 
-    showSnackbar(text, color = "success") {
-      this.snackbarText = text;
-      this.snackbarColor = color;
-      this.snackbar = true;
-    },
 
     getSentimentColor(sentiment) {
       const colors = {

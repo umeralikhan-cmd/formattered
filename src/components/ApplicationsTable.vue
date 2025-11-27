@@ -235,12 +235,10 @@
                 </v-data-table>
               </div>
 
-              <v-alert v-else type="info" variant="tonal" class="no-data-alert">
-                <template #prepend>
-                  <v-icon>mdi-information-outline</v-icon>
-                </template>
+              <p v-else class="text-body-2 text-grey text-center py-4">
+                <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
                 No questions found for this Edovo document.
-              </v-alert>
+              </p>
             </div>
 
             <!-- Non-Edovo Documents - Show Document/Image Previews -->
@@ -293,12 +291,10 @@
                 </v-col>
 
                 <v-col cols="12" v-if="!documentUrls.document_url && !documentUrls.image_url">
-                  <v-alert type="info" variant="tonal" class="no-data-alert">
-                    <template #prepend>
-                      <v-icon>mdi-information-outline</v-icon>
-                    </template>
+                  <p class="text-body-2 text-grey text-center py-4">
+                    <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
                     No documents available for this applicant.
-                  </v-alert>
+                  </p>
                 </v-col>
               </v-row>
             </div>

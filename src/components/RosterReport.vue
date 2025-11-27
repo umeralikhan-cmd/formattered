@@ -20,9 +20,10 @@
         </div>
 
         <div v-else-if="error" class="error-state">
-          <v-alert type="error" variant="tonal" class="modern-alert">
+          <p class="text-body-2 text-error text-center py-4">
+            <v-icon size="small" class="mr-1">mdi-alert-circle</v-icon>
             {{ error }}
-          </v-alert>
+          </p>
         </div>
 
         <div v-else-if="rosterData" class="roster-content">
@@ -120,12 +121,10 @@
           </div>
 
           <div v-else class="empty-state">
-            <v-alert type="info" variant="tonal" class="modern-alert">
-              <div class="d-flex align-center gap-2">
-                <v-icon>mdi-information</v-icon>
-                <span>No mavericks found for this facility.</span>
-              </div>
-            </v-alert>
+            <p class="text-body-2 text-grey text-center py-4">
+              <v-icon size="small" class="mr-1">mdi-information</v-icon>
+              <span>No mavericks found for this facility.</span>
+            </p>
           </div>
         </div>
       </v-card-text>

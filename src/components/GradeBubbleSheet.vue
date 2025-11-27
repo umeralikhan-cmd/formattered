@@ -47,11 +47,11 @@
 
         <!-- Progress Messages -->
         <v-card-text v-if="progressMessages.length">
-          <v-alert type="info" class="mb-3" border="start" variant="tonal">
-            <div v-for="(msg, idx) in progressMessages" :key="idx">
+          <div class="text-body-2 mb-3">
+            <div v-for="(msg, idx) in progressMessages" :key="idx" class="py-1">
               <v-icon start size="small">mdi-progress-clock</v-icon> {{ msg }}
             </div>
-          </v-alert>
+          </div>
         </v-card-text>
 
         <!-- Final Grading Results -->
@@ -90,22 +90,6 @@
       </v-card>
     </v-responsive>
   </v-container>
-
-  <v-snackbar
-    v-model="snackbar"
-    :timeout="3000"
-    :color="snackbarColor"
-    multi-line
-     rounded="pill"
-    location="top"
-  >
-    {{ snackbarText }}
-    <template v-slot:actions>
-      <v-btn color="red" variant="text" @click="snackbar = false">
-        Close
-      </v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <script>
@@ -116,9 +100,6 @@ export default {
   data() {
     return {
       uploading: false,
-      snackbar: false,
-      snackbarColor: "success",
-      snackbarText: "",
       selectedFile: null,
       selectedQuestionType: "Preseason v1",
       questionTypes: [],
@@ -143,9 +124,6 @@ export default {
     async gradeFiles() {
       this.results = []; // Reset results
       if (this.selectedFiles.length === 0) {
-        this.snackbarText = "No files selected";
-        this.snackbarColor = "error";
-        this.snackbar = true;
         return;
       }
 
@@ -194,9 +172,6 @@ export default {
               if (parsed.results) {
                 this.results = parsed.results; // Update results with images and marks
                 console.log("Grading results:", this.results);
-                this.snackbarText = "Grading complete!";
-                this.snackbarColor = "success";
-                this.snackbar = true;
                 this.selectedFiles = []; // Clear selected files after grading
               } else {
                 this.progressMessages.push(msg);

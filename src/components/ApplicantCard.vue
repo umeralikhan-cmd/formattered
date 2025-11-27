@@ -270,19 +270,6 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-
-  <!-- Snackbar -->
-  <v-snackbar
-    v-model="snackbar"
-    :timeout="3000"
-    :color="snackbarColor"
-    location="top"
-  >
-    {{ snackbarText }}
-    <template v-slot:actions>
-      <v-btn variant="text" @click="snackbar = false">Close</v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <script>
@@ -298,9 +285,6 @@ export default {
       selectedDocument: null,
       deleteDialog: false,
       facilityOptions: [],
-      snackbar: false,
-      snackbarColor: "success",
-      snackbarText: "",
     };
   },
   props: {
@@ -348,15 +332,9 @@ export default {
         if (res.status === 200) {
           this.deleteDialog = false;
           this.getApplicants();
-          this.snackbarText = "Document deleted successfully!";
-          this.snackbarColor = "success";
-          this.snackbar = true;
         }
       } catch (err) {
         console.error(err);
-        this.snackbarText = "Failed to delete document";
-        this.snackbarColor = "error";
-        this.snackbar = true;
       }
     },
     async getApplicants() {
@@ -378,15 +356,9 @@ export default {
         const res = await api.post("/update-applicant", this.selectedApplicant);
         if (res.status === 200) {
           this.getApplicants();
-          this.snackbarText = "Changes saved successfully!";
-          this.snackbarColor = "success";
-          this.snackbar = true;
         }
       } catch (err) {
         console.error(err);
-        this.snackbarText = "Failed to save changes";
-        this.snackbarColor = "error";
-        this.snackbar = true;
       }
     },
     toggleIframe(index) {

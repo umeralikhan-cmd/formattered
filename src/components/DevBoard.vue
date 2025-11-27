@@ -40,15 +40,9 @@
     <div v-else class="dev-board-content">
       <div class="content-wrapper">
         
-        <!-- Info Alert -->
-        <v-alert
-          type="info"
-          variant="tonal"
-          class="dev-info-alert"
-        >
-          <template #prepend>
-            <v-icon>mdi-information-outline</v-icon>
-          </template>
+        <!-- Info Message -->
+        <div class="dev-info-message">
+          <v-icon class="mr-2">mdi-information-outline</v-icon>
           <div>
             <div class="alert-title">Developer Testing Board</div>
             <div class="alert-text">
@@ -56,7 +50,7 @@
               For development/testing purposes only.
             </div>
           </div>
-        </v-alert>
+        </div>
         <!-- Basic Utilities Section -->
         <div class="tools-section">
           <div class="section-header">
@@ -293,16 +287,20 @@
 
         <!-- Progress/Status Section -->
         <div v-if="statusMessage || loading" class="status-section">
-            <v-alert
-              :type="alertType"
-              :text="statusMessage"
+            <div
               v-if="statusMessage"
-              dismissible
-              @click:close="clearStatus"
-            variant="tonal"
-            class="status-alert"
+              class="status-message text-body-2 py-2"
+              :class="`text-${alertType}`"
             >
-            </v-alert>
+              {{ statusMessage }}
+              <v-btn
+                icon="mdi-close"
+                size="x-small"
+                variant="text"
+                @click="clearStatus"
+                class="ml-2"
+              />
+            </div>
 
             <v-progress-linear
               v-if="loading"

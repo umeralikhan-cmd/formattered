@@ -65,15 +65,6 @@
             <p class="loader-text">Loading queue...</p>
           </div>
 
-          <div v-else-if="error" class="error-container">
-            <v-alert type="error" variant="tonal" class="modern-alert">
-              <div class="d-flex align-center gap-2">
-                <v-icon size="20">mdi-alert-circle</v-icon>
-                <span>{{ error }}</span>
-              </div>
-            </v-alert>
-          </div>
-
           <div v-else class="table-wrapper">
             <v-data-table
               :headers="headers"
@@ -167,19 +158,6 @@
         </v-card-actions>
     </v-card>
     </v-dialog>
-
-    <!-- Snackbar for notifications -->
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="3000"
-      :color="snackbarColor"
-      location="top"
-    >
-      {{ snackbarText }}
-      <template v-slot:actions>
-        <v-btn variant="text" @click="snackbar = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </div>
 </template>
 
@@ -193,9 +171,6 @@ const activeTab = ref('PRESEASON');
 const archiveDialog = ref(false);
 const itemToArchive = ref(null);
 const archiving = ref(false);
-const snackbar = ref(false);
-const snackbarText = ref('');
-const snackbarColor = ref('success');
 
 // Table headers
 const headers = [
@@ -264,12 +239,6 @@ const getStatusColor = (status) => {
       return statusColors[status?.toLowerCase()] || 'grey';
 };
 
-const showSnackbar = (message, color = 'success') => {
-  snackbarText.value = message;
-  snackbarColor.value = color;
-  snackbar.value = true;
-};
-
 // Action methods
 const approveItem = async (item) => {
       try {
@@ -282,14 +251,12 @@ const approveItem = async (item) => {
         });
 
         if (response.data && response.data.success) {
-      showSnackbar(`Queue item #${item.id} approved successfully`, 'success');
       await refetchCurrentQueue();
         } else {
           throw new Error(response.data?.error || 'Failed to approve item');
         }
       } catch (error) {
         console.error('Error approving item:', error);
-    showSnackbar(`Failed to approve item: ${error.message}`, 'error');
   }
 };
 
@@ -304,14 +271,12 @@ const setPendingItem = async (item) => {
         });
 
         if (response.data && response.data.success) {
-      showSnackbar(`Queue item #${item.id} set to pending`, 'success');
       await refetchCurrentQueue();
         } else {
           throw new Error(response.data?.error || 'Failed to set item to pending');
         }
       } catch (error) {
         console.error('Error setting item to pending:', error);
-    showSnackbar(`Failed to set item to pending: ${error.message}`, 'error');
   }
 };
 
@@ -333,7 +298,6 @@ const archiveItem = async () => {
           });
 
           if (response.data && response.data.success) {
-      showSnackbar(`Queue item #${itemToArchive.value.id} archived successfully`, 'success');
       await refetchCurrentQueue();
       archiveDialog.value = false;
       itemToArchive.value = null;
@@ -342,7 +306,6 @@ const archiveItem = async () => {
           }
         } catch (error) {
           console.error('Error archiving item:', error);
-    showSnackbar(`Failed to archive item: ${error.message}`, 'error');
   } finally {
     archiving.value = false;
   }

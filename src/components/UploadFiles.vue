@@ -129,11 +129,8 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import { useQuery } from '@tanstack/vue-query';
-import { useToast } from 'vue-toastification';
 import api from "@/plugins/axios";
 import { VFileUpload } from "vuetify/labs/VFileUpload";
-
-const toast = useToast();
 
 // Props
 const props = defineProps({
@@ -183,10 +180,6 @@ watch(driveFilesData, async (files) => {
       filesInDrive.value = files;
       console.log("Files found:", files);
       
-      // Only show toast if user manually clicked scan
-      if (manualScan.value) {
-        toast.success(`Found ${files.length} ${files.length === 1 ? 'file' : 'files'} in Google Drive!`);
-      }
       
       // Auto-process files on initial load (only once)
       if (!hasAutoProcessed.value && !manualScan.value) {
@@ -199,10 +192,6 @@ watch(driveFilesData, async (files) => {
       scanLength.value = 0;
       filesInDrive.value = [];
       titleMessage.value = "No files found";
-      // Only show toast if user manually clicked scan
-      if (manualScan.value) {
-        toast.warning('No files found in Google Drive');
-      }
     }
     manualScan.value = false; // Reset flag after processing
   }
@@ -213,10 +202,6 @@ watch(isError, (hasError) => {
   if (hasError) {
     console.error("Error scanning Google Drive", error.value);
     titleMessage.value = "Error scanning drive";
-    // Only show error toast if user manually clicked scan
-    if (manualScan.value) {
-      toast.error('Failed to scan Google Drive');
-    }
     manualScan.value = false;
   }
 });
@@ -230,7 +215,6 @@ const firstActionValue = computed(() => {
 // Methods
 const ScanGoogleDrive = async () => {
   manualScan.value = true; // Set flag to show toast
-  toast.info('Scanning Google Drive...');
   await refetchDrive();
 };
 const ProcessDocs = async () => {
@@ -238,7 +222,6 @@ const ProcessDocs = async () => {
   console.log('Files in drive:', filesInDrive.value);
   
   if (!filesInDrive.value || filesInDrive.value.length === 0) {
-    toast.warning('No files to process');
     return;
   }
   
@@ -246,8 +229,6 @@ const ProcessDocs = async () => {
   firstActionMessage.value = "Processing files...";
   progressMessages.value = [];
   ocrValue.value = 0;
-  
-  toast.info(`Starting to process ${filesInDrive.value.length} files...`);
   
   for (const file of filesInDrive.value) {
     // Check if file is CSV
@@ -262,11 +243,10 @@ const ProcessDocs = async () => {
     ocrValue.value++;
   }
   
-  // Silently refresh the drive files list (no toast)
+  // Silently refresh the drive files list
   await refetchDrive();
   firstActionMessage.value = "Processing completed";
   reloading.value = false;
-  toast.success('All files processed successfully! ✅');
 };
 
 const startOcrStreamSequential = (file) => {
@@ -330,7 +310,6 @@ const uploadFiles = async () => {
   const files = Array.isArray(selectedFiles.value) ? selectedFiles.value : (selectedFiles.value ? [selectedFiles.value] : []);
   
   if (files.length === 0) {
-    toast.error('No files selected');
     return;
   }
   
@@ -343,11 +322,8 @@ const uploadFiles = async () => {
   }
 
   try {
-    const res = await api.post("/upload-to-google-drive", formData);
+    await api.post("/upload-to-google-drive", formData);
     uploading.value = false;
-    
-    const uploadedCount = res.data.uploaded?.length || files.length;
-    toast.success(`${uploadedCount} ${uploadedCount === 1 ? 'file' : 'files'} uploaded successfully! 🎉`);
     selectedFiles.value = null;
     
     setTimeout(() => {
@@ -356,7 +332,6 @@ const uploadFiles = async () => {
   } catch (err) {
     console.error(err);
     uploading.value = false;
-    toast.error('Error uploading files');
   }
 };
 

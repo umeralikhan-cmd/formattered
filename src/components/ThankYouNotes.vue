@@ -27,10 +27,11 @@
             referrerpolicy="no-referrer"
           />
         </div>
-        <v-alert v-else type="info" variant="tonal">
+        <p v-else class="text-body-2 text-grey text-center py-4">
+          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
           No document to preview. Click "Get Thank You Note" to generate and
           preview.
-        </v-alert>
+        </p>
       </div>
     </v-card-text>
 

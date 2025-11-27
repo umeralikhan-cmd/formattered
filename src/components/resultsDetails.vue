@@ -185,13 +185,15 @@
                       <span>{{ val }}</span>
                     </div>
                     </div>
-                    <v-alert v-else type="info" variant="tonal">
+                    <p v-else class="text-body-2 text-grey text-center py-4">
+                      <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
                       No answers available for this mission.
-                    </v-alert>
+                    </p>
                 </div>
-                <v-alert v-else type="info" variant="tonal" class="mt-4">
+                <p v-else class="text-body-2 text-grey text-center py-4 mt-4">
+                  <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
                   Select a mission to view its answers.
-                </v-alert>
+                </p>
               </div>
             </v-tabs-window-item>
 
@@ -311,9 +313,10 @@
                       ></v-progress-circular>
 
                   <div v-if="!documentId && !loading[0]" class="no-content">
-                        <v-alert type="info" variant="tonal">
+                        <p class="text-body-2 text-grey text-center py-4">
+                          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
                           Document ID not available
-                        </v-alert>
+                        </p>
                       </div>
 
                   <div v-else-if="documentId" class="document-content">
@@ -355,9 +358,10 @@
                 <v-tabs-window-item value="image">
                 <div class="document-viewer">
                   <div v-if="!imageID" class="no-content">
-                        <v-alert type="info" variant="tonal">
+                        <p class="text-body-2 text-grey text-center py-4">
+                          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
                           Image ID not available
-                        </v-alert>
+                        </p>
                       </div>
 
                   <div v-else class="document-content">
@@ -431,16 +435,18 @@
                             Generate Certificate
                           </v-btn>
                         </div>
-                      <v-alert v-else type="warning" variant="tonal">
+                      <p v-else class="text-body-2 text-warning text-center py-2">
+                            <v-icon size="small" class="mr-1">mdi-alert</v-icon>
                             Match Maverick to Results
-                          </v-alert>
+                          </p>
                       </template>
                   </div>
 
                   <div v-if="!user.certificate_id" class="no-content">
-                        <v-alert type="info" variant="tonal">
+                        <p class="text-body-2 text-grey text-center py-4">
+                          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
                           Certificate not available
-                        </v-alert>
+                        </p>
                       </div>
                       <iframe
                         v-else
@@ -493,16 +499,18 @@
                             Generate Report
                           </v-btn>
                         </div>
-                      <v-alert v-else type="warning" variant="tonal">
+                      <p v-else class="text-body-2 text-warning text-center py-2">
+                            <v-icon size="small" class="mr-1">mdi-alert</v-icon>
                             Match Maverick to Results
-                          </v-alert>
+                          </p>
                       </template>
                   </div>
 
                   <div v-if="!user.report_id" class="no-content">
-                        <v-alert type="info" variant="tonal">
+                        <p class="text-body-2 text-grey text-center py-4">
+                          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
                           Report not available
-                        </v-alert>
+                        </p>
                       </div>
                       <iframe
                         v-else
@@ -604,9 +612,6 @@
 import api from "@/plugins/axios";
 import LookupUsers from "./LookupUsers.vue";
 import ThankYouNotes from "./ThankYouNotes.vue";
-import { useToast } from 'vue-toastification';
-
-const toast = useToast();
 
 export default {
   components: {
@@ -891,12 +896,10 @@ export default {
           this.deleteDialog = false;
           this.$emit("documentDeleted", this.documentId);
           this.deleteLoading = false;
-          toast.success("Document deleted successfully! 🗑️");
         }
       } catch (err) {
         console.error(err);
         this.deleteLoading = false;
-        toast.error("Failed to delete document");
       }
     },
     async refreshDocumentFunction() {

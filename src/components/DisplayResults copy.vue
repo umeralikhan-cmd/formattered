@@ -160,24 +160,6 @@
     </v-card-text>
   </v-card>
 
-  <template>
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="3000"
-      :color="snackbarColor"
-      multi-line
-       rounded="pill"
-      location="top"
-    >
-      {{ snackbarText }}
-      <template v-slot:actions>
-        <v-btn color="red" variant="text" @click="snackbar = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
-  </template>
-
   <v-dialog v-model="ExportResultsDialog">
     <Exports :applicants="selectedItems" @close="ExportResultsDialog = false" :questionType="selectedQuestionType"
     @documentDeleted="documentDeletedBulk"/>
@@ -206,9 +188,6 @@ export default {
     return {
       selectedFacility: null,
       facilityOptions: [],
-      snackbar: false,
-      snackbarColor: "success",
-      snackbarText: "",
       selectedQuestionType: "All",
       questionTypes: ["All"],
       headers: [
@@ -271,8 +250,6 @@ export default {
       // item is an array of document_ids to delete
       this.items = this.items.filter((i) => !item.includes(i.document_id));
       this.ExportResultsDialog = false;
-      this.snackbarText = `${item.length} document(s) deleted successfully`;
-      this.snackbar = true;
     },
 
     
@@ -294,8 +271,6 @@ export default {
       //remove from items where document_id = item
       this.items = this.items.filter((i) => i.document_id !== item);
       this.selectedDocumentId = null;
-      this.snackbarText = "Document deleted successfully";
-      this.snackbar = true;
     },
     documentRegraded(item) {
       this.getResults();

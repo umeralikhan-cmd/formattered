@@ -262,39 +262,15 @@
 
             <!-- Message if no URLs -->
             <v-col cols="12" v-if="!documentData.document_url && !documentData.image_url">
-              <v-alert
-                type="info"
-                variant="tonal"
-                class="no-data-alert"
-              >
-                <template #prepend>
-                  <v-icon>mdi-information-outline</v-icon>
-                </template>
+              <p class="text-body-2 text-grey text-center py-4">
+                <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
                 No document or image URLs available
-              </v-alert>
+              </p>
             </v-col>
           </v-row>
         </v-card-text>
       </v-card>
     </v-dialog>
-
-    <!-- Snackbar for regeneration feedback -->
-    <v-snackbar
-      v-model="snackbar"
-      :color="snackbarColor"
-      :timeout="3000"
-      top
-    >
-      {{ snackbarMessage }}
-      <template v-slot:actions>
-        <v-btn
-          text
-          @click="snackbar = false"
-        >
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
   </div>
 </template>
 
@@ -331,9 +307,6 @@ export default {
       viewDialog: false,
       documentData: null,
       regenerateLoading: {},
-      snackbar: false,
-      snackbarMessage: '',
-      snackbarColor: 'success',
     };
   },
   methods: {
@@ -402,12 +375,10 @@ export default {
 
       if (!parentId || !documentType) {
         console.error("Missing parent_id or document_type");
-        this.showSnackbar("Missing required data", "error");
         return;
       }
 
       if (!maverickId) {
-        this.showSnackbar("No maverick ID associated with this document", "error");
         return;
       }
 
@@ -426,23 +397,14 @@ export default {
         console.log("Regenerate document raw response:", response);
 
         if (response.data.success) {
-          this.showSnackbar(`${action} regenerated successfully!`, "success");
           // Emit refresh to reload the logs
           this.$emit('refresh');
-        } else {
-          this.showSnackbar(`Failed to regenerate ${action}: ${response.data.error || 'Unknown error'}`, "error");
         }
       } catch (error) {
         console.error("Error regenerating document:", error);
-        this.showSnackbar(`Error regenerating ${action}. Please check console.`, "error");
       } finally {
         this.regenerateLoading[loadingKey] = false;
       }
-    },
-    showSnackbar(message, color = 'success') {
-      this.snackbarMessage = message;
-      this.snackbarColor = color;
-      this.snackbar = true;
     },
   },
 };

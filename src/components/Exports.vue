@@ -126,13 +126,10 @@
       
       <v-card-text class="delete-dialog-text">
         Are you sure you want to delete the selected <strong>{{ applicants.length }}</strong> documents?
-        <v-alert
-          type="warning"
-          variant="tonal"
-          class="mt-4"
-        >
+        <p class="text-body-2 text-warning mt-4 py-2">
+          <v-icon size="small" class="mr-1">mdi-alert</v-icon>
           This action cannot be undone!
-        </v-alert>
+        </p>
       </v-card-text>
       
       <v-card-actions class="delete-dialog-actions">

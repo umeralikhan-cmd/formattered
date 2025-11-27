@@ -30,9 +30,8 @@
               variant="outlined"
               density="comfortable"
             :disabled="loader"
-            @update:modelValue="getResults"
               hide-details
-              :menu-props="{ maxHeight: 400 }"
+              :menu-props="{ maxHeight: 400, closeOnContentClick: true }"
           ></v-select>
         </v-col>
           <v-col cols="12" sm="6" md="4" lg="2">
@@ -45,9 +44,8 @@
               variant="outlined"
               density="comfortable"
             clearable
-            @update:model-value="getResults"
               hide-details
-              :menu-props="{ maxHeight: 400 }"
+              :menu-props="{ maxHeight: 400, closeOnContentClick: true }"
           >
             <template v-slot:selection="{ item }">
               <span v-if="item" class="text-truncate">
@@ -366,24 +364,6 @@
     </div>
   </div>
 
-  <template>
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="3000"
-      :color="snackbarColor"
-      multi-line
-       rounded="pill"
-      location="top"
-    >
-      {{ snackbarText }}
-      <template v-slot:actions>
-        <v-btn color="red" variant="text" @click="snackbar = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
-  </template>
-
   <v-dialog v-model="ExportResultsDialog">
     <Exports :applicants="selectedItems" @close="ExportResultsDialog = false" :questionType="selectedQuestionType"
     @documentDeleted="documentDeletedBulk"/>
@@ -408,9 +388,6 @@ const props = defineProps({
 
 // Reactive state
 const selectedFacility = ref(null);
-const snackbar = ref(false);
-const snackbarColor = ref("success");
-const snackbarText = ref("");
 const selectedQuestionType = ref("All");
 const dateMenu = ref(false);
 const dateRangeArr = ref([]);
@@ -644,9 +621,6 @@ const rowProps = (row) => {
 const documentDeletedBulk = (item) => {
   refetchResults();
   ExportResultsDialog.value = false;
-  snackbarText.value = `${item.length} document(s) deleted successfully`;
-  snackbarColor.value = 'success';
-  snackbar.value = true;
 };
 
 const onDateRangeChange = (val) => {

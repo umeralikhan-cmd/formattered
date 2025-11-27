@@ -449,10 +449,11 @@
 
           <v-row v-if="selectedFacilities.length > 0 && validSelectedFacilities.length === 0">
             <v-col cols="12">
-              <v-alert type="warning" variant="tonal">
+              <p class="text-body-2 text-warning py-2">
+                <v-icon size="small" class="mr-1">mdi-alert</v-icon>
                 Selected facilities must have both a Report Link and Email address.
                 Please select facilities with complete information.
-              </v-alert>
+              </p>
             </v-col>
           </v-row>
 
@@ -563,9 +564,10 @@
           </v-row>
           <v-row v-if="selectedEmailType && isSignedIn">
             <v-col cols="12">
-              <v-alert type="success" variant="tonal" density="compact">
+              <p class="text-body-2 text-success py-2">
+                <v-icon size="small" class="mr-1">mdi-check-circle</v-icon>
                 Signed in as Google user - Ready to create drafts
-              </v-alert>
+              </p>
             </v-col>
           </v-row>
           <v-row v-if="selectedEmailType && selectedEmailType.document_id">
@@ -614,12 +616,9 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
-import { useToast } from 'vue-toastification';
 import api from "@/plugins/axios";
 import RosterReport from "./RosterReport.vue";
 import ReportExports from "./ReportExports.vue";
-
-const toast = useToast();
 
 // Table headers
 const headers = [
@@ -686,7 +685,7 @@ const { data: facilitiesData, isLoading: loader, isFetching, refetch: refetchFac
 // Watch for errors
 watch(facilitiesError, (error) => {
   if (error) {
-    toast.error("Error fetching facilities");
+    console.error("Error fetching facilities");
   }
 });
 
@@ -829,7 +828,6 @@ const duplicateAddress = (addr) => {
   if (!editFacilityAddressOriginalByRef.value) editFacilityAddressOriginalByRef.value = new WeakMap();
   const lastRef = editFacilityData.value.mailing_addresses[editFacilityData.value.mailing_addresses.length - 1];
   editFacilityAddressOriginalByRef.value.set(lastRef, JSON.parse(JSON.stringify(lastRef)));
-  toast.success("Address duplicated (local only)");
 };
 const saveAddress = async (aidx) => {
   try {
@@ -846,9 +844,8 @@ const saveAddress = async (aidx) => {
     if (saved.id != null) {
       editFacilityAddressOriginalMap.value[saved.id] = JSON.parse(JSON.stringify(saved));
     }
-    toast.success('Address saved! ✅');
   } catch (err) {
-    toast.error('Error saving address');
+    console.error('Error saving address');
   }
 };
 const deleteAddress = async (aidx) => {
@@ -857,7 +854,6 @@ const deleteAddress = async (aidx) => {
     const addr = editFacilityData.value.mailing_addresses[aidx];
     if (!addr || !addr.id) {
       editFacilityData.value.mailing_addresses.splice(aidx, 1);
-      toast.success('Address removed! 🗑️');
       return;
     }
     await api.post('/delete-address', { id: addr.id });
@@ -865,9 +861,8 @@ const deleteAddress = async (aidx) => {
     if (addr.id && editFacilityAddressOriginalMap.value[addr.id]) {
       delete editFacilityAddressOriginalMap.value[addr.id];
     }
-    toast.success('Address deleted! 🗑️');
   } catch (err) {
-    toast.error('Error deleting address');
+    console.error('Error deleting address');
   }
 };
 const cancelAddress = (aidx, addr) => {
@@ -964,7 +959,6 @@ const addNewAddress = () => {
   const inserted = editFacilityData.value.mailing_addresses[editFacilityData.value.mailing_addresses.length - 1];
   editFacilityAddressOriginalByRef.value.set(inserted, JSON.parse(JSON.stringify(inserted)));
 
-  toast.success('New mailing address added! ✅');
 };
 
 const saveFacilityEdits = async () => {
@@ -995,9 +989,8 @@ const saveFacilityEdits = async () => {
 
     editFacilityData.value = JSON.parse(JSON.stringify(merged));
 
-    toast.success('Facility changes saved! ✅');
   } catch (err) {
-    toast.error('Error saving facility');
+    console.error('Error saving facility');
   }
 };
 
@@ -1046,7 +1039,7 @@ const signInWithGoogle = () => {
   const clientId = process.env.VUE_APP_GOOGLE_CLIENT_ID || import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   if (!clientId) {
-    toast.error('Google Client ID not configured. Please set VITE_GOOGLE_CLIENT_ID in your .env file');
+    console.error('Google Client ID not configured. Please set VITE_GOOGLE_CLIENT_ID in your .env file');
     return;
   }
 
@@ -1079,7 +1072,7 @@ const signInWithGoogle = () => {
   );
 
   if (!popup) {
-    toast.error('Popup blocked. Please allow popups for this site.');
+    console.error('Popup blocked. Please allow popups for this site.');
     return;
   }
 
@@ -1094,8 +1087,6 @@ const signInWithGoogle = () => {
       const expiresAt = Date.now() + (expiresIn * 1000);
       localStorage.setItem('google_access_token', event.data.access_token);
       localStorage.setItem('google_token_expires_at', expiresAt.toString());
-
-      toast.success('Successfully signed in with Google! ✅');
 
       window.removeEventListener('message', handleMessage);
       if (popup) popup.close();
@@ -1123,7 +1114,6 @@ const openEmailDraftDialog = async (facility) => {
     emailTypes.value = res.data.email_types || [];
   } catch (err) {
     console.error('Error fetching email types:', err);
-    toast.error('Error fetching email types');
   } finally {
     emailTypesLoading.value = false;
   }
@@ -1143,12 +1133,10 @@ const onEmailTypeChange = (emailType) => {
 
 const makeDraft = async () => {
       if (!isSignedIn.value || !googleAccessToken.value) {
-        toast.warning('Please sign in with Google first');
         return;
       }
 
       if (!selectedEmailTypeData.value) {
-        toast.warning('Please select an email type');
         return;
       }
 
@@ -1163,14 +1151,8 @@ const makeDraft = async () => {
 
         const res = await api.post('/make-email-draft', payload);
 
-        if (res.data && res.data.success) {
-          toast.success('Email draft created successfully! 📧');
-        } else {
-          toast.error(res.data?.error || 'Failed to create email draft');
-        }
       } catch (err) {
         console.error('Error creating draft:', err);
-        toast.error(err.response?.data?.detail || 'Error creating email draft');
       } finally {
     makeDraftLoading.value = false;
     setTimeout(() => {
@@ -1196,7 +1178,6 @@ const openBulkEmailDraftDialog = async () => {
         emailTypes.value = res.data.email_types || [];
       } catch (err) {
         console.error('Error fetching email types:', err);
-        toast.error('Error fetching email types');
   } finally {
     bulkEmailTypesLoading.value = false;
   }
@@ -1222,17 +1203,14 @@ const removeFacilityFromSelection = (facilityId) => {
 
 const makeBulkDraft = async () => {
       if (!isSignedIn.value || !googleAccessToken.value) {
-        toast.warning('Please sign in with Google first');
         return;
       }
 
       if (!bulkEmailTypeData.value) {
-        toast.warning('Please select an email type');
         return;
       }
 
       if (validSelectedFacilities.value.length === 0) {
-        toast.warning('No valid facilities selected. Facilities must have both Report Link and Email.');
         return;
       }
 
@@ -1248,23 +1226,10 @@ const makeBulkDraft = async () => {
         const res = await api.post('/make-email-draft-bulk', payload);
 
         if (res.data && res.data.success) {
-          const totalProcessed = res.data.total_processed || 0;
-          const totalSuccess = res.data.total_success || 0;
-          const totalFailed = res.data.total_failed || 0;
-
-          if (totalFailed > 0) {
-            toast.warning(`Email drafts created! ${totalSuccess} succeeded, ${totalFailed} failed out of ${totalProcessed} facilities.`);
-          } else {
-            toast.success(`Email drafts created! ${totalSuccess} succeeded out of ${totalProcessed} facilities. 📧`);
-          }
-
           selectedFacilities.value = [];
-        } else {
-          toast.error(res.data?.error || 'Failed to create email drafts');
         }
       } catch (err) {
         console.error('Error creating bulk drafts:', err);
-        toast.error(err.response?.data?.detail || 'Error creating email drafts');
       } finally {
     bulkMakeDraftLoading.value = false;
     setTimeout(() => {
@@ -1343,7 +1308,7 @@ const closeReportDialog = () => {
 };
 
 const onExportSuccess = (payload) => {
-  toast.success('Export completed successfully! ✅');
+  console.log('Export completed successfully!');
 };
 
 // Initialize on mount

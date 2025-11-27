@@ -71,26 +71,6 @@
     </v-responsive>
   </v-container>
 
-  <v-snackbar
-    v-model="snackbar"
-    :timeout="3000"
-    :color="snackbarColor"
-    multi-line
-     rounded="pill"
-    location="top"
-  >
-    {{ snackbarText }}
-    <template v-slot:actions>
-        <v-btn
-          color="red"
-          variant="text"
-          @click="snackbar = false"
-        >
-          Close
-        </v-btn>
-      </template>
-  </v-snackbar>
-
 </template>
 
 
@@ -102,9 +82,6 @@ export default {
   data() {
     return {
       uploading: false,
-      snackbar: false,
-      snackbarColor: "success",
-      snackbarText: "",
       mainFolder: "Triage Inbox (WIP)",
       items: [],
       status: "unprocessed",
@@ -196,9 +173,6 @@ export default {
 
     async uploadFiles() {
       if (this.selectedFiles.length === 0) {
-        this.snackbarText = "No files selected";
-        this.snackbarColor = "error";
-        this.snackbar = true;
         return;
       }
       this.uploading = true;
@@ -210,11 +184,8 @@ export default {
       }
 
       try {
-        const res = await api.post("/upload-to-google-drive", formData);
+        await api.post("/upload-to-google-drive", formData);
         this.uploading = false;
-        this.snackbarText = res.data.uploaded.length + " Files were uploaded successfully";
-        this.snackbarColor = "success";
-        this.snackbar = true;
         this.selectedFiles = [];
         this.getGoogleDocuments();
          //   this.getGoogleDocuments();

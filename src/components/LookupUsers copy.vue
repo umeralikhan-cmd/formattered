@@ -309,23 +309,6 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-  <template>
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="3000"
-      :color="snackbarColor"
-      multi-line
-      rounded="pill"
-      location="top"
-    >
-      {{ snackbarText }}
-      <template v-slot:actions>
-        <v-btn color="red" variant="text" @click="snackbar = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
-  </template>
 </template>
 
 <script>
@@ -357,9 +340,6 @@ export default {
       selectedDocument: null, // Stores the selected document for deletion
       deleteDialog: false, // Controls the visibility of the delete confirmation dialog
       facilityOptions: [], // Stores facility names for the autocomplete
-      snackbar: false, // Controls the snackbar visibility
-      snackbarColor: "success", // Snackbar color
-      snackbarText: "", // Snackbar text message
       selected: [],
       selectedApplicant: {},
       applicantOptions: [], // Options for the applicant autocomplete
@@ -496,9 +476,6 @@ export default {
           }
         } catch (err) {
           console.error("Error searching applicants:", err);
-          this.snackbarText = "Error searching for applicants";
-          this.snackbarColor = "error";
-          this.snackbar = true;
         } finally {
           this.loading = false;
         }
@@ -639,15 +616,9 @@ export default {
           // this.$emit("update-user", updatedUser);
 
           this.getApplicants(); // Refresh the document details
-          this.snackbarText = "Changes saved successfully!";
-          this.snackbarColor = "success";
-          this.snackbar = true; // Show snackbar notification
         }
       } catch (err) {
         console.error("Error saving changes:", err);
-        this.snackbarText = "Error saving changes";
-        this.snackbarColor = "error";
-        this.snackbar = true;
       }
     },
     toggleIframe(index) {
@@ -684,15 +655,9 @@ export default {
 
           // Refresh the data
           this.getApplicants();
-          this.snackbarText = "New applicant added successfully!";
-          this.snackbarColor = "success";
-          this.snackbar = true;
         }
       } catch (err) {
         console.error("Error adding new user:", err);
-        this.snackbarText = "Error adding new applicant";
-        this.snackbarColor = "error";
-        this.snackbar = true;
       }
     },
     clearApplicant() {
