@@ -52,18 +52,18 @@
                 auto-select-first
               >
                 <template #selection="{ item }">
-                  <span v-if="item && item.raw" class="text-truncate">
-                    {{ item.raw.facility_name || 'Unknown' }}
+                  <span v-if="item && (item as any).raw" class="text-truncate">
+                    {{ (item as any).raw.facility_name || 'Unknown' }}
                   </span>
                 </template>
                 <template #item="{ item, props }">
-                  <v-list-item v-bind="props" :key="item.raw.facility_id" class="facility-list-item">
+                  <v-list-item v-bind="props" :key="(item as any).raw.facility_id" class="facility-list-item">
                     <v-list-item-title class="facility-name">
-                      {{ item.raw.facility_name || 'Unknown Facility' }}
+                      {{ (item as any).raw.facility_name || 'Unknown Facility' }}
                     </v-list-item-title>
                     <v-list-item-subtitle
-                      v-for="(address, idx) in item.raw.mailing_addresses || []"
-                      :key="`${item.raw.facility_id}-${idx}`"
+                      v-for="(address, idx) in (item as any).raw.mailing_addresses || []"
+                      :key="`${(item as any).raw.facility_id}-${idx}`"
                       class="facility-address"
                     >
                       {{ address }}
@@ -170,49 +170,49 @@
             >
               <!-- Display First Name -->
               <template #item.first_name="{ item }">
-                {{ item.first_name }}
+                {{ (item as ResultItem).first_name }}
               </template>
 
               <!-- Display Last Name -->
               <template #item.last_name="{ item }">
-                {{ item.last_name }}
+                {{ (item as ResultItem).last_name }}
               </template>
 
               <!-- Display Middle Name -->
               <template #item.middle_name="{ item }">
-                {{ item.middle_name }}
+                {{ (item as ResultItem).middle_name }}
               </template>
 
               <!-- Display Document Type -->
               <template #item.document_type="{ item }">
-                {{ item.document_type }}
+                {{ (item as ResultItem).document_type }}
               </template>
 
               <!-- Display DOC Number -->
               <template #item.doc_number="{ item }">
-                {{ item.doc_number }}
+                {{ (item as ResultItem).doc_number }}
               </template>
 
               <!-- Display Facility Name -->
               <template #item.facility_name="{ item }">
-                {{ item.facility_name }}
+                {{ (item as ResultItem).facility_name }}
               </template>
 
               <!-- Display Inmate Number -->
               <template #item.inmate_number="{ item }">
-                {{ item.inmate_number }}
+                {{ (item as ResultItem).inmate_number }}
               </template>
 
               <template #item.mark="{ item }">
-                {{ item.score }}
+                {{ (item as ResultItem).score }}
               </template>
 
               <template #item.date_created="{ item }">
-                {{ formatToLocal(item.date_created) }}
+                {{ formatToLocal((item as ResultItem).date_created) }}
               </template>
 
               <template #item.mailing_address="{ item }">
-                {{ item.mailing_address }}
+                {{ (item as ResultItem).mailing_address }}
               </template>
 
               <template #item.data-table-expand="{ internalItem, isExpanded, toggleExpand }">
@@ -325,8 +325,36 @@
 import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
+// @ts-ignore
 import resultsDetails from './resultsDetails.vue';
+// @ts-ignore
 import Exports from './Exports.vue';
+
+interface Facility {
+  facility_id: string;
+  facility_name: string;
+  id: string;
+  mailing_addresses: string[];
+}
+
+interface ResultItem {
+  result_uid: string;
+  document_id: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  document_type: string;
+  score: number;
+  created_at: string;
+  date_created: string;
+  doc_number: string;
+  facility_name: string;
+  inmate_number: string;
+  mailing_address: string;
+  parent_id?: string;
+  extracted_table?: string;
+  [key: string]: any;
+}
 
 const props = defineProps({
   refresh: {
@@ -336,19 +364,19 @@ const props = defineProps({
 });
 
 // Reactive state
-const selectedFacility = ref<any>(null);
+const selectedFacility = ref<string | null>(null);
 const selectedQuestionType = ref('All');
 const dateMenu = ref(false);
-const dateRangeArr = ref([]);
+const dateRangeArr = ref<string[]>([]);
 const matchStatus = ref('All');
 const selectedDocumentId = ref<string | null>(null);
 const dialog = ref(false);
 const loading = ref<any[]>([]);
 const expandedDocumentId = ref<string | null>(null);
-const expanded = ref([]);
+const expanded = ref<string[]>([]);
 const search = ref('');
 const ExportResultsDialog = ref(false);
-const selectedIDS = ref([]);
+const selectedIDS = ref<string[]>([]);
 const page = ref(1);
 const itemsPerPage = ref(20);
 
@@ -382,10 +410,10 @@ const questionTypes = computed(() => questionTypesData.value || ['All']);
 // TanStack Query for facilities (cached, rarely changes)
 const { data: facilitiesData, isLoading: facilitiesLoading } = useQuery({
   queryKey: ['facilityProfiles'], // UNIQUE KEY - different from Facilities page
-  queryFn: async () => {
+  queryFn: async (): Promise<Facility[]> => {
     const res = await api.get('/get-facility-profile');
     // Ensure consistent data structure
-    const normalized = res.data.map((facility) => ({
+    const normalized = res.data.map((facility: any) => ({
       facility_id: facility['Facility ID'] || facility.facility_id,
       facility_name: facility['Facility Name'] || facility.facility_name,
       id: facility.id,
@@ -404,7 +432,7 @@ const { data: facilitiesData, isLoading: facilitiesLoading } = useQuery({
   refetchOnMount: false, // ✅ Don't refetch on mount - use cached data
   refetchOnReconnect: false,
   select: (data) => data || [], // Ensure always returns array
-  placeholderData: [], // Show empty array while loading to prevent undefined errors
+  placeholderData: [] as Facility[], // Show empty array while loading to prevent undefined errors
 });
 
 const facilityOptions = computed(() => {
@@ -437,7 +465,7 @@ const {
   refetch: refetchResults,
 } = useQuery({
   queryKey: ['markedResults', selectedQuestionType, selectedFacility], // Reactive query key
-  queryFn: async () => {
+  queryFn: async (): Promise<ResultItem[]> => {
     console.log('Fetching results:', {
       question_type: selectedQuestionType.value,
       facility_id: selectedFacility.value,
@@ -455,7 +483,7 @@ const {
   refetchOnMount: false, // ✅ Don't refetch on mount - only when queryKey changes
   refetchOnReconnect: false,
   select: (data) => data || [], // Ensure always returns array
-  keepPreviousData: true, // Keep showing old data while fetching new
+  placeholderData: (previousData) => previousData, // Keep showing old data while fetching new
 });
 
 const items = computed(() => {
@@ -494,7 +522,7 @@ watch(matchStatus, () => {
 // Computed properties
 const dateRangeText = computed(() => {
   if (!dateRangeArr.value || !Array.isArray(dateRangeArr.value) || dateRangeArr.value.length === 0) return '';
-  const formatDate = (dateStr) => {
+  const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
     const [year, month, day] = dateStr.split('-');
     return `${month}/${day}/${year}`;
@@ -514,14 +542,14 @@ const filteredItems = computed(() => {
 
   // Filter by match status based on parent_id
   if (matchStatus.value === 'Matched') {
-    filtered = filtered.filter((item) => item.parent_id);
+    filtered = filtered.filter((item: ResultItem) => item.parent_id);
   } else if (matchStatus.value === 'Unmatched') {
-    filtered = filtered.filter((item) => !item.parent_id);
+    filtered = filtered.filter((item: ResultItem) => !item.parent_id);
   }
 
   // Filter by search text
   if (search.value) {
-    filtered = filtered.filter((item) => firstAndLastNameFilter(null, search.value, { columns: item }));
+    filtered = filtered.filter((item: ResultItem) => firstAndLastNameFilter(null, search.value, { columns: item }));
   }
 
   // Filter by date range
@@ -540,7 +568,7 @@ const filteredItems = computed(() => {
     const end = new Date(endDateStr);
     end.setHours(23, 59, 59, 999);
 
-    filtered = filtered.filter((item) => {
+    filtered = filtered.filter((item: ResultItem) => {
       const dateValue = item.date_created || item.created_at;
       if (!dateValue) return false;
 
@@ -563,7 +591,7 @@ const filteredItems = computed(() => {
 });
 
 const selectedItems = computed(() => {
-  return items.value.filter((item) => selectedIDS.value.includes(item.document_id));
+  return items.value.filter((item: ResultItem) => selectedIDS.value.includes(item.document_id));
 });
 
 const pageCount = computed(() => {
@@ -584,19 +612,19 @@ const currentRangeText = computed(() => {
 });
 
 // Methods
-const rowProps = (row) => {
+const rowProps = (row: { item: ResultItem }) => {
   const data = row && row.item ? row.item : null;
   const noParent = data == null || data.parent_id === null || data.parent_id === undefined;
   return noParent ? { class: 'row-orange' } : {};
 };
 
-const documentDeletedBulk = (item) => {
+const documentDeletedBulk = (item: any) => {
   refetchResults();
   ExportResultsDialog.value = false;
 };
 
-const onDateRangeChange = (val) => {
-  const formatDateToString = (date) => {
+const onDateRangeChange = (val: any) => {
+  const formatDateToString = (date: any): string | null => {
     if (!date) return null;
 
     if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -678,24 +706,24 @@ const clearDateRange = () => {
   page.value = 1;
 };
 
-const documentDeleted = (item) => {
+const documentDeleted = (item: any) => {
   console.log('Document deleted:', item);
   refetchResults();
   selectedDocumentId.value = null;
 };
 
-const documentRegraded = (item) => {
+const documentRegraded = (item: any) => {
   refetchResults();
 };
 
-const scoreUpdated = (scoreData) => {
+const scoreUpdated = (scoreData: any) => {
   refetchResults();
 };
 
-const formatToLocal = (dateString) => {
+const formatToLocal = (dateString: string) => {
   if (!dateString) return '';
 
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     year: '2-digit',
     month: '2-digit',
     day: '2-digit',
@@ -708,8 +736,10 @@ const formatToLocal = (dateString) => {
   return new Intl.DateTimeFormat(undefined, options).format(date);
 };
 
-const firstAndLastNameFilter = (value, query, item) => {
+const firstAndLastNameFilter = (value: any, query: string, item: any) => {
   if (!query) return true;
+  
+  if (!item || !item.columns) return false;
 
   const fullName = `${item.columns.first_name} ${item.columns.last_name}`.toLowerCase();
   const reversedFullName = `${item.columns.last_name} ${item.columns.first_name}`.toLowerCase();
@@ -729,17 +759,17 @@ const getResults = () => {
   refetchResults();
 };
 
-const isEdovoDocument = (item) => {
+const isEdovoDocument = (item: ResultItem) => {
   return item.document_type?.startsWith('Edovo') || item.extracted_table?.startsWith('Edovo');
 };
 
-const getEdovoQuestionsWithAnswerKey = (item) => {
+const getEdovoQuestionsWithAnswerKey = (item: ResultItem) => {
   let documentType = item.document_type || item.extracted_table || '';
   documentType = documentType.replace('Edovo ', '').trim();
 
   const answerKeys = edovoAnswerKeys.value[documentType] || [];
 
-  const questions = [];
+  const questions: any[] = [];
   for (const answerKey of answerKeys) {
     const questionNumber = answerKey.question_number;
     const qColumn = `Q${questionNumber}`;
@@ -1282,6 +1312,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   position: sticky !important;
   top: 0 !important;
   z-index: 10 !important;
+  
 }
 
 .table-wrapper :deep(.v-table) {
@@ -1299,6 +1330,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 .table-wrapper :deep(.v-data-table__tr) {
   height: auto !important;
   min-height: 52px !important;
+  
 }
 
 /* Short content columns - prefer no wrap */
@@ -1354,6 +1386,8 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   cursor: pointer !important;
 }
 
+
+
 :deep(.v-data-table__th) {
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
@@ -1377,6 +1411,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   white-space: nowrap !important;
   display: inline-block !important;
   line-height: 1.2 !important;
+  
 }
 
 :deep(.v-theme--dark .v-data-table__th) {
@@ -1390,7 +1425,6 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   font-size: 0.875rem !important;
   white-space: normal !important; /* Allow text wrapping */
   padding: 12px 16px !important;
-  vertical-align: top !important;
   word-wrap: break-word !important;
   word-break: break-word !important;
   line-height: 1.5 !important;

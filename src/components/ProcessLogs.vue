@@ -78,6 +78,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
+// @ts-ignore
 import ProcessLogsTable from './ProcessLogsTable.vue';
 import ApplicationsTable from './ApplicationsTable.vue';
 import api from '@/plugins/axios';
@@ -106,7 +107,7 @@ const {
   refetch,
 } = useQuery({
   queryKey: ['processLogs', currentTabName],
-  queryFn: async () => {
+  queryFn: async (): Promise<any[]> => {
     if (currentTabName.value === 'Applications') {
       return [];
     }
@@ -125,15 +126,14 @@ const {
   refetchOnMount: false, // ✅ Don't refetch on mount - only when tab changes
   refetchOnReconnect: false,
   select: (data) => data || [], // Ensure always returns array
-  placeholderData: [], // Show empty array while loading
-  keepPreviousData: true, // Keep showing old data while switching tabs
+  placeholderData: (previousData) => previousData, // Keep showing old data while switching tabs
 });
 
 const currentLogs = computed(() => {
   return logsData.value || [];
 });
 
-const changeTab = (index) => {
+const changeTab = (index: number) => {
   activeTab.value = index;
 };
 

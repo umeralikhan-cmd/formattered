@@ -202,8 +202,25 @@
 import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
+// @ts-ignore
 import ApplicationCard from './ApplicantCard.vue';
+// @ts-ignore
 import MergeApplicants from './MergeApplicants.vue';
+
+interface MaverickItem {
+  id: string | number;
+  first_name?: string;
+  last_name?: string;
+  middle_name?: string;
+  inmate_number?: string;
+  facility_name?: string;
+  [key: string]: any;
+}
+
+interface MavericksResponse {
+  items: MaverickItem[];
+  totalItems: number;
+}
 
 const props = defineProps({
   refresh: {
@@ -214,25 +231,25 @@ const props = defineProps({
 
 // State
 const searchQuery = ref('');
-const selected = ref([]);
+const selected = ref<MaverickItem[]>([]);
 const page = ref(1);
 const itemsPerPage = ref(20);
 const dialog = ref(false);
 const dialogMerge = ref(false);
 const scholarshipDialog = ref(false);
-const selectedDocument = ref(null);
-const selectedMaverick = ref(null);
-const selectedDocumentType = ref(null);
-const debounceTimeout = ref(null);
+const selectedDocument = ref<MaverickItem | null>(null);
+const selectedMaverick = ref<MaverickItem | null>(null);
+const selectedDocumentType = ref<string | null>(null);
+const debounceTimeout = ref<number | undefined>(undefined);
 
 // Constants
 const headers = [
-  { title: 'First Name', key: 'first_name', align: 'start' },
-  { title: 'Last Name', key: 'last_name', align: 'start' },
-  { title: 'Middle Name', key: 'middle_name', align: 'start' },
-  { title: 'Inmate Number', key: 'inmate_number', align: 'start' },
-  { title: 'Institution', key: 'facility_name', align: 'start' },
-  { title: 'Actions', key: 'action', sortable: false, align: 'end' },
+  { title: 'First Name', key: 'first_name', align: 'start' as const },
+  { title: 'Last Name', key: 'last_name', align: 'start' as const },
+  { title: 'Middle Name', key: 'middle_name', align: 'start' as const },
+  { title: 'Inmate Number', key: 'inmate_number', align: 'start' as const },
+  { title: 'Institution', key: 'facility_name', align: 'start' as const },
+  { title: 'Actions', key: 'action', sortable: false, align: 'end' as const },
 ];
 
 const documentTypeOptions = ['PRESEASON', 'BOOK ONE', 'BOOK TWO'];
@@ -247,7 +264,7 @@ const {
   refetch,
 } = useQuery({
   queryKey,
-  queryFn: async () => {
+  queryFn: async (): Promise<MavericksResponse> => {
     const response = await api.post('/get-applicants', {
       page: page.value,
       itemsPerPage: itemsPerPage.value,
@@ -261,8 +278,7 @@ const {
   refetchOnMount: false, // ✅ Don't refetch on mount - only when page/search changes
   refetchOnReconnect: false,
   select: (data) => data || { items: [], totalItems: 0 }, // Ensure always returns proper structure
-  placeholderData: { items: [], totalItems: 0 }, // Show empty structure while loading
-  keepPreviousData: true, // Keep showing old data while paginating/searching
+  placeholderData: (previousData) => previousData, // Keep showing old data while paginating/searching
 });
 
 const items = computed(() => mavericksData.value?.items || []);
@@ -288,20 +304,22 @@ const closeDialog = () => {
   dialog.value = false;
 };
 
-const onRowClick = (item) => {
+const onRowClick = (item: MaverickItem) => {
   selectedDocument.value = item;
   dialog.value = true;
 };
 
 const onSearch = () => {
-  clearTimeout(debounceTimeout.value);
+  if (debounceTimeout.value !== undefined) {
+    clearTimeout(debounceTimeout.value);
+  }
   debounceTimeout.value = setTimeout(() => {
     page.value = 1;
     refetch();
-  }, 500);
+  }, 500) as unknown as number;
 };
 
-const changePage = (newPage) => {
+const changePage = (newPage: number) => {
   page.value = newPage;
 };
 
@@ -309,14 +327,14 @@ const onItemsPerPageChange = () => {
   page.value = 1;
 };
 
-const openScholarshipDialog = (item) => {
+const openScholarshipDialog = (item: MaverickItem) => {
   selectedMaverick.value = item;
   selectedDocumentType.value = null;
   scholarshipDialog.value = true;
 };
 
 const addToScholarshipQueue = async () => {
-  if (!selectedDocumentType.value) {
+  if (!selectedDocumentType.value || !selectedMaverick.value) {
     return;
   }
 

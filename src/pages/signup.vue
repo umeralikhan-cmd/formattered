@@ -157,19 +157,19 @@ const agreeToTerms = ref(false);
 const showPassword = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
-const signupForm = ref(null);
+const signupForm = ref<any>(null);
 
 // Validation rules
 const rules = {
-  required: (value) => !!value || 'This field is required',
-  email: (value) => {
+  required: (value: any) => !!value || 'This field is required',
+  email: (value: string) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return pattern.test(value) || 'Invalid email address';
   },
-  minLength: (value) => {
+  minLength: (value: string) => {
     return (value && value.length >= 6) || 'Password must be at least 6 characters';
   },
-  mustAgree: (value) => {
+  mustAgree: (value: boolean) => {
     return value === true || 'You must agree to the terms';
   },
 };

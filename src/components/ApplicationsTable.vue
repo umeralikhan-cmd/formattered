@@ -14,23 +14,23 @@
     >
       <!-- Full Name -->
       <template #item.full_name="{ item }">
-        <span class="font-weight-medium">{{ item.full_name || 'N/A' }}</span>
+        <span class="font-weight-medium">{{ (item as ApplicantItem).full_name || 'N/A' }}</span>
       </template>
 
       <!-- First Name -->
       <template #item.first_name="{ item }">
-        {{ item.first_name || 'N/A' }}
+        {{ (item as ApplicantItem).first_name || 'N/A' }}
       </template>
 
       <!-- Last Name -->
       <template #item.last_name="{ item }">
-        {{ item.last_name || 'N/A' }}
+        {{ (item as ApplicantItem).last_name || 'N/A' }}
       </template>
 
       <!-- DOC Number -->
       <template #item.doc_number="{ item }">
-        <v-chip v-if="item.doc_number" x-small outlined color="primary">
-          {{ item.doc_number }}
+        <v-chip v-if="(item as ApplicantItem).doc_number" x-small outlined color="primary">
+          {{ (item as ApplicantItem).doc_number }}
         </v-chip>
         <span v-else class="grey--text">N/A</span>
       </template>
@@ -38,29 +38,29 @@
       <!-- Facility Name -->
       <template #item.facility_name="{ item }">
         <div class="text-truncate" style="max-width: 200px">
-          {{ item.facility_name || 'N/A' }}
+          {{ (item as ApplicantItem).facility_name || 'N/A' }}
         </div>
       </template>
 
       <!-- Document Type -->
       <template #item.document_type="{ item }">
         <v-chip x-small>
-          {{ item.document_type || 'N/A' }}
+          {{ (item as ApplicantItem).document_type || 'N/A' }}
         </v-chip>
       </template>
 
       <!-- Maverick Profile ID -->
       <template #item.maverick_profile_id="{ item }">
-        <v-chip v-if="item.maverick_profile_id" x-small outlined color="success">
-          {{ item.maverick_profile_id }}
+        <v-chip v-if="(item as ApplicantItem).maverick_profile_id" x-small outlined color="success">
+          {{ (item as ApplicantItem).maverick_profile_id }}
         </v-chip>
         <v-chip v-else x-small outlined color="grey"> None </v-chip>
       </template>
 
       <!-- Facility ID -->
       <template #item.facility_id="{ item }">
-        <v-chip v-if="item.facility_id" x-small outlined color="info">
-          {{ item.facility_id }}
+        <v-chip v-if="(item as ApplicantItem).facility_id" x-small outlined color="info">
+          {{ (item as ApplicantItem).facility_id }}
         </v-chip>
         <span v-else class="grey--text">N/A</span>
       </template>
@@ -68,12 +68,12 @@
       <!-- Mailing Address -->
       <template #item.mailing_address="{ item }">
         <v-btn
-          v-if="item.mailing_address"
+          v-if="(item as ApplicantItem).mailing_address"
           icon
           size="small"
           variant="text"
           class="action-icon-btn"
-          @click="showMailingAddressDialog(item.mailing_address)"
+          @click="showMailingAddressDialog((item as ApplicantItem).mailing_address)"
         >
           <v-icon color="primary"> mdi-map-marker-outline </v-icon>
         </v-btn>
@@ -82,12 +82,12 @@
 
       <!-- Created At -->
       <template #item.created_at="{ item }">
-        <span class="text-caption">{{ formatDate(item.created_at) }}</span>
+        <span class="text-caption">{{ formatDate((item as ApplicantItem).created_at) }}</span>
       </template>
 
       <!-- Actions -->
       <template #item.actions="{ item }">
-        <v-btn icon size="small" variant="text" class="action-icon-btn" @click="viewDetails(item)">
+        <v-btn icon size="small" variant="text" class="action-icon-btn" @click="viewDetails(item as ApplicantItem)">
           <v-icon color="primary"> mdi-eye-outline </v-icon>
         </v-btn>
       </template>
@@ -291,6 +291,38 @@ import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
 
+interface ApplicantItem {
+  id: string | number;
+  full_name?: string;
+  first_name?: string;
+  last_name?: string;
+  doc_number?: string;
+  facility_name?: string;
+  document_type?: string;
+  maverick_profile_id?: string;
+  facility_id?: string;
+  mailing_address?: any;
+  created_at?: string;
+  document_parent_id?: string;
+  [key: string]: any;
+}
+
+interface QuestionItem {
+  question_number: number;
+  lesson?: string;
+  question?: string;
+  answer?: string;
+  [key: string]: any;
+}
+
+interface DocumentUrls {
+  document_url?: string | null;
+  image_url?: string | null;
+  is_edovo?: boolean;
+  questions?: QuestionItem[];
+  [key: string]: any;
+}
+
 // Props
 const props = defineProps({
   searchProp: {
@@ -303,13 +335,13 @@ const props = defineProps({
 const page = ref(1);
 const itemsPerPage = ref(20);
 const mailingAddressDialog = ref(false);
-const selectedMailingAddress = ref(null);
+const selectedMailingAddress = ref<any>(null);
 const detailsDialog = ref(false);
-const selectedApplicant = ref(null);
+const selectedApplicant = ref<ApplicantItem | null>(null);
 const loadingDocuments = ref(false);
-const documentUrls = ref(null);
+const documentUrls = ref<DocumentUrls | null>(null);
 const searchDebounced = ref('');
-const searchTimeout = ref(null);
+const searchTimeout = ref<number | undefined>(undefined);
 
 // Headers
 const headers = [
@@ -338,13 +370,20 @@ const questionHeaders = [
 watch(
   () => props.searchProp,
   (newVal) => {
-    clearTimeout(searchTimeout.value);
+    if (searchTimeout.value !== undefined) {
+      clearTimeout(searchTimeout.value);
+    }
     searchTimeout.value = setTimeout(() => {
       searchDebounced.value = newVal;
       page.value = 1; // Reset to first page on search
-    }, 500);
+    }, 500) as unknown as number;
   }
 );
+
+interface ApplicantsResponse {
+  items: ApplicantItem[];
+  totalItems: number;
+}
 
 // TanStack Query for applicants
 const {
@@ -354,7 +393,7 @@ const {
   refetch,
 } = useQuery({
   queryKey: ['applicants', page, itemsPerPage, searchDebounced],
-  queryFn: async () => {
+  queryFn: async (): Promise<ApplicantsResponse> => {
     const response = await api.post('/local-dash', {
       instructions: {
         action: 'get_new_applicants',
@@ -370,7 +409,7 @@ const {
   refetchOnWindowFocus: false,
   refetchOnMount: false, // ✅ Don't refetch on mount - only when page/search changes
   refetchOnReconnect: false,
-  keepPreviousData: true, // Keep previous data while loading new page
+  placeholderData: (previousData) => previousData, // Keep previous data while loading new page
 });
 
 const items = computed(() => applicantsData.value?.items || []);
@@ -392,7 +431,7 @@ const options = computed({
 const refreshData = () => {
   refetch();
 };
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string | undefined) => {
   if (!dateString) return 'N/A';
   const date = new Date(dateString);
   return date.toLocaleString();
@@ -413,7 +452,7 @@ const showMailingAddressDialog = (mailingAddress: any) => {
   }
 };
 
-const viewDetails = async (item: any) => {
+const viewDetails = async (item: ApplicantItem) => {
   selectedApplicant.value = item;
   detailsDialog.value = true;
   documentUrls.value = null;
@@ -441,7 +480,7 @@ const fetchDocumentUrls = async (documentParentId: any, documentType: string) =>
     documentUrls.value = {
       document_url: null,
       image_url: null,
-    };
+    } as DocumentUrls;
   } finally {
     loadingDocuments.value = false;
   }

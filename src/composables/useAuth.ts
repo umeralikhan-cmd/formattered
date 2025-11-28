@@ -50,7 +50,7 @@ export function useAuth() {
       // Demo user check
       if (email === 'root@gmail.com' && password === '123') {
         // Create a mock user for demo
-        const mockUser = {
+        const mockUser: any = {
           id: 'demo-user-123',
           email: 'root@gmail.com',
           user_metadata: { full_name: 'Demo User' },
@@ -58,15 +58,15 @@ export function useAuth() {
           updated_at: new Date().toISOString(),
         };
 
-        const mockSession = {
+        const mockSession: any = {
           access_token: 'demo-token',
           refresh_token: 'demo-refresh',
           user: mockUser,
           expires_at: Date.now() + 3600000, // 1 hour
         };
 
-      user.value = mockUser as User;
-      session.value = mockSession as Session;
+        user.value = mockUser;
+        session.value = mockSession;
 
         // Store in localStorage for persistence
         localStorage.setItem('demo-auth', JSON.stringify({ user: mockUser, session: mockSession }));
@@ -83,7 +83,7 @@ export function useAuth() {
 
       user.value = data.user;
       session.value = data.session;
-      return { success: true, user: data.user };
+      return { success: true, user: data.user || undefined };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       console.error('Error signing in:', error);

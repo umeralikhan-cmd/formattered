@@ -391,7 +391,7 @@
                   color="primary"
                   variant="outlined"
                   closable
-                  @click:close="removeFacilityFromSelection(facility.id)"
+                  @click:close="facility.id && removeFacilityFromSelection(facility.id)"
                 >
                   {{ facility['Facility Name'] }}
                 </v-chip>
@@ -524,8 +524,8 @@
   <!-- Roster Report Dialog -->
   <RosterReport
     v-model="rosterReportDialog"
-    :facility-id="selectedFacilityId"
-    :facility-facility-id="selectedFacilityFacilityId"
+    :facility-id="selectedFacilityId || undefined"
+    :facility-facility-id="selectedFacilityFacilityId || undefined"
     @close="closeRosterReportDialog"
   />
 
@@ -543,46 +543,112 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
 import RosterReport from './RosterReport.vue';
+// @ts-ignore
 import ReportExports from './ReportExports.vue';
+
+interface MailingAddress {
+  id?: string;
+  parent_id?: string;
+  'Mailing Account Address Type'?: string;
+  'Mailing Account Name'?: string;
+  'Facility Mailing Account ID'?: string;
+  'Facility/Company Name'?: string;
+  'Facility Contact Emails (ALL)'?: string;
+  'Primary H2.0 Sales Email'?: string;
+  'Mailing Account Notes'?: string;
+  'Ship To Name_first'?: string;
+  'Ship To Name_middle'?: string;
+  'Ship To Name_last'?: string;
+  'Mailing Account Address_line1'?: string;
+  'Mailing Account Address_line2'?: string;
+  'Mailing Account Address_city'?: string;
+  'Mailing Account Address_state'?: string;
+  'Mailing Account Address_zip'?: string;
+  'Mailing Account Address_country'?: string;
+  'Mailing Account Address_county'?: string;
+  'Mailing Account Address_neighborhood'?: string;
+  'Mailing Account Address_geolocation'?: string;
+  [key: string]: any;
+}
+
+interface FacilityItem {
+  id?: string;
+  'Facility ID'?: string;
+  'Facility Implementation Method'?: string;
+  'Facility Name'?: string;
+  'Facility Abbreviation'?: string;
+  'Facility Status'?: string;
+  'Facility Status Notes'?: string;
+  'Facility Book One Payer'?: string;
+  'Facility Book Two Payer'?: string;
+  'Facility Preseason Payer'?: string;
+  'Facility Standalone Course Payer'?: string;
+  'Facility Data Entry Notes'?: string;
+  'Facility Mail Policy Notes'?: string;
+  'Facility Sponsor Notes'?: string;
+  '"Other" explained:'?: string;
+  'Google Drive Folder Link'?: string;
+  'Roster Report Google Sheet Link'?: string;
+  'Payer Type (all guides)'?: string;
+  'Sales Email(s)'?: string;
+  'Staff Emails For Reporting'?: string;
+  'Supervisor Email(s)'?: string;
+  'Supervisor Phone #'?: string;
+  'Facility Contact Supervisor Name_first'?: string;
+  'Facility Contact Supervisor Name_middle'?: string;
+  'Facility Contact Supervisor Name_last'?: string;
+  'Facility Contact Supervisor Title'?: string;
+  'Facility Digital Messaging Platform'?: string;
+  'Active Customer?'?: string;
+  mailing_addresses?: MailingAddress[];
+  facility_id?: string;
+  facility_name?: string;
+  [key: string]: any;
+}
+
+interface EmailType {
+  document_id: string;
+  document_type: string;
+}
 
 // Table headers - auto-size columns to content
 const headers = [
   { title: 'Name', key: 'Facility Name' },
   { title: 'Facility ID', key: 'Facility ID' },
-  { title: 'Report Link', key: 'report_link', align: 'center' },
-  { title: 'Active Customer', key: 'Active Customer?', align: 'center' },
+  { title: 'Report Link', key: 'report_link', align: 'center' as const },
+  { title: 'Active Customer', key: 'Active Customer?', align: 'center' as const },
   { title: 'Staff Emails', key: 'Staff Emails For Reporting' },
 ];
 
 // Reactive state
-const expanded = ref([]);
+const expanded = ref<string[]>([]);
 const search = ref('');
 const activeCustomerFilter = ref('All');
 const editFacilityDialog = ref(false);
-const editFacilityData = ref(null);
-const editFacilityOriginalData = ref(null);
-const editFacilityAddressOriginalMap = ref({});
-const editFacilityAddressOriginalByRef = ref(null);
+const editFacilityData = ref<FacilityItem | null>(null);
+const editFacilityOriginalData = ref<FacilityItem | null>(null);
+const editFacilityAddressOriginalMap = ref<Record<string, MailingAddress>>({});
+const editFacilityAddressOriginalByRef = ref<WeakMap<MailingAddress, MailingAddress> | null>(null);
 const emailDraftDialog = ref(false);
-const emailTypes = ref([]);
-const selectedEmailType = ref(null);
-const selectedEmailTypeData = ref(null);
-const selectedFacility = ref(null);
+const emailTypes = ref<EmailType[]>([]);
+const selectedEmailType = ref<EmailType | null>(null);
+const selectedEmailTypeData = ref<EmailType | null>(null);
+const selectedFacility = ref<FacilityItem | null>(null);
 const emailTypesLoading = ref(false);
-const googleAccessToken = ref(null);
+const googleAccessToken = ref<string | null>(null);
 const isSignedIn = ref(false);
 const makeDraftLoading = ref(false);
-const selectedFacilities = ref([]);
+const selectedFacilities = ref<string[]>([]);
 const bulkEmailDraftDialog = ref(false);
-const bulkEmailType = ref(null);
-const bulkEmailTypeData = ref(null);
+const bulkEmailType = ref<EmailType | null>(null);
+const bulkEmailTypeData = ref<EmailType | null>(null);
 const bulkEmailTypesLoading = ref(false);
 const bulkMakeDraftLoading = ref(false);
 const rosterReportDialog = ref(false);
-const selectedFacilityId = ref(null);
-const selectedFacilityFacilityId = ref(null);
+const selectedFacilityId = ref<string | null>(null);
+const selectedFacilityFacilityId = ref<string | null>(null);
 const reportExportsDialog = ref(false);
-const selectedReportFacility = ref(null);
+const selectedReportFacility = ref<FacilityItem | null>(null);
 
 // TanStack Query - Fetch facilities (smart caching)
 const {
@@ -593,10 +659,10 @@ const {
   error: facilitiesError,
 } = useQuery({
   queryKey: ['facilitiesSupabase'], // UNIQUE KEY - different from DisplayResults
-  queryFn: async () => {
+  queryFn: async (): Promise<FacilityItem[]> => {
     const res = await api.get('/get-facilities-supabase');
     const facilities = Array.isArray(res.data)
-      ? res.data.map((f) => ({
+      ? res.data.map((f: any) => ({
           ...f,
           facility_id: f.facility_id || f['Facility ID'],
           facility_name: f.facility_name || f['Facility Name'],
@@ -616,8 +682,7 @@ const {
   refetchOnWindowFocus: false, // Don't refetch on tab focus
   refetchOnReconnect: false, // Don't refetch on network reconnect
   select: (data) => data || [], // Ensure always returns array
-  placeholderData: [], // Show empty array while loading to prevent undefined errors
-  keepPreviousData: true, // Keep showing old data while refetching
+  placeholderData: [] as FacilityItem[], // Show empty array while loading to prevent undefined errors
 });
 
 // Watch for errors
@@ -645,7 +710,8 @@ const reportButtonDisabled = computed(() => {
 
 const validSelectedFacilities = computed(() => {
   return items.value.filter(
-    (facility) =>
+    (facility: FacilityItem) =>
+      facility.id &&
       selectedFacilities.value.includes(facility.id) &&
       facility['Roster Report Google Sheet Link'] &&
       facility['Roster Report Google Sheet Link'].trim() &&
@@ -659,9 +725,9 @@ const filteredItems = computed(() => {
     return items.value;
   }
   const filter = activeCustomerFilter.value;
-  return items.value.filter((it) => {
+  return items.value.filter((it: FacilityItem) => {
     const val = it['Active Customer?'];
-    const isNA = (v) =>
+    const isNA = (v: any) =>
       v === null ||
       v === undefined ||
       String(v).trim() === '' ||
@@ -685,38 +751,38 @@ const facilityFieldKeys = computed(() => {
 });
 
 // Helper functions
-const isNonEmpty = (val) => {
+const isNonEmpty = (val: any): boolean => {
   return val !== null && val !== undefined && String(val).trim() !== '';
 };
 
-const isRequiredFacilityField = (key) => {
+const isRequiredFacilityField = (key: string): boolean => {
   return key === 'Facility ID' || key === 'Facility Name' || key === 'Facility Abbreviation';
 };
 
-const facilityRules = (key) => {
+const facilityRules = (key: string) => {
   if (isRequiredFacilityField(key)) {
-    return [(v) => isNonEmpty(v) || 'Required'];
+    return [(v: any) => isNonEmpty(v) || 'Required'];
   }
   return [];
 };
 
-const isRequiredAddressField = (akey) => {
+const isRequiredAddressField = (akey: string): boolean => {
   return akey === 'Mailing Account Name' || akey === 'Mailing Account Address_line1';
 };
 
-const addressRules = (akey) => {
+const addressRules = (akey: string) => {
   if (isRequiredAddressField(akey)) {
-    return [(v) => isNonEmpty(v) || 'Required'];
+    return [(v: any) => isNonEmpty(v) || 'Required'];
   }
   return [];
 };
 
-const isAddressValid = (addr) => {
+const isAddressValid = (addr: MailingAddress | null): boolean => {
   if (!addr) return false;
   return isNonEmpty(addr['Mailing Account Name']) && isNonEmpty(addr['Mailing Account Address_line1']);
 };
 
-const _shallowEqualAddresses = (a, b) => {
+const _shallowEqualAddresses = (a: MailingAddress | null, b: MailingAddress | null): boolean => {
   const keys = new Set([...(a ? Object.keys(a) : []), ...(b ? Object.keys(b) : [])]);
   for (const k of keys) {
     if ((a ? a[k] : undefined) !== (b ? b[k] : undefined)) return false;
@@ -724,7 +790,7 @@ const _shallowEqualAddresses = (a, b) => {
   return true;
 };
 
-const _hasMeaningfulValue = (obj) => {
+const _hasMeaningfulValue = (obj: MailingAddress | null): boolean => {
   for (const [k, v] of Object.entries(obj || {})) {
     if (k === 'id' || k === 'parent_id') continue;
     if (v !== null && v !== undefined && String(v).trim() !== '') return true;
@@ -733,19 +799,19 @@ const _hasMeaningfulValue = (obj) => {
 };
 
 // Methods
-const editFacility = (item) => {
+const editFacility = (item: FacilityItem) => {
   console.log('Editing facility:', item);
   editFacilityData.value = JSON.parse(JSON.stringify(item));
   editFacilityOriginalData.value = JSON.parse(JSON.stringify(item));
   editFacilityAddressOriginalMap.value = {};
-  (item.mailing_addresses || []).forEach((a) => {
+  (item.mailing_addresses || []).forEach((a: MailingAddress) => {
     if (a && a.id != null) {
       editFacilityAddressOriginalMap.value[a.id] = JSON.parse(JSON.stringify(a));
     }
   });
   editFacilityAddressOriginalByRef.value = new WeakMap();
-  (editFacilityData.value.mailing_addresses || []).forEach((a) => {
-    editFacilityAddressOriginalByRef.value.set(a, JSON.parse(JSON.stringify(a)));
+  (editFacilityData.value?.mailing_addresses || []).forEach((a: MailingAddress) => {
+    editFacilityAddressOriginalByRef.value?.set(a, JSON.parse(JSON.stringify(a)));
   });
   editFacilityDialog.value = true;
 };
@@ -758,12 +824,12 @@ const closeEditFacilityDialog = () => {
   editFacilityAddressOriginalByRef.value = null;
 };
 
-const addressFieldKeys = (addr) => {
+const addressFieldKeys = (addr: MailingAddress) => {
   return Object.keys(addr || {});
 };
-const duplicateAddress = (addr) => {
+const duplicateAddress = (addr: MailingAddress) => {
   if (!editFacilityData.value) return;
-  const copy = JSON.parse(JSON.stringify(addr || {}));
+  const copy: MailingAddress = JSON.parse(JSON.stringify(addr || {}));
   copy.id = '';
   copy.parent_id = editFacilityData.value.id;
   if (copy['Mailing Account Name']) {
@@ -772,12 +838,13 @@ const duplicateAddress = (addr) => {
   const facId = editFacilityData.value && editFacilityData.value['Facility ID'];
   const name = copy['Mailing Account Name'] || '';
   copy['Facility Mailing Account ID'] = facId ? `${facId}_${name}` : name;
-  (editFacilityData.value.mailing_addresses ||= []).push(copy);
+  if (!editFacilityData.value.mailing_addresses) editFacilityData.value.mailing_addresses = [];
+  editFacilityData.value.mailing_addresses.push(copy);
   if (!editFacilityAddressOriginalByRef.value) editFacilityAddressOriginalByRef.value = new WeakMap();
   const lastRef = editFacilityData.value.mailing_addresses[editFacilityData.value.mailing_addresses.length - 1];
   editFacilityAddressOriginalByRef.value.set(lastRef, JSON.parse(JSON.stringify(lastRef)));
 };
-const saveAddress = async (aidx) => {
+const saveAddress = async (aidx: number) => {
   try {
     if (!editFacilityData.value || !Array.isArray(editFacilityData.value.mailing_addresses)) return;
     const addr = editFacilityData.value.mailing_addresses[aidx];
@@ -799,7 +866,7 @@ const saveAddress = async (aidx) => {
     console.error('Error saving address');
   }
 };
-const deleteAddress = async (aidx) => {
+const deleteAddress = async (aidx: number) => {
   try {
     if (!editFacilityData.value || !Array.isArray(editFacilityData.value.mailing_addresses)) return;
     const addr = editFacilityData.value.mailing_addresses[aidx];
@@ -816,7 +883,7 @@ const deleteAddress = async (aidx) => {
     console.error('Error deleting address');
   }
 };
-const cancelAddress = (aidx, addr) => {
+const cancelAddress = (aidx: number, addr: MailingAddress) => {
   if (!editFacilityData.value || !Array.isArray(editFacilityData.value.mailing_addresses)) return;
   const id = addr && addr.id;
   if (id != null && editFacilityAddressOriginalMap.value[id]) {
@@ -832,7 +899,7 @@ const cancelAddress = (aidx, addr) => {
   }
 };
 
-const handleAddressFieldChange = (addr, key, value) => {
+const handleAddressFieldChange = (addr: MailingAddress, key: string, value: any) => {
   addr[key] = value;
   if (key === 'Mailing Account Name') {
     const facId = editFacilityData.value && editFacilityData.value['Facility ID'];
@@ -868,7 +935,7 @@ const addNewAddress = () => {
     'Mailing Account Address_geolocation': '',
   };
 
-  const existing = (editFacilityData.value.mailing_addresses || []).find((a) => a && typeof a === 'object');
+  const existing = (editFacilityData.value?.mailing_addresses || []).find((a: MailingAddress) => a && typeof a === 'object');
 
   const fallbackOrder = [
     'id',
@@ -896,19 +963,20 @@ const addNewAddress = () => {
 
   const orderedKeys = existing ? Object.keys(existing) : fallbackOrder;
 
-  const newAddr = {};
+  const newAddr: MailingAddress = {};
   orderedKeys.forEach((k) => {
     if (Object.prototype.hasOwnProperty.call(baseVals, k)) {
-      newAddr[k] = baseVals[k];
+      newAddr[k] = baseVals[k as keyof typeof baseVals];
     } else {
       newAddr[k] = '';
     }
   });
   fallbackOrder.forEach((k) => {
-    if (!(k in newAddr)) newAddr[k] = baseVals[k];
+    if (!(k in newAddr)) newAddr[k] = baseVals[k as keyof typeof baseVals];
   });
 
-  (editFacilityData.value.mailing_addresses ||= []).push(newAddr);
+  if (!editFacilityData.value.mailing_addresses) editFacilityData.value.mailing_addresses = [];
+  editFacilityData.value.mailing_addresses.push(newAddr);
   if (!editFacilityAddressOriginalByRef.value) editFacilityAddressOriginalByRef.value = new WeakMap();
   const inserted = editFacilityData.value.mailing_addresses[editFacilityData.value.mailing_addresses.length - 1];
   editFacilityAddressOriginalByRef.value.set(inserted, JSON.parse(JSON.stringify(inserted)));
@@ -924,13 +992,13 @@ const saveFacilityEdits = async () => {
 
     if (!prevId || String(prevId).trim() === '' || prevId !== saved.id) {
       if (Array.isArray(editFacilityData.value.mailing_addresses)) {
-        editFacilityData.value.mailing_addresses.forEach((a) => {
+        editFacilityData.value.mailing_addresses.forEach((a: MailingAddress) => {
           if (a) a.parent_id = saved.id;
         });
       }
     }
 
-    const merged = {
+    const merged: FacilityItem = {
       ...saved,
       mailing_addresses: Array.isArray(editFacilityData.value.mailing_addresses)
         ? editFacilityData.value.mailing_addresses
@@ -946,7 +1014,7 @@ const saveFacilityEdits = async () => {
   }
 };
 
-const isAddressChanged = (addr) => {
+const isAddressChanged = (addr: MailingAddress): boolean => {
   const byRef = editFacilityAddressOriginalByRef.value && editFacilityAddressOriginalByRef.value.get(addr);
   if (byRef) return !_shallowEqualAddresses(addr, byRef);
 
@@ -975,11 +1043,11 @@ const loadGoogleToken = () => {
 };
 
 const loadGoogleApi = () => {
-  if (!window.gapi) {
+  if (!(window as any).gapi) {
     const script = document.createElement('script');
     script.src = 'https://apis.google.com/js/api.js';
     script.onload = () => {
-      window.gapi.load('client:auth2', () => {
+      (window as any).gapi.load('client:auth2', () => {
         console.log('Google API loaded');
       });
     };
@@ -988,7 +1056,7 @@ const loadGoogleApi = () => {
 };
 
 const signInWithGoogle = () => {
-  const clientId = process.env.VUE_APP_GOOGLE_CLIENT_ID || import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   if (!clientId) {
     console.error('Google Client ID not configured. Please set VITE_GOOGLE_CLIENT_ID in your .env file');
@@ -1025,7 +1093,7 @@ const signInWithGoogle = () => {
     return;
   }
 
-  const handleMessage = (event) => {
+  const handleMessage = (event: MessageEvent) => {
     if (event.origin !== window.location.origin) return;
 
     if (event.data.type === 'google_auth_success') {
@@ -1051,7 +1119,7 @@ const signInWithGoogle = () => {
     }
   }, 500);
 };
-const openEmailDraftDialog = async (facility) => {
+const openEmailDraftDialog = async (facility: FacilityItem) => {
   selectedFacility.value = facility;
   emailDraftDialog.value = true;
   selectedEmailType.value = null;
@@ -1076,7 +1144,7 @@ const closeEmailDraftDialog = () => {
   emailTypes.value = [];
 };
 
-const onEmailTypeChange = (emailType) => {
+const onEmailTypeChange = (emailType: EmailType) => {
   selectedEmailTypeData.value = emailType;
 };
 
@@ -1109,7 +1177,7 @@ const makeDraft = async () => {
   }
 };
 
-const openReportLink = (link) => {
+const openReportLink = (link: string) => {
   if (link && link.trim()) {
     window.open(link, '_blank');
   }
@@ -1121,7 +1189,7 @@ const openBulkEmailDraftDialog = async () => {
   bulkEmailTypeData.value = null;
 
   try {
-    bulkEmailType.value.valuesLoading = true;
+    bulkEmailTypesLoading.value = true;
     const res = await api.get('/get-email-types');
     emailTypes.value = res.data.email_types || [];
   } catch (err) {
@@ -1138,11 +1206,11 @@ const closeBulkEmailDraftDialog = () => {
   bulkEmailTypeData.value = null;
 };
 
-const onBulkEmailTypeChange = (emailType) => {
+const onBulkEmailTypeChange = (emailType: EmailType) => {
   bulkEmailTypeData.value = emailType;
 };
 
-const removeFacilityFromSelection = (facilityId) => {
+const removeFacilityFromSelection = (facilityId: string) => {
   const index = selectedFacilities.value.indexOf(facilityId);
   if (index > -1) {
     selectedFacilities.value.splice(index, 1);
@@ -1225,10 +1293,10 @@ const addNewFacility = () => {
   editFacilityDialog.value = true;
 };
 
-const openRosterReportDialogForItem = (item) => {
+const openRosterReportDialogForItem = (item: FacilityItem) => {
   if (item) {
-    selectedFacilityId.value = item.id;
-    selectedFacilityFacilityId.value = item['Facility ID'];
+    selectedFacilityId.value = item.id || null;
+    selectedFacilityFacilityId.value = item['Facility ID'] || null;
     rosterReportDialog.value = true;
   }
 };
@@ -1242,7 +1310,7 @@ const closeRosterReportDialog = () => {
 const openReportDialog = () => {
   if (selectedFacilities.value.length === 1) {
     const facilityId = selectedFacilities.value[0];
-    const facility = items.value.find((f) => f.id === facilityId);
+    const facility = items.value.find((f: FacilityItem) => f.id === facilityId);
     if (facility) {
       selectedReportFacility.value = facility;
       reportExportsDialog.value = true;
@@ -1255,7 +1323,7 @@ const closeReportDialog = () => {
   selectedReportFacility.value = null;
 };
 
-const onExportSuccess = (payload) => {
+const onExportSuccess = (payload: any) => {
   console.log('Export completed successfully!');
 };
 
@@ -1684,7 +1752,6 @@ onMounted(() => {
   font-size: 0.875rem !important;
   white-space: normal !important;
   padding: 12px 16px !important;
-  vertical-align: top !important;
   word-wrap: break-word !important;
   word-break: break-word !important;
   line-height: 1.5 !important;

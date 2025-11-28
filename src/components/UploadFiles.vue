@@ -17,7 +17,7 @@
           <v-btn
             color="primary"
             size="large"
-            :disabled="uploading || !selectedFiles || (Array.isArray(selectedFiles) && selectedFiles.length === 0)"
+            :disabled="uploading || !selectedFiles || selectedFiles.length === 0"
             :loading="uploading"
             class="upload-btn"
             @click="uploadFiles"
@@ -115,6 +115,12 @@ import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
 import { VFileUpload } from 'vuetify/labs/VFileUpload';
 
+interface DriveFile {
+  id: string;
+  name: string;
+  [key: string]: any;
+}
+
 // Props
 const props = defineProps({
   refreshScan: {
@@ -131,9 +137,9 @@ const titleMessage = ref('');
 const scanLength = ref(0);
 const firstActionMessage = ref('');
 const ocrValue = ref(0);
-const progressMessages = ref([]);
-const filesInDrive = ref([]);
-const selectedFiles = ref(null);
+const progressMessages = ref<string[]>([]);
+const filesInDrive = ref<DriveFile[]>([]);
+const selectedFiles = ref<File[] | undefined>(undefined);
 const manualScan = ref(false); // Track if user manually clicked scan
 const hasAutoProcessed = ref(false); // Track if auto-processing already happened
 
@@ -231,8 +237,8 @@ const ProcessDocs = async () => {
   reloading.value = false;
 };
 
-const startOcrStreamSequential = (file) => {
-  return new Promise((resolve) => {
+const startOcrStreamSequential = (file: DriveFile): Promise<void> => {
+  return new Promise<void>((resolve) => {
     const fileId = file.id;
     const fileName = encodeURIComponent(file.name);
     const backendUrl = import.meta.env.VITE_API_URL || '/api';
@@ -256,8 +262,8 @@ const startOcrStreamSequential = (file) => {
   });
 };
 
-const processEdovoFile = (file) => {
-  return new Promise((resolve) => {
+const processEdovoFile = (file: DriveFile): Promise<void> => {
+  return new Promise<void>((resolve) => {
     const fileId = file.id;
     const fileName = encodeURIComponent(file.name);
     const backendUrl = import.meta.env.VITE_API_URL || '/api';
@@ -285,11 +291,7 @@ const processEdovoFile = (file) => {
 };
 
 const uploadFiles = async () => {
-  const files = Array.isArray(selectedFiles.value)
-    ? selectedFiles.value
-    : selectedFiles.value
-      ? [selectedFiles.value]
-      : [];
+  const files = selectedFiles.value || [];
 
   if (files.length === 0) {
     return;
@@ -306,7 +308,7 @@ const uploadFiles = async () => {
   try {
     await api.post('/upload-to-google-drive', formData);
     uploading.value = false;
-    selectedFiles.value = null;
+    selectedFiles.value = undefined;
 
     setTimeout(() => {
       ScanGoogleDrive();
@@ -317,7 +319,7 @@ const uploadFiles = async () => {
   }
 };
 
-const getIcon = (msg) => {
+const getIcon = (msg: string): string => {
   if (msg.includes('✅')) return 'mdi-check-circle';
   if (msg.toLowerCase().includes('error')) return 'mdi-alert-circle';
   if (msg.toLowerCase().includes('starting')) return 'mdi-play-circle';
@@ -326,7 +328,7 @@ const getIcon = (msg) => {
   return 'mdi-information';
 };
 
-const getIconColor = (msg) => {
+const getIconColor = (msg: string): string => {
   if (msg.includes('✅')) return 'green';
   if (msg.toLowerCase().includes('error')) return 'red';
   if (msg.toLowerCase().includes('starting')) return 'blue';

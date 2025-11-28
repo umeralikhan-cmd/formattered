@@ -5,8 +5,11 @@
  */
 
 // Composables
+// @ts-ignore - vue-router/auto is generated
 import { createRouter, createWebHistory } from 'vue-router/auto';
+// @ts-ignore - virtual module
 import { setupLayouts } from 'virtual:generated-layouts';
+// @ts-ignore - vue-router/auto-routes is generated
 import { routes } from 'vue-router/auto-routes';
 import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 

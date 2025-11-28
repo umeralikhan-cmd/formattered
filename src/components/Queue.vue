@@ -56,36 +56,36 @@
           <div v-else class="table-wrapper">
             <v-data-table :headers="headers" :items="currentQueueItems" :items-per-page="20" fixed-header height="600">
               <template #item.created_at="{ item }">
-                <span class="date-text">{{ formatDate(item.created_at) }}</span>
+                <span class="date-text">{{ formatDate((item as QueueItem).created_at) }}</span>
               </template>
 
               <template #item.status="{ item }">
-                <v-chip :color="getStatusColor(item.status)" variant="flat" size="small" class="status-chip">
-                  {{ item.status }}
+                <v-chip :color="getStatusColor((item as QueueItem).status)" variant="flat" size="small" class="status-chip">
+                  {{ (item as QueueItem).status }}
                 </v-chip>
               </template>
 
               <template #item.actions="{ item }">
                 <div class="action-buttons">
                   <v-btn
-                    v-if="item.status === 'Pending'"
+                    v-if="(item as QueueItem).status === 'Pending'"
                     icon
                     size="small"
                     title="Approve"
                     variant="text"
                     class="action-btn approve-btn"
-                    @click="approveItem(item)"
+                    @click="approveItem(item as QueueItem)"
                   >
                     <v-icon size="16"> mdi-check </v-icon>
                   </v-btn>
                   <v-btn
-                    v-else-if="item.status === 'Approved'"
+                    v-else-if="(item as QueueItem).status === 'Approved'"
                     icon
                     size="small"
                     title="Set to Pending"
                     variant="text"
                     class="action-btn pending-btn"
-                    @click="setPendingItem(item)"
+                    @click="setPendingItem(item as QueueItem)"
                   >
                     <v-icon size="16"> mdi-close </v-icon>
                   </v-btn>
@@ -95,7 +95,7 @@
                     title="Archive"
                     variant="text"
                     class="action-btn archive-btn"
-                    @click="confirmArchive(item)"
+                    @click="confirmArchive(item as QueueItem)"
                   >
                     <v-icon size="16"> mdi-archive </v-icon>
                   </v-btn>
@@ -141,10 +141,21 @@ import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
 
+interface QueueItem {
+  id: string | number;
+  first_name?: string;
+  last_name?: string;
+  facility_name?: string;
+  document_type?: string;
+  status?: string;
+  created_at?: string;
+  [key: string]: any;
+}
+
 // Reactive state
 const activeTab = ref('PRESEASON');
 const archiveDialog = ref(false);
-const itemToArchive = ref(null);
+const itemToArchive = ref<QueueItem | null>(null);
 const archiving = ref(false);
 
 // Table headers
@@ -155,7 +166,7 @@ const headers = [
   { title: 'Document Type', key: 'document_type', sortable: true },
   { title: 'Status', key: 'status', sortable: true },
   { title: 'Created At', key: 'created_at', sortable: true },
-  { title: 'Actions', key: 'actions', sortable: false, align: 'center' },
+  { title: 'Actions', key: 'actions', sortable: false, align: 'center' as const },
 ];
 
 // TanStack Query - Fetch queue (refetch on tab change)
@@ -167,7 +178,7 @@ const {
   refetch: refetchCurrentQueue,
 } = useQuery({
   queryKey: ['queue', activeTab],
-  queryFn: async () => {
+  queryFn: async (): Promise<QueueItem[]> => {
     const response = await api.post('/local-dash', {
       instructions: {
         action: 'get_queue',
@@ -186,8 +197,7 @@ const {
   refetchOnMount: false, // ✅ Don't refetch on mount - only when tab changes
   refetchOnReconnect: false,
   select: (data) => data || [], // Ensure always returns array
-  placeholderData: [], // Show empty array while loading
-  keepPreviousData: true, // Keep showing old data while switching tabs
+  placeholderData: [] as QueueItem[], // Show empty array while loading
 });
 
 // Computed properties
@@ -199,7 +209,7 @@ watch(activeTab, () => {
 });
 
 // Helper functions
-const formatDate = (dateString) => {
+const formatDate = (dateString: string | undefined): string => {
   if (!dateString) return 'N/A';
   const date = new Date(dateString);
   return date.toLocaleString('en-US', {
@@ -211,8 +221,8 @@ const formatDate = (dateString) => {
   });
 };
 
-const getStatusColor = (status) => {
-  const statusColors = {
+const getStatusColor = (status: string | undefined): string => {
+  const statusColors: Record<string, string> = {
     pending: 'orange',
     approved: 'green',
     processing: 'blue',
@@ -220,11 +230,12 @@ const getStatusColor = (status) => {
     failed: 'red',
     'on-hold': 'grey',
   };
-  return statusColors[status?.toLowerCase()] || 'grey';
+  const statusKey = status?.toLowerCase() || '';
+  return statusColors[statusKey] || 'grey';
 };
 
 // Action methods
-const approveItem = async (item) => {
+const approveItem = async (item: QueueItem) => {
   try {
     const response = await api.post('/local-dash', {
       instructions: {
@@ -244,7 +255,7 @@ const approveItem = async (item) => {
   }
 };
 
-const setPendingItem = async (item) => {
+const setPendingItem = async (item: QueueItem) => {
   try {
     const response = await api.post('/local-dash', {
       instructions: {
@@ -264,7 +275,7 @@ const setPendingItem = async (item) => {
   }
 };
 
-const confirmArchive = (item) => {
+const confirmArchive = (item: QueueItem) => {
   itemToArchive.value = item;
   archiveDialog.value = true;
 };

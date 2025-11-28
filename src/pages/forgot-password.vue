@@ -88,12 +88,12 @@ const { resetPassword, loading } = useAuth();
 const email = ref('');
 const errorMessage = ref('');
 const successMessage = ref('');
-const resetForm = ref(null);
+const resetForm = ref<any>(null);
 
 // Validation rules
 const rules = {
-  required: (value) => !!value || 'This field is required',
-  email: (value) => {
+  required: (value: any) => !!value || 'This field is required',
+  email: (value: string) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return pattern.test(value) || 'Invalid email address';
   },

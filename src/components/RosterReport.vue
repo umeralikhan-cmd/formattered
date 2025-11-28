@@ -55,66 +55,66 @@
               >
                 <template #item.application="{ item }">
                   <v-chip
-                    v-if="item.application && item.application.status"
+                    v-if="(item as MaverickItem).application && (item as MaverickItem).application!.status"
                     size="small"
-                    :color="getStatusChipColor(item.application.status)"
+                    :color="getStatusChipColor((item as MaverickItem).application!.status)"
                     variant="flat"
                     class="status-chip"
                   >
-                    {{ item.application.status }}
+                    {{ (item as MaverickItem).application!.status }}
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
                 <template #item.tyh="{ item }">
                   <v-chip
-                    v-if="item.tyh && item.tyh.status"
+                    v-if="(item as MaverickItem).tyh && (item as MaverickItem).tyh!.status"
                     size="small"
-                    :color="getStatusChipColor(item.tyh.status)"
+                    :color="getStatusChipColor((item as MaverickItem).tyh!.status)"
                     variant="flat"
                     class="status-chip"
                   >
-                    {{ item.tyh.status }}
+                    {{ (item as MaverickItem).tyh!.status }}
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
                 <template #item.preseason="{ item }">
                   <v-chip
-                    v-if="item.preseason && item.preseason.status"
+                    v-if="(item as MaverickItem).preseason && (item as MaverickItem).preseason!.status"
                     size="small"
-                    :color="getStatusChipColor(item.preseason.status)"
+                    :color="getStatusChipColor((item as MaverickItem).preseason!.status)"
                     variant="flat"
                     class="status-chip"
                   >
-                    {{ item.preseason.status }}
+                    {{ (item as MaverickItem).preseason!.status }}
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
                 <template #item.book_one="{ item }">
                   <v-chip
-                    v-if="item.book_one && item.book_one.status"
+                    v-if="(item as MaverickItem).book_one && (item as MaverickItem).book_one!.status"
                     size="small"
-                    :color="getStatusChipColor(item.book_one.status)"
+                    :color="getStatusChipColor((item as MaverickItem).book_one!.status)"
                     variant="flat"
                     class="status-chip"
                   >
-                    {{ item.book_one.status }}
+                    {{ (item as MaverickItem).book_one!.status }}
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
                 <template #item.book_two="{ item }">
                   <v-chip
-                    v-if="item.book_two && item.book_two.status"
+                    v-if="(item as MaverickItem).book_two && (item as MaverickItem).book_two!.status"
                     size="small"
-                    :color="getStatusChipColor(item.book_two.status)"
+                    :color="getStatusChipColor((item as MaverickItem).book_two!.status)"
                     variant="flat"
                     class="status-chip"
                   >
-                    {{ item.book_two.status }}
+                    {{ (item as MaverickItem).book_two!.status }}
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
                 <template #item.notes="{ item }">
-                  <span class="notes-text">{{ item.notes || '—' }}</span>
+                  <span class="notes-text">{{ (item as MaverickItem).notes || '—' }}</span>
                 </template>
               </v-data-table>
             </div>
@@ -139,6 +139,30 @@
 import { computed } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
+
+interface StatusItem {
+  status?: string;
+  [key: string]: any;
+}
+
+interface MaverickItem {
+  first_name?: string;
+  last_name?: string;
+  doc_number?: string;
+  application?: StatusItem;
+  tyh?: StatusItem;
+  preseason?: StatusItem;
+  book_one?: StatusItem;
+  book_two?: StatusItem;
+  notes?: string;
+  [key: string]: any;
+}
+
+interface RosterData {
+  total_mavericks?: number;
+  mavericks?: MaverickItem[];
+  [key: string]: any;
+}
 
 // Props
 const props = defineProps({
@@ -180,7 +204,7 @@ const {
   refetch,
 } = useQuery({
   queryKey: ['rosterReport', computed(() => props.facilityId)],
-  queryFn: async () => {
+  queryFn: async (): Promise<RosterData> => {
     if (!props.facilityId) {
       throw new Error('Facility ID is required');
     }
@@ -205,12 +229,15 @@ const {
 
 const error = computed(() => {
   if (!props.facilityId) return 'Facility ID is required';
-  if (queryError.value) return queryError.value.response?.data?.detail || 'Error fetching roster report';
+  if (queryError.value) {
+    const err = queryError.value as any;
+    return err.response?.data?.detail || 'Error fetching roster report';
+  }
   return null;
 });
 
 // Methods
-const getLogColor = (status) => {
+const getLogColor = (status: string | undefined): string => {
   if (!status) return 'grey';
   const statusLower = status.toLowerCase();
   if (statusLower === 'complete') return 'success';
@@ -219,14 +246,14 @@ const getLogColor = (status) => {
   return 'info';
 };
 
-const getChipColor = (displayText) => {
+const getChipColor = (displayText: string | undefined): string => {
   if (!displayText) return 'grey';
   if (displayText === 'Completed') return 'success';
   if (displayText.includes('2nd chance')) return 'warning';
   return 'info';
 };
 
-const getStatusChipColor = (status) => {
+const getStatusChipColor = (status: string | undefined): string => {
   if (!status) return 'grey';
   const statusLower = status.toLowerCase();
   if (statusLower === 'complete') return 'success';

@@ -131,8 +131,8 @@ const loginForm = ref(null);
 
 // Validation rules
 const rules = {
-  required: (value) => !!value || 'This field is required',
-  email: (value) => {
+  required: (value: any) => !!value || 'This field is required',
+  email: (value: string) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return pattern.test(value) || 'Invalid email address';
   },
@@ -141,8 +141,9 @@ const rules = {
 // Handle login
 const handleLogin = async () => {
   if (!loginForm.value) return;
-  
-  const { valid } = await loginForm.value.validate();
+
+  // Cast loginForm.value to any to avoid TS error ('validate' does not exist on type 'never')
+  const { valid } = await (loginForm.value as any).validate?.() || {};
   if (!valid) return;
 
   errorMessage.value = '';
