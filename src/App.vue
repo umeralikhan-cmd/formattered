@@ -25,20 +25,204 @@ watch(() => appStore.theme, (newTheme) => {
 </script>
 
 <style>
+/* Force font loading */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+
 * {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.v-application {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Global font override - Force everywhere */
+html,
+body,
+#app,
+.v-application,
+.v-application *,
+input,
+textarea,
+select,
+button {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+.v-application {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px !important;
+  line-height: 1.6;
+}
+
+/* Headings - Force Poppins */
+h1, h2, h3, h4, h5, h6,
+.v-card-title,
+.dialog-title,
+.page-title,
+.section-title,
+.table-title,
+.modal-title,
+.dialog-header-title {
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+}
+
+h1 {
+  font-size: 2.5rem !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+}
+
+h2 {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+}
+
+h3 {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+
+h4 {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+
+h5 {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+}
+
+h6 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+}
+
+/* Vuetify Typography Overrides */
+.v-btn,
+.v-btn * {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
+}
+
+.v-card-title,
+.v-card-title * {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.375rem !important;
+  letter-spacing: -0.01em !important;
+}
+
+.v-card-subtitle,
+.v-card-subtitle * {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 0.9375rem !important;
+}
+
+.v-card-text,
+.v-card-text * {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+.v-list-item-title {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 0.9375rem !important;
+}
+
+.v-tab,
+.v-tab * {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+  letter-spacing: 0 !important;
+}
+
+.v-data-table th,
+.v-data-table-header th {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.875rem !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+}
+
+.v-data-table td,
+.v-data-table tbody td {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.9375rem !important;
+}
+
+.v-label,
+.v-field-label,
+.v-input label {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 0.9375rem !important;
+}
+
+.v-chip,
+.v-chip * {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  letter-spacing: 0.02em !important;
+}
+
+.v-text-field input,
+.v-select input,
+.v-autocomplete input,
+.v-textarea textarea {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+}
+
+.v-menu .v-list,
+.v-dialog .v-card,
+.v-overlay .v-card {
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Dialogs and Modals */
+.v-dialog .v-card-title,
+.modern-dialog-header,
+.dialog-header-title {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+}
+
+.v-dialog .v-card-text,
+.dialog-content {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Page content */
+p, span, div {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 1rem !important;
+}
+
+/* Stats and labels */
+.stats-text,
+.stats-label,
+.table-stats {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
 }
 
 /* Smooth scrollbar */

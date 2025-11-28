@@ -8,8 +8,7 @@
       <div class="breadcrumbs">
         <v-icon size="24" color="primary">{{ currentPageIcon }}</v-icon>
         <div class="page-info">
-        <h1 class="page-title">{{ currentPageTitle }}</h1>
-          <p v-if="currentPageSubtitle" class="page-subtitle">{{ currentPageSubtitle }}</p>
+          <h1 class="page-title">{{ currentPageTitle }}</h1>
         </div>
         <v-chip v-if="currentPageBadge" size="small" color="primary" variant="flat">
           {{ currentPageBadge }}
@@ -32,7 +31,7 @@ const route = useRoute()
 
 const emit = defineEmits(['toggle-mobile-sidebar'])
 
-const pageConfig: Record<string, { title: string; icon: string; badge?: string; subtitle?: string }> = {
+const pageConfig: Record<string, { title: string; icon: string; badge?: string }> = {
   '/': { 
     title: 'Document Upload & Processing', 
     icon: 'mdi-cloud-upload-outline'
@@ -41,15 +40,13 @@ const pageConfig: Record<string, { title: string; icon: string; badge?: string; 
   '/facilities': { title: 'Facilities Management', icon: 'mdi-domain' },
   '/queue': { 
     title: 'Scholarship Queue', 
-    icon: 'mdi-format-list-checks',
-    subtitle: 'Manage and approve scholarship applications'
+    icon: 'mdi-format-list-checks'
   },
   '/mail': { title: 'Mail Management', icon: 'mdi-email-outline' },
   '/dev': { title: 'Developer Board', icon: 'mdi-console' },
   '/mavericks': { 
     title: 'Mavericks Directory', 
-    icon: 'mdi-account-group',
-    subtitle: 'Search and manage Maverick profiles'
+    icon: 'mdi-account-group'
   },
 }
 
@@ -63,10 +60,6 @@ const currentPageIcon = computed(() => {
 
 const currentPageBadge = computed(() => {
   return pageConfig[route.path]?.badge
-})
-
-const currentPageSubtitle = computed(() => {
-  return pageConfig[route.path]?.subtitle
 })
 
 const toggleMobileSidebar = () => {
@@ -129,12 +122,13 @@ const toggleMobileSidebar = () => {
 }
 
 .page-title {
-  font-size: 1.25rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #0F172A;
   margin: 0;
   line-height: 1.3;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .v-theme--dark .page-title {
@@ -142,10 +136,13 @@ const toggleMobileSidebar = () => {
 }
 
 .page-subtitle {
-  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
   color: #64748B;
   margin: 0;
   line-height: 1.4;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -408,14 +408,14 @@ const page = ref(1);
 const itemsPerPage = ref(20);
 
 const headers = [
-        { title: "First Name", key: "first_name", width: "10%" },
-        { title: "Middle Name", key: "middle_name", width: "10%" },
-        { title: "Last Name", key: "last_name", width: "10%" },
-        { title: "Document Type", key: "document_type", width: "20%" },
-        { title: "Score", key: "score", width: "10%" },
-        { title: "Created", key: "created_at", width: "12%" },
-        { title: "DOC Number", key: "doc_number", width: "10%" },
-        { title: "Facility Name", key: "facility_name", width: "18%" },
+        { title: "First Name", key: "first_name" },
+        { title: "Middle Name", key: "middle_name" },
+        { title: "Last Name", key: "last_name" },
+        { title: "Document Type", key: "document_type" },
+        { title: "Score", key: "score" },
+        { title: "Created", key: "created_at" },
+        { title: "DOC Number", key: "doc_number" },
+        { title: "Facility Name", key: "facility_name" },
 ];
 
 // TanStack Query for question types (cached, fetches once)
@@ -1337,9 +1337,9 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .table-wrapper :deep(.v-table) {
-  width: 100%; /* Table fills container */
-  min-width: 1200px; /* Minimum width to prevent cramping */
-  table-layout: fixed; /* Fixed layout for consistent column widths */
+  width: auto; /* Table sizes to content */
+  min-width: 100%; /* At least fill container */
+  table-layout: auto; /* Auto layout - columns size to content */
 }
 
 /* Allow table to grow wider if needed, but wrap text first */
@@ -1411,16 +1411,22 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   background: #F9FAFB !important;
   text-transform: uppercase !important;
   letter-spacing: 0.03em !important;
-  white-space: nowrap !important; /* Keep headers on one line */
-  overflow: hidden !important;
-  text-overflow: clip !important;
+  white-space: nowrap !important;
   padding: 14px 16px !important;
   vertical-align: middle !important;
   position: sticky !important;
   top: 0 !important;
   z-index: 10 !important;
   line-height: 1.2 !important;
-  min-width: fit-content !important;
+}
+
+/* Force header content to stay on one line */
+:deep(.v-data-table__th span),
+:deep(.v-data-table__th .v-data-table-header__content),
+:deep(.v-data-table-header__content) {
+  white-space: nowrap !important;
+  display: inline-block !important;
+  line-height: 1.2 !important;
 }
 
 :deep(.v-theme--dark .v-data-table__th) {
@@ -1533,69 +1539,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   padding: 10px !important;
 }
 
-/* Specific column width adjustments for better text display */
-:deep(.v-data-table__th:nth-child(1)),
-:deep(.v-data-table__td:nth-child(1)) {  /* Checkbox */
-  width: 50px !important;
-  min-width: 50px !important;
-  max-width: 50px !important;
-}
-
-:deep(.v-data-table__th:nth-child(2)),
-:deep(.v-data-table__td:nth-child(2)) { /* First name */
-  min-width: 120px !important;
-  max-width: 180px !important;
-}
-
-:deep(.v-data-table__th:nth-child(3)),
-:deep(.v-data-table__td:nth-child(3)) { /* Middle name */
-  min-width: 120px !important;
-  max-width: 150px !important;
-}
-
-:deep(.v-data-table__th:nth-child(4)),
-:deep(.v-data-table__td:nth-child(4)) { /* Last name */
-  min-width: 120px !important;
-  max-width: 180px !important;
-}
-
-:deep(.v-data-table__th:nth-child(5)),
-:deep(.v-data-table__td:nth-child(5)) { /* Document type */
-  min-width: 200px !important;
-  max-width: 300px !important;
-}
-
-:deep(.v-data-table__th:nth-child(6)),
-:deep(.v-data-table__td:nth-child(6)) { /* Score */
-  width: 100px !important;
-  min-width: 100px !important;
-  max-width: 100px !important;
-}
-
-:deep(.v-data-table__th:nth-child(7)),
-:deep(.v-data-table__td:nth-child(7)) { /* Date created */
-  min-width: 160px !important;
-  max-width: 200px !important;
-}
-
-:deep(.v-data-table__th:nth-child(8)),
-:deep(.v-data-table__td:nth-child(8)) { /* Doc number */
-  min-width: 120px !important;
-  max-width: 150px !important;
-}
-
-:deep(.v-data-table__th:nth-child(9)),
-:deep(.v-data-table__td:nth-child(9)) { /* Facility name */
-  min-width: 180px !important;
-  max-width: 350px !important;
-}
-
-:deep(.v-data-table__th:nth-child(10)),
-:deep(.v-data-table__td:nth-child(10)) { /* Expand button */
-  width: 80px !important;
-  min-width: 80px !important;
-  max-width: 80px !important;
-}
+/* Remove specific column width constraints - let columns auto-size to content */
 
 /* Show/Hide Expand Button - Simple styling */
 :deep(.expand-btn) {

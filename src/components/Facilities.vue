@@ -621,13 +621,13 @@ import api from "@/plugins/axios";
 import RosterReport from "./RosterReport.vue";
 import ReportExports from "./ReportExports.vue";
 
-// Table headers
+// Table headers - auto-size columns to content
 const headers = [
-  { title: "Name", key: "Facility Name", width: "30%" },
-  { title: "Facility ID", key: "Facility ID", width: "20%" },
-  { title: "Link", key: "report_link", width: "10%", align: "center" },
-  { title: "Active", key: "Active Customer?", width: "12%", align: "center" },
-  { title: "Email", key: "Staff Emails For Reporting", width: "28%" }
+  { title: "Name", key: "Facility Name" },
+  { title: "Facility ID", key: "Facility ID" },
+  { title: "Link", key: "report_link", align: "center" },
+  { title: "Active", key: "Active Customer?", align: "center" },
+  { title: "Email", key: "Staff Emails For Reporting" }
 ];
 
 // Reactive state
@@ -1664,9 +1664,9 @@ onMounted(() => {
 }
 
 .table-wrapper :deep(.v-table) {
-  width: max-content;
-  min-width: 100%;
-  table-layout: auto;
+  width: auto; /* Table grows to fit content */
+  min-width: 100%; /* At least fill container */
+  table-layout: auto; /* Auto layout for flexible columns */
 }
 
 .table-wrapper :deep(.v-table tbody) {
@@ -1717,12 +1717,21 @@ onMounted(() => {
   position: sticky !important;
   top: 0 !important;
   z-index: 10 !important;
-  line-height: 1.3 !important;
+  line-height: 1.2 !important;
 }
 
 :deep(.v-theme--dark .v-data-table__th) {
   color: #94A3B8 !important;
   background: #0F172A !important;
+}
+
+/* Force header content to stay on one line */
+:deep(.v-data-table__th span),
+:deep(.v-data-table__th .v-data-table-header__content),
+:deep(.v-data-table-header__content) {
+  white-space: nowrap !important;
+  display: inline-block !important;
+  line-height: 1.2 !important;
 }
 
 :deep(.v-data-table__td) {

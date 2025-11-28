@@ -3,11 +3,9 @@
     <div class="sidebar-header">
       <transition name="fade" mode="out-in">
         <div v-if="!collapsed" class="logo-section" key="expanded">
-          <div class="logo-icon">
-            <v-icon size="28" color="white">mdi-school</v-icon>
-          </div>
+          
           <div class="logo-text">
-            <h2>FormAttered</h2>
+            <h2>Hustle 2.0</h2>
           </div>
         </div>
         <div v-else class="logo-section-collapsed" key="collapsed">
@@ -175,9 +173,15 @@ watch(collapsed, (newValue) => {
   justify-content: center;
 }
 
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
 .logo-text h2 {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: #F9FAFB;
   margin: 0;
   white-space: nowrap;
@@ -185,6 +189,11 @@ watch(collapsed, (newValue) => {
 
 .v-theme--light .logo-text h2 {
   color: #1E293B;
+}
+
+
+.v-theme--light .logo-subtitle {
+  color: #64748B;
 }
 
 .sidebar-footer {
@@ -240,8 +249,10 @@ watch(collapsed, (newValue) => {
   text-decoration: none;
   transition: all 0.2s ease;
   cursor: pointer;
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: 0.01em;
 }
 
 .sidebar-collapsed .nav-item {

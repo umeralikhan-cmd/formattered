@@ -335,7 +335,7 @@ const props = defineProps({
 
 // State
 const page = ref(1);
-const itemsPerPage = ref(500);
+const itemsPerPage = ref(20);
 const mailingAddressDialog = ref(false);
 const selectedMailingAddress = ref(null);
 const detailsDialog = ref(false);

@@ -57,39 +57,66 @@ export default createVuetify({
     },
   },
   defaults: {
+    global: {
+      style: {
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important',
+      },
+    },
     VCard: {
       elevation: 0,
       rounded: 'xl',
       border: 'sm',
+      style: 'font-family: Inter, sans-serif !important;',
+    },
+    VCardTitle: {
+      style: 'font-family: Poppins, sans-serif !important; font-weight: 700 !important; font-size: 1.375rem !important;',
+    },
+    VCardText: {
+      style: 'font-family: Inter, sans-serif !important; font-size: 1rem !important;',
     },
     VBtn: {
       rounded: 'lg',
       elevation: 0,
       class: 'text-none font-weight-medium',
+      style: 'font-family: Inter, sans-serif !important; font-weight: 600 !important; font-size: 0.9375rem !important;',
     },
     VTextField: {
       variant: 'outlined',
       density: 'comfortable',
       rounded: 'lg',
+      style: 'font-family: Inter, sans-serif !important;',
     },
     VSelect: {
       variant: 'outlined',
       density: 'comfortable',
       rounded: 'lg',
+      style: 'font-family: Inter, sans-serif !important;',
     },
     VAutocomplete: {
       variant: 'outlined',
       density: 'comfortable',
       rounded: 'lg',
+      style: 'font-family: Inter, sans-serif !important;',
     },
     VCheckbox: {
       color: 'primary',
     },
     VChip: {
       rounded: 'pill',
+      style: 'font-family: Inter, sans-serif !important; font-weight: 600 !important;',
     },
     VDataTable: {
       hover: true,
+      style: 'font-family: Inter, sans-serif !important;',
+    },
+    VTab: {
+      style: 'font-family: Inter, sans-serif !important; font-weight: 600 !important; font-size: 0.9375rem !important;',
+    },
+    VList: {
+      style: 'font-family: Inter, sans-serif !important;',
+    },
+    VListItem: {
+      style: 'font-family: Inter, sans-serif !important;',
     },
   },
 })
