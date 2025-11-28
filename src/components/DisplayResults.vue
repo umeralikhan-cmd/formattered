@@ -887,6 +887,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  border-radius: 12px !important;
 }
 
 .filters-section:hover {
@@ -1016,6 +1017,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 :deep(.v-field) {
   cursor: pointer !important;
   transition: all 0.2s ease;
+  border-radius: 8px !important;
 }
 
 :deep(.v-field:hover) {

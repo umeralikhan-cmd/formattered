@@ -61,7 +61,7 @@
               class="process-btn"
             >
               <v-icon start>mdi-play-circle-outline</v-icon>
-              {{ reloading ? 'Processing...' : 'Start Grading' }}
+              {{ filesInDrive.length === 0 ? 'No Files to Grade' : (reloading ? 'Processing...' : 'Start Grading') }}
             </v-btn>
           </div>
         </div>
@@ -154,7 +154,7 @@ const selectedFiles = ref(null);
 const manualScan = ref(false); // Track if user manually clicked scan
 const hasAutoProcessed = ref(false); // Track if auto-processing already happened
 
-// TanStack Query - Fetch Google Drive files (check for new files)
+// TanStack Query - Fetch Google Drive files (only when user clicks Scan)
 const { data: driveFilesData, refetch: refetchDrive, isError, error } = useQuery({
   queryKey: ['googleDriveFiles'],
   queryFn: async () => {
@@ -164,16 +164,17 @@ const { data: driveFilesData, refetch: refetchDrive, isError, error } = useQuery
     }
     return [];
   },
-  staleTime: 1000 * 60, // 1 minute - check for new files when stale
+  enabled: false, // Don't auto-fetch on mount - only when user clicks Scan button
+  staleTime: 1000 * 60, // 1 minute
   gcTime: 1000 * 60 * 10, // 10 minutes in cache
   refetchOnWindowFocus: false,
-  refetchOnMount: false, // ✅ Only refetch if data is stale (older than 1 minute)
+  refetchOnMount: false,
   refetchOnReconnect: false,
   select: (data) => data || [], // Ensure always returns array
   placeholderData: [], // Show empty array while loading
 });
 
-// Watch for data changes from query
+// Watch for data changes from query (only after manual scan)
 watch(driveFilesData, async (files) => {
   if (files) {
     if (files.length > 0) {
@@ -181,14 +182,6 @@ watch(driveFilesData, async (files) => {
       titleMessage.value = "Files found: " + files.length;
       filesInDrive.value = files;
       console.log("Files found:", files);
-      
-      
-      // Auto-process files on initial load (only once)
-      if (!hasAutoProcessed.value && !manualScan.value) {
-        hasAutoProcessed.value = true;
-        console.log("Auto-processing files on page load...");
-        await ProcessDocs();
-      }
     } else {
       ocrValue.value = 0;
       scanLength.value = 0;
@@ -197,7 +190,7 @@ watch(driveFilesData, async (files) => {
     }
     manualScan.value = false; // Reset flag after processing
   }
-}, { immediate: true }); // Process data immediately when available
+}); // Removed immediate: true and auto-processing logic
 
 // Watch for errors
 watch(isError, (hasError) => {
@@ -774,8 +767,7 @@ const getIconColor = (msg) => {
   text-transform: none !important;
   font-weight: 600 !important;
   letter-spacing: 0 !important;
-  border: 1px solid #6366F1 !important;
-  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2) !important;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
   padding: 10px 24px !important;
   height: auto !important;
   min-height: 40px !important;
@@ -783,14 +775,16 @@ const getIconColor = (msg) => {
 }
 
 .process-btn:not(:disabled):hover {
-  border-color: #4F46E5 !important;
-  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3) !important;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4) !important;
   cursor: pointer !important;
+  transform: translateY(-1px);
 }
 
 .process-btn:disabled {
-  opacity: 0.6 !important;
+  opacity: 0.4 !important;
   cursor: not-allowed !important;
+  background: #475569 !important;
+  color: #94A3B8 !important;
 }
 
 /* Responsive Design */

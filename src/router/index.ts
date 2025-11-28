@@ -18,7 +18,7 @@ const router = createRouter({
 const publicRoutes = ['/login', '/signup', '/forgot-password', '/reset-password']
 
 // Navigation guard for authentication
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to: any, from: any, next: any) => {
   const isPublicRoute = publicRoutes.includes(to.path)
   
   // Check for demo auth or Supabase session
@@ -54,7 +54,7 @@ router.beforeEach(async (to, from, next) => {
 })
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
-router.onError((err, to) => {
+router.onError((err: any, to: any) => {
   if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
     if (!localStorage.getItem('vuetify:dynamic-reload')) {
       console.log('Reloading page to fix dynamic import error')
