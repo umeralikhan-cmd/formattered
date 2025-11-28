@@ -5,11 +5,11 @@
  */
 
 // Styles
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css';
+import 'vuetify/styles';
 
 // Composables
-import { createVuetify } from 'vuetify'
+import { createVuetify } from 'vuetify';
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
@@ -69,7 +69,8 @@ export default createVuetify({
       style: 'font-family: Inter, sans-serif !important;',
     },
     VCardTitle: {
-      style: 'font-family: Poppins, sans-serif !important; font-weight: 700 !important; font-size: 1.375rem !important;',
+      style:
+        'font-family: Poppins, sans-serif !important; font-weight: 700 !important; font-size: 1.375rem !important;',
     },
     VCardText: {
       style: 'font-family: Inter, sans-serif !important; font-size: 1rem !important;',
@@ -119,4 +120,4 @@ export default createVuetify({
       style: 'font-family: Inter, sans-serif !important;',
     },
   },
-})
+});

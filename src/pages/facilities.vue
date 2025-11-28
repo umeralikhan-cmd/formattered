@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent } from 'vue';
 
-const Facilities = defineAsyncComponent(() => import("@/components/Facilities.vue"));
+const Facilities = defineAsyncComponent(() => import('@/components/Facilities.vue'));
 
 export default {
   components: {
@@ -41,12 +41,12 @@ export default {
 }
 
 .loading-state p {
-  color: #6B7280;
+  color: #6b7280;
   font-size: 0.875rem;
   margin: 0;
 }
 
 .v-theme--dark .loading-state p {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 </style>

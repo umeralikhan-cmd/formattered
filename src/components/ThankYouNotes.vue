@@ -1,10 +1,8 @@
 <template>
-<v-card style="height: 80%;">
+  <v-card style="height: 80%">
     <v-card-title class="d-flex align-center justify-space-between">
       <span>Thank You Note</span>
-      <v-btn color="primary" :loading="loading" @click="getThankYouNote">
-        Get Thank You Note
-      </v-btn>
+      <v-btn color="primary" :loading="loading" @click="getThankYouNote"> Get Thank You Note </v-btn>
     </v-card-title>
 
     <v-card-text>
@@ -28,21 +26,19 @@
           />
         </div>
         <p v-else class="text-body-2 text-grey text-center py-4">
-          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
-          No document to preview. Click "Get Thank You Note" to generate and
-          preview.
+          <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
+          No document to preview. Click "Get Thank You Note" to generate and preview.
         </p>
       </div>
     </v-card-text>
-
   </v-card>
 </template>
 
 <script>
-import api from "@/plugins/axios";
+import api from '@/plugins/axios';
 
 export default {
-  name: "ThankYouNotes",
+  name: 'ThankYouNotes',
   props: {
     user: { type: Object, required: true },
     // documentId prop is no longer used for preview; we only show the generated file URL
@@ -50,7 +46,7 @@ export default {
   },
   data() {
     return {
-      message: "",
+      message: '',
       loading: false,
       resultFileUrl: null, // URL returned by backend for the uploaded thank-you page
     };
@@ -90,12 +86,12 @@ export default {
           document_type: this.user.document_type,
           id: this.user.id, // Extracted row id to update thankyou_id/text
         };
-        const res = await api.post("/get-thank-you-note", payload);
+        const res = await api.post('/get-thank-you-note', payload);
         const data = res?.data || {};
         if (data.note) this.message = data.note;
         if (data.file_url) this.resultFileUrl = data.file_url;
       } catch (e) {
-        console.error("Failed to get thank you note:", e);
+        console.error('Failed to get thank you note:', e);
       } finally {
         this.loading = false;
       }

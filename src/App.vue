@@ -5,23 +5,26 @@
 </template>
 
 <script lang="ts" setup>
-import { watch, onMounted } from 'vue'
-import { useTheme } from 'vuetify'
-import { useAppStore } from '@/stores/app'
+import { watch, onMounted } from 'vue';
+import { useTheme } from 'vuetify';
+import { useAppStore } from '@/stores/app';
 
-const theme = useTheme()
-const appStore = useAppStore()
+const theme = useTheme();
+const appStore = useAppStore();
 
 // Initialize theme
 onMounted(() => {
-  appStore.initTheme()
-  theme.global.name.value = appStore.theme
-})
+  appStore.initTheme();
+  theme.global.name.value = appStore.theme;
+});
 
 // Watch for theme changes using the new API
-watch(() => appStore.theme, (newTheme) => {
-  theme.global.name.value = newTheme
-})
+watch(
+  () => appStore.theme,
+  (newTheme) => {
+    theme.global.name.value = newTheme;
+  }
+);
 </script>
 
 <style>
@@ -29,7 +32,9 @@ watch(() => appStore.theme, (newTheme) => {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
 
 * {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* Global font override - Force everywhere */
@@ -42,7 +47,12 @@ input,
 textarea,
 select,
 button {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
 }
 
 .v-application {
@@ -53,7 +63,12 @@ button {
 }
 
 /* Headings - Force Poppins */
-h1, h2, h3, h4, h5, h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 .v-card-title,
 .dialog-title,
 .page-title,
@@ -61,7 +76,12 @@ h1, h2, h3, h4, h5, h6,
 .table-title,
 .modal-title,
 .dialog-header-title {
-  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family:
+    'Poppins',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif !important;
   font-weight: 700 !important;
   letter-spacing: -0.01em !important;
 }
@@ -211,7 +231,9 @@ h6 {
 }
 
 /* Page content */
-p, span, div {
+p,
+span,
+div {
   font-family: 'Inter', sans-serif !important;
   font-size: 1rem !important;
 }
@@ -261,11 +283,18 @@ p, span, div {
 /* Vue Toastification Custom Styling - App Color Scheme */
 .Vue-Toastification__toast {
   border-radius: 12px !important;
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2), 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  box-shadow:
+    0 10px 30px rgba(99, 102, 241, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.1) !important;
   padding: 16px 20px !important;
   min-width: 320px !important;
   max-width: 500px !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !important;
   font-weight: 500 !important;
   font-size: 0.9375rem !important;
   backdrop-filter: blur(10px);
@@ -273,27 +302,35 @@ p, span, div {
 }
 
 .Vue-Toastification__toast--success {
-  background: linear-gradient(135deg, #6366F1, #4F46E5) !important;
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
   color: white !important;
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3), 0 4px 12px rgba(99, 102, 241, 0.15) !important;
+  box-shadow:
+    0 10px 30px rgba(99, 102, 241, 0.3),
+    0 4px 12px rgba(99, 102, 241, 0.15) !important;
 }
 
 .Vue-Toastification__toast--error {
-  background: linear-gradient(135deg, #EF4444, #DC2626) !important;
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
   color: white !important;
-  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3), 0 4px 12px rgba(239, 68, 68, 0.15) !important;
+  box-shadow:
+    0 10px 30px rgba(239, 68, 68, 0.3),
+    0 4px 12px rgba(239, 68, 68, 0.15) !important;
 }
 
 .Vue-Toastification__toast--warning {
-  background: linear-gradient(135deg, #F59E0B, #D97706) !important;
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
   color: white !important;
-  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3), 0 4px 12px rgba(245, 158, 11, 0.15) !important;
+  box-shadow:
+    0 10px 30px rgba(245, 158, 11, 0.3),
+    0 4px 12px rgba(245, 158, 11, 0.15) !important;
 }
 
 .Vue-Toastification__toast--info {
-  background: linear-gradient(135deg, #818CF8, #6366F1) !important;
+  background: linear-gradient(135deg, #818cf8, #6366f1) !important;
   color: white !important;
-  box-shadow: 0 10px 30px rgba(129, 140, 248, 0.3), 0 4px 12px rgba(129, 140, 248, 0.15) !important;
+  box-shadow:
+    0 10px 30px rgba(129, 140, 248, 0.3),
+    0 4px 12px rgba(129, 140, 248, 0.15) !important;
 }
 
 .Vue-Toastification__toast-body {
@@ -327,24 +364,34 @@ p, span, div {
 
 /* Dark theme adjustments */
 .v-theme--dark .Vue-Toastification__toast {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.3) !important;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .v-theme--dark .Vue-Toastification__toast--success {
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4), 0 4px 12px rgba(99, 102, 241, 0.2) !important;
+  box-shadow:
+    0 10px 30px rgba(99, 102, 241, 0.4),
+    0 4px 12px rgba(99, 102, 241, 0.2) !important;
 }
 
 .v-theme--dark .Vue-Toastification__toast--error {
-  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4), 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+  box-shadow:
+    0 10px 30px rgba(239, 68, 68, 0.4),
+    0 4px 12px rgba(239, 68, 68, 0.2) !important;
 }
 
 .v-theme--dark .Vue-Toastification__toast--warning {
-  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4), 0 4px 12px rgba(245, 158, 11, 0.2) !important;
+  box-shadow:
+    0 10px 30px rgba(245, 158, 11, 0.4),
+    0 4px 12px rgba(245, 158, 11, 0.2) !important;
 }
 
 .v-theme--dark .Vue-Toastification__toast--info {
-  box-shadow: 0 10px 30px rgba(129, 140, 248, 0.4), 0 4px 12px rgba(129, 140, 248, 0.2) !important;
+  box-shadow:
+    0 10px 30px rgba(129, 140, 248, 0.4),
+    0 4px 12px rgba(129, 140, 248, 0.2) !important;
 }
 
 /* Animation */

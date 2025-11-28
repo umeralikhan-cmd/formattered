@@ -3,23 +3,18 @@
     <!-- Dialog Header -->
     <div class="dialog-header">
       <div class="header-content">
-        <v-icon class="header-icon" size="28">mdi-account-details</v-icon>
+        <v-icon class="header-icon" size="28"> mdi-account-details </v-icon>
         <div>
           <h2 class="dialog-title">Applicant Details</h2>
           <p class="dialog-subtitle">View and edit applicant information</p>
         </div>
       </div>
-      <v-btn
-        icon
-        variant="text"
-        @click="closeDialog"
-        class="close-btn"
-      >
+      <v-btn icon variant="text" class="close-btn" @click="closeDialog">
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </div>
 
-    <v-divider></v-divider>
+    <v-divider />
 
     <!-- Dialog Content -->
     <v-card-text class="dialog-content">
@@ -28,50 +23,50 @@
         <v-col cols="12" md="4">
           <div class="form-section">
             <h3 class="section-title">
-              <v-icon size="20" color="primary">mdi-account-edit</v-icon>
+              <v-icon size="20" color="primary"> mdi-account-edit </v-icon>
               Personal Information
             </h3>
-            
+
             <div class="form-fields">
               <v-text-field
-                label="First Name"
                 v-model="selectedApplicant.first_name"
+                label="First Name"
                 variant="outlined"
                 density="compact"
                 hide-details="auto"
                 class="mb-3"
-              ></v-text-field>
+              />
 
               <v-text-field
-                label="Last Name"
                 v-model="selectedApplicant.last_name"
+                label="Last Name"
                 variant="outlined"
                 density="compact"
                 hide-details="auto"
                 class="mb-3"
-              ></v-text-field>
+              />
 
               <v-text-field
-                label="Middle Name"
                 v-model="selectedApplicant.middle_name"
+                label="Middle Name"
                 variant="outlined"
                 density="compact"
                 hide-details="auto"
                 class="mb-3"
-              ></v-text-field>
+              />
 
               <v-text-field
-                label="Inmate Number"
                 v-model="selectedApplicant.inmate_number"
+                label="Inmate Number"
                 variant="outlined"
                 density="compact"
                 hide-details="auto"
                 class="mb-3"
-              ></v-text-field>
+              />
 
               <v-autocomplete
-                label="Facility Name"
                 v-model="selectedApplicant.facility_id"
+                label="Facility Name"
                 :items="facilityOptions"
                 item-value="facility_id"
                 item-title="facility_name"
@@ -82,13 +77,13 @@
                 class="mb-3"
                 @update:model-value="updateMailingAddress"
               >
-                <template v-slot:selection="{ item }">
+                <template #selection="{ item }">
                   <span v-if="item">
                     {{ item.raw.facility_name }}
                   </span>
                 </template>
 
-                <template v-slot:item="{ item, props }">
+                <template #item="{ item, props }">
                   <v-list-item v-bind="props">
                     <v-list-item-title>{{ item.raw.facility_name }}</v-list-item-title>
                     <v-list-item-subtitle>{{ item.raw.facility_address }}</v-list-item-subtitle>
@@ -97,22 +92,22 @@
               </v-autocomplete>
 
               <v-text-field
-                label="Mailing Address"
                 v-model="selectedApplicant.mailing_address"
+                label="Mailing Address"
                 variant="outlined"
                 density="compact"
                 hide-details="auto"
                 class="mb-4"
-              ></v-text-field>
+              />
 
               <v-btn
-                @click="saveChanges"
                 color="primary"
                 variant="flat"
                 block
                 size="large"
                 prepend-icon="mdi-content-save"
                 class="save-btn"
+                @click="saveChanges"
               >
                 Save Changes
               </v-btn>
@@ -124,7 +119,7 @@
         <v-col cols="12" md="8">
           <div class="documents-section">
             <h3 class="section-title">
-              <v-icon size="20" color="primary">mdi-file-document-multiple</v-icon>
+              <v-icon size="20" color="primary"> mdi-file-document-multiple </v-icon>
               Documents
             </h3>
 
@@ -133,7 +128,7 @@
                 <div class="document-header">
                   <div class="document-info">
                     <div class="document-name">
-                      <v-icon size="18" color="primary">mdi-file-document</v-icon>
+                      <v-icon size="18" color="primary"> mdi-file-document </v-icon>
                       {{ item.document.document_name }}
                     </div>
                     <div class="document-meta">
@@ -151,22 +146,10 @@
                     </div>
                   </div>
                   <div class="document-actions">
-                    <v-btn
-                      icon
-                      size="small"
-                      variant="text"
-                      @click="toggleIframe(index)"
-                      color="primary"
-                    >
+                    <v-btn icon size="small" variant="text" color="primary" @click="toggleIframe(index)">
                       <v-icon>{{ expandedIndex === index ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
                     </v-btn>
-                    <v-btn
-                      icon
-                      size="small"
-                      variant="text"
-                      @click="deleteDocuentDialog(item)"
-                      color="error"
-                    >
+                    <v-btn icon size="small" variant="text" color="error" @click="deleteDocuentDialog(item)">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </div>
@@ -176,11 +159,11 @@
                   <div v-if="expandedIndex === index" class="document-preview">
                     <v-tabs v-model="tab" color="primary" density="compact">
                       <v-tab value="pdf">
-                        <v-icon start size="18">mdi-file-pdf-box</v-icon>
+                        <v-icon start size="18"> mdi-file-pdf-box </v-icon>
                         Document
                       </v-tab>
                       <v-tab value="image">
-                        <v-icon start size="18">mdi-image</v-icon>
+                        <v-icon start size="18"> mdi-image </v-icon>
                         Bubble Sheet
                       </v-tab>
                     </v-tabs>
@@ -194,7 +177,7 @@
                           frameborder="0"
                           allowfullscreen
                           class="document-iframe"
-                        ></iframe>
+                        />
                       </v-tabs-window-item>
 
                       <v-tabs-window-item value="image">
@@ -206,10 +189,10 @@
                             frameborder="0"
                             allowfullscreen
                             class="document-iframe"
-                          ></iframe>
+                          />
                         </div>
                         <div v-else class="no-image">
-                          <v-icon size="48" color="grey">mdi-image-off</v-icon>
+                          <v-icon size="48" color="grey"> mdi-image-off </v-icon>
                           <p>No bubble sheet available</p>
                         </div>
                       </v-tabs-window-item>
@@ -220,7 +203,7 @@
             </div>
 
             <div v-else class="no-documents">
-              <v-icon size="64" color="grey-lighten-1">mdi-file-document-off</v-icon>
+              <v-icon size="64" color="grey-lighten-1"> mdi-file-document-off </v-icon>
               <p class="no-documents-text">No documents available</p>
             </div>
           </div>
@@ -234,7 +217,7 @@
     <v-card class="modern-dialog">
       <div class="dialog-header">
         <div class="header-content">
-          <v-icon class="header-icon" size="24" color="error">mdi-delete-alert</v-icon>
+          <v-icon class="header-icon" size="24" color="error"> mdi-delete-alert </v-icon>
           <div>
             <h2 class="dialog-title">Delete Document</h2>
             <p class="dialog-subtitle">This action cannot be undone</p>
@@ -242,55 +225,44 @@
         </div>
       </div>
 
-      <v-divider></v-divider>
+      <v-divider />
 
-      <v-card-text class="dialog-content">
-        Are you sure you want to delete this document?
-      </v-card-text>
+      <v-card-text class="dialog-content"> Are you sure you want to delete this document? </v-card-text>
 
-      <v-divider></v-divider>
+      <v-divider />
 
       <v-card-actions class="dialog-actions">
-        <v-spacer></v-spacer>
-        <v-btn
-          variant="text"
-          @click="deleteDialog = false"
-          class="cancel-btn"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          color="error"
-          variant="flat"
-          @click="deleteDocumentFunction"
-          class="confirm-btn"
-        >
-          Delete
-        </v-btn>
+        <v-spacer />
+        <v-btn variant="text" class="cancel-btn" @click="deleteDialog = false"> Cancel </v-btn>
+        <v-btn color="error" variant="flat" class="confirm-btn" @click="deleteDocumentFunction"> Delete </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import api from "@/plugins/axios";
+import api from '@/plugins/axios';
 
 export default {
-  name: "ApplicantCard",
+  name: 'ApplicantCard',
+  props: {
+    selectedApplicant: {
+      type: Object,
+    },
+  },
   data() {
     return {
       items: [],
       expandedIndex: null,
-      tab: "pdf",
+      tab: 'pdf',
       selectedDocument: null,
       deleteDialog: false,
       facilityOptions: [],
     };
   },
-  props: {
-    selectedApplicant: {
-      type: Object,
-    },
+  mounted() {
+    this.getApplicants();
+    this.getFacilities();
   },
   methods: {
     updateMailingAddress() {
@@ -300,12 +272,12 @@ export default {
       if (selectedFacility) {
         this.selectedApplicant.mailing_address = selectedFacility.facility_address;
       } else {
-        this.selectedApplicant.mailing_address = "";
+        this.selectedApplicant.mailing_address = '';
       }
     },
     async getFacilities() {
       try {
-        const res = await api.get("/get-facilities");
+        const res = await api.get('/get-facilities');
         this.facilityOptions = res.data.map((facility) => ({
           facility_id: facility.facility_id,
           facility_name: facility.facility_name,
@@ -313,11 +285,11 @@ export default {
         }));
         this.updateMailingAddress();
       } catch (err) {
-        console.error("Error fetching facilities:", err);
+        console.error('Error fetching facilities:', err);
       }
     },
     closeDialog() {
-      this.$emit("closeDialog");
+      this.$emit('closeDialog');
     },
     deleteDocuentDialog(item) {
       this.selectedDocument = item;
@@ -325,7 +297,7 @@ export default {
     },
     async deleteDocumentFunction() {
       try {
-        const res = await api.post("/delete-document", {
+        const res = await api.post('/delete-document', {
           document_id: this.selectedDocument.document.document_id,
           image_id: this.selectedDocument.image.image_id,
         });
@@ -339,7 +311,7 @@ export default {
     },
     async getApplicants() {
       try {
-        const res = await api.get("/get-applicant-details", {
+        const res = await api.get('/get-applicant-details', {
           params: {
             first_name: this.selectedApplicant.first_name,
             last_name: this.selectedApplicant.last_name,
@@ -353,7 +325,7 @@ export default {
     },
     async saveChanges() {
       try {
-        const res = await api.post("/update-applicant", this.selectedApplicant);
+        const res = await api.post('/update-applicant', this.selectedApplicant);
         if (res.status === 200) {
           this.getApplicants();
         }
@@ -364,10 +336,6 @@ export default {
     toggleIframe(index) {
       this.expandedIndex = this.expandedIndex === index ? null : index;
     },
-  },
-  mounted() {
-    this.getApplicants();
-    this.getFacilities();
   },
 };
 </script>
@@ -385,7 +353,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 24px 28px;
-  background: linear-gradient(135deg, #3B82F6 0%, #6366F1 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
   color: white;
 }
 
@@ -421,25 +389,25 @@ export default {
 /* Dialog Content */
 .dialog-content {
   padding: 28px !important;
-  background: #F8FAFC;
+  background: #f8fafc;
 }
 
 .v-theme--dark .dialog-content {
-  background: #0F172A;
+  background: #0f172a;
 }
 
 /* Form Section */
 .form-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
   padding: 24px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   height: 100%;
 }
 
 .v-theme--dark .form-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -452,11 +420,11 @@ export default {
   color: #111827;
   margin: 0 0 20px 0;
   padding-bottom: 12px;
-  border-bottom: 2px solid #E2E8F0;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .v-theme--dark .section-title {
-  color: #F9FAFB;
+  color: #f9fafb;
   border-bottom-color: #334155;
 }
 
@@ -482,16 +450,16 @@ export default {
 
 /* Documents Section */
 .documents-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
   padding: 24px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   height: 100%;
 }
 
 .v-theme--dark .documents-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -503,20 +471,20 @@ export default {
 
 /* Document Card */
 .document-card {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 16px;
   transition: all 0.2s ease;
 }
 
 .document-card:hover {
-  border-color: #C7D2FE;
+  border-color: #c7d2fe;
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
 }
 
 .v-theme--dark .document-card {
-  background: #0F172A;
+  background: #0f172a;
   border-color: #334155;
 }
 
@@ -542,7 +510,7 @@ export default {
 }
 
 .v-theme--dark .document-name {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .document-meta {
@@ -556,11 +524,11 @@ export default {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #6B7280;
+  color: #6b7280;
 }
 
 .v-theme--dark .meta-item {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .document-actions {
@@ -571,7 +539,7 @@ export default {
 /* Document Preview */
 .document-preview {
   margin-top: 16px;
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid #e2e8f0;
   padding-top: 16px;
 }
 
@@ -583,12 +551,12 @@ export default {
   margin-top: 8px;
   border-radius: 8px;
   overflow: hidden;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .preview-window {
-  background: #0F172A;
+  background: #0f172a;
   border-color: #334155;
 }
 
@@ -610,12 +578,12 @@ export default {
 .no-documents-text {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #9CA3AF;
+  color: #9ca3af;
   margin: 0;
 }
 
 .v-theme--dark .no-documents-text {
-  color: #6B7280;
+  color: #6b7280;
 }
 
 .no-image {
@@ -625,7 +593,7 @@ export default {
   justify-content: center;
   padding: 40px;
   gap: 12px;
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Modern Delete Dialog */
@@ -636,11 +604,11 @@ export default {
 
 .dialog-actions {
   padding: 20px 24px !important;
-  background: #FAFBFC;
+  background: #fafbfc;
 }
 
 .v-theme--dark .dialog-actions {
-  background: #151E2E;
+  background: #151e2e;
 }
 
 .cancel-btn,

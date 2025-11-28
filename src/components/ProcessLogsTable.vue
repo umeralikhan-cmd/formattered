@@ -7,35 +7,35 @@
       :items-per-page="10"
       :footer-props="{ 'items-per-page-options': [10, 25, 50, 100] }"
     >
-    <template v-slot:item.parent_id="{ item }">
+      <template #item.parent_id="{ item }">
         {{ item.parent_id || 'N/A' }}
       </template>
       <!-- First Name -->
-      <template v-slot:item.first_name="{ item }">
+      <template #item.first_name="{ item }">
         {{ item.maverick_info?.Name_first || 'N/A' }}
       </template>
 
       <!-- Last Name -->
-      <template v-slot:item.last_name="{ item }">
+      <template #item.last_name="{ item }">
         {{ item.maverick_info?.Name_last || 'N/A' }}
       </template>
 
       <!-- Facility Name -->
-      <template v-slot:item.facility_name="{ item }">
+      <template #item.facility_name="{ item }">
         <div>
           {{ item.maverick_info?.['Last Known Facility Name'] || 'N/A' }}
-          <span v-if="item.maverick_info?.facility_name_source" style="font-size:0.75em; margin-left:6px;">
-        <sub>{{ item.maverick_info.facility_name_source }}</sub>
+          <span v-if="item.maverick_info?.facility_name_source" style="font-size: 0.75em; margin-left: 6px">
+            <sub>{{ item.maverick_info.facility_name_source }}</sub>
           </span>
         </div>
       </template>
       <!-- Payer -->
-      <template v-slot:item.payer="{ item }">
-          {{ item.maverick_info?.payer || 'N/A' }}
+      <template #item.payer="{ item }">
+        {{ item.maverick_info?.payer || 'N/A' }}
       </template>
 
       <!-- Logs -->
-      <template v-slot:item.logs="{ item }">
+      <template #item.logs="{ item }">
         <div class="logs-chips-wrapper">
           <template v-for="(entries, key) in item.logs" :key="key">
             <v-menu location="bottom" :close-on-content-click="false">
@@ -48,12 +48,17 @@
                   @click="showData(entries)"
                 >
                   <v-progress-circular
-                    v-if="regenerateLoading[`${item.parent_id}_${key}`] || (key === 'exam' && (regenerateLoading[`${item.parent_id}_certificate`] || regenerateLoading[`${item.parent_id}_report`]))"
+                    v-if="
+                      regenerateLoading[`${item.parent_id}_${key}`] ||
+                      (key === 'exam' &&
+                        (regenerateLoading[`${item.parent_id}_certificate`] ||
+                          regenerateLoading[`${item.parent_id}_report`]))
+                    "
                     indeterminate
                     size="14"
                     width="2"
                     class="mr-1"
-                  ></v-progress-circular>
+                  />
                   <span class="chip-text">{{ key }}</span>
                 </v-chip>
               </template>
@@ -61,26 +66,22 @@
               <v-card class="log-detail-card" max-width="500">
                 <div class="log-detail-header">
                   <div class="header-content">
-                    <v-icon size="20" :color="getStatusColor(entries[0]?.status)">mdi-clipboard-text-outline</v-icon>
+                    <v-icon size="20" :color="getStatusColor(entries[0]?.status)"> mdi-clipboard-text-outline </v-icon>
                     <h3 class="log-detail-title">{{ key }} Details</h3>
                   </div>
                 </div>
 
-                <v-divider></v-divider>
+                <v-divider />
 
                 <v-card-text class="log-detail-content">
                   <div v-if="entries.length === 0" class="no-logs-message">
-                    <v-icon size="32" color="grey">mdi-information-outline</v-icon>
+                    <v-icon size="32" color="grey"> mdi-information-outline </v-icon>
                     <p>No logs found</p>
                   </div>
                   <div v-else class="logs-list">
-                    <div
-                      v-for="(log, i) in entries"
-                      :key="i"
-                      class="log-entry"
-                    >
+                    <div v-for="(log, i) in entries" :key="i" class="log-entry">
                       <div class="log-timestamp">
-                        <v-icon size="14">mdi-clock-outline</v-icon>
+                        <v-icon size="14"> mdi-clock-outline </v-icon>
                         {{ formatDate(log.date_created) }}
                       </div>
                       <div class="log-details">
@@ -107,12 +108,12 @@
                     <v-btn
                       variant="flat"
                       color="primary"
-                      @click="regenerateDocument(item, key)"
                       :loading="regenerateLoading[`${item.parent_id}_${key}`]"
                       :disabled="regenerateLoading[`${item.parent_id}_${key}`]"
                       block
                       prepend-icon="mdi-refresh"
                       class="regenerate-btn"
+                      @click="regenerateDocument(item, key)"
                     >
                       Regenerate {{ key }}
                     </v-btn>
@@ -124,12 +125,12 @@
                       v-if="!item.logs.certificate"
                       variant="flat"
                       color="success"
-                      @click="regenerateDocument(item, 'certificate')"
                       :loading="regenerateLoading[`${item.parent_id}_certificate`]"
                       :disabled="regenerateLoading[`${item.parent_id}_certificate`]"
                       block
                       prepend-icon="mdi-certificate"
                       class="generate-btn mb-2"
+                      @click="regenerateDocument(item, 'certificate')"
                     >
                       Generate Certificate
                     </v-btn>
@@ -137,24 +138,24 @@
                       v-if="!item.logs.report"
                       variant="flat"
                       color="info"
-                      @click="regenerateDocument(item, 'report')"
                       :loading="regenerateLoading[`${item.parent_id}_report`]"
                       :disabled="regenerateLoading[`${item.parent_id}_report`]"
                       block
                       prepend-icon="mdi-file-document"
                       class="generate-btn mb-2"
+                      @click="regenerateDocument(item, 'report')"
                     >
                       Generate Report
                     </v-btn>
                     <v-btn
                       variant="flat"
                       color="warning"
-                      @click="regenerateDocument(item, 'queue_logs')"
                       :loading="regenerateLoading[`${item.parent_id}_queue_logs`]"
                       :disabled="regenerateLoading[`${item.parent_id}_queue_logs`]"
                       block
                       prepend-icon="mdi-clipboard-text"
                       class="generate-btn"
+                      @click="regenerateDocument(item, 'queue_logs')"
                     >
                       Generate Queue Log
                     </v-btn>
@@ -167,16 +168,16 @@
       </template>
 
       <!-- View Button -->
-      <template v-slot:item.view="{ item }">
+      <template #item.view="{ item }">
         <v-btn
           icon
           size="small"
           variant="text"
           :loading="viewLoading[item.parent_id]"
-          @click="viewDocument(item)"
           class="view-btn"
+          @click="viewDocument(item)"
         >
-          <v-icon color="primary">mdi-eye-outline</v-icon>
+          <v-icon color="primary"> mdi-eye-outline </v-icon>
         </v-btn>
       </template>
     </v-data-table>
@@ -186,84 +187,73 @@
       <v-card class="modern-dialog">
         <div class="dialog-header">
           <div class="header-content">
-            <v-icon class="header-icon" size="24">mdi-file-document-outline</v-icon>
+            <v-icon class="header-icon" size="24"> mdi-file-document-outline </v-icon>
             <div>
               <h2 class="dialog-title">View Document</h2>
               <p class="dialog-subtitle">Preview document and image files</p>
             </div>
           </div>
-          <v-btn
-            icon
-            variant="text"
-            @click="viewDialog = false"
-            class="close-btn"
-          >
+          <v-btn icon variant="text" class="close-btn" @click="viewDialog = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
 
-        <v-divider></v-divider>
+        <v-divider />
 
-        <v-card-text class="dialog-content" v-if="documentData">
+        <v-card-text v-if="documentData" class="dialog-content">
           <v-row>
             <!-- Document URL -->
-            <v-col cols="12" md="6" v-if="documentData.document_url">
+            <v-col v-if="documentData.document_url" cols="12" md="6">
               <div class="preview-section">
                 <div class="section-header">
-                  <v-icon size="20" color="primary">mdi-file-pdf-box</v-icon>
+                  <v-icon size="20" color="primary"> mdi-file-pdf-box </v-icon>
                   <h3 class="section-title">Document</h3>
                 </div>
                 <div class="iframe-wrapper">
-              <iframe
-                :src="documentData.document_url"
-                frameborder="0"
-              ></iframe>
+                  <iframe :src="documentData.document_url" frameborder="0" />
                 </div>
                 <div class="section-actions">
-                <v-btn
+                  <v-btn
                     variant="outlined"
-                  :href="documentData.document_url"
-                  target="_blank"
-                  prepend-icon="mdi-open-in-new"
+                    :href="documentData.document_url"
+                    target="_blank"
+                    prepend-icon="mdi-open-in-new"
                     class="action-btn"
-                >
-                  Open in New Tab
-                </v-btn>
+                  >
+                    Open in New Tab
+                  </v-btn>
                 </div>
               </div>
             </v-col>
 
             <!-- Image URL -->
-            <v-col cols="12" md="6" v-if="documentData.image_url">
+            <v-col v-if="documentData.image_url" cols="12" md="6">
               <div class="preview-section">
                 <div class="section-header">
-                  <v-icon size="20" color="primary">mdi-image-outline</v-icon>
+                  <v-icon size="20" color="primary"> mdi-image-outline </v-icon>
                   <h3 class="section-title">Image</h3>
                 </div>
                 <div class="iframe-wrapper">
-              <iframe
-                :src="documentData.image_url"
-                frameborder="0"
-              ></iframe>
+                  <iframe :src="documentData.image_url" frameborder="0" />
                 </div>
                 <div class="section-actions">
-                <v-btn
+                  <v-btn
                     variant="outlined"
-                  :href="documentData.image_url"
-                  target="_blank"
-                  prepend-icon="mdi-open-in-new"
+                    :href="documentData.image_url"
+                    target="_blank"
+                    prepend-icon="mdi-open-in-new"
                     class="action-btn"
-                >
-                  Open in New Tab
-                </v-btn>
+                  >
+                    Open in New Tab
+                  </v-btn>
                 </div>
               </div>
             </v-col>
 
             <!-- Message if no URLs -->
-            <v-col cols="12" v-if="!documentData.document_url && !documentData.image_url">
+            <v-col v-if="!documentData.document_url && !documentData.image_url" cols="12">
               <p class="text-body-2 text-grey text-center py-4">
-                <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
+                <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
                 No document or image URLs available
               </p>
             </v-col>
@@ -277,7 +267,7 @@
 <script>
 import api from '@/plugins/axios';
 export default {
-  name: "ProcessLogsTable",
+  name: 'ProcessLogsTable',
   props: {
     tabName: {
       type: String,
@@ -295,13 +285,13 @@ export default {
   data() {
     return {
       headers: [
-        { title: "Parent ID", key: "parent_id", width: 150 },
-        { title: "First Name", key: "first_name", width: 150 },
-        { title: "Last Name", key: "last_name", width: 150 },
-        { title: "Facility Name", key: "facility_name", width: 250 },
-        { title: "Payer", key: "payer", width: 200 },
-        { title: "Logs", key: "logs", width: 400 },
-        { title: "View", key: "view", width: 100, sortable: false },
+        { title: 'Parent ID', key: 'parent_id', width: 150 },
+        { title: 'First Name', key: 'first_name', width: 150 },
+        { title: 'Last Name', key: 'last_name', width: 150 },
+        { title: 'Facility Name', key: 'facility_name', width: 250 },
+        { title: 'Payer', key: 'payer', width: 200 },
+        { title: 'Logs', key: 'logs', width: 400 },
+        { title: 'View', key: 'view', width: 100, sortable: false },
       ],
       viewLoading: {},
       viewDialog: false,
@@ -312,24 +302,24 @@ export default {
   methods: {
     getStatusColor(status) {
       switch (status?.toLowerCase()) {
-        case "complete":
-          return "success";
-        case "pending":
-          return "warning";
-        case "error":
-        case "failed":
-          return "error";
+        case 'complete':
+          return 'success';
+        case 'pending':
+          return 'warning';
+        case 'error':
+        case 'failed':
+          return 'error';
         default:
-          return "grey";
+          return 'grey';
       }
     },
     formatDate(dateString) {
-      if (!dateString) return "N/A";
+      if (!dateString) return 'N/A';
       const date = new Date(dateString);
       return date.toLocaleString();
     },
     showData(entries) {
-      console.log("Log Entries:", entries);
+      console.log('Log Entries:', entries);
       // Placeholder for any additional logic when a chip is clicked
     },
     async viewDocument(item) {
@@ -337,32 +327,31 @@ export default {
       const documentType = item.document_type;
 
       if (!parentId || !documentType) {
-        console.error("Missing parent_id or document_type");
+        console.error('Missing parent_id or document_type');
         return;
       }
 
       this.viewLoading[parentId] = true;
 
       try {
-
         const result = await api.post('/local-dash', {
           document_parent_id: parentId.toString(),
           document_type: documentType,
           instructions: {
-            action: "get_document"
-          }
+            action: 'get_document',
+          },
         });
 
         this.documentData = {
           is_edovo: result.data.is_edovo,
           document_url: result.data.document_url,
-          image_url: result.data.image_url
+          image_url: result.data.image_url,
         };
-        console.log("View document response:", this.documentData);
+        console.log('View document response:', this.documentData);
         this.viewDialog = true;
       } catch (error) {
-        console.error("Error viewing document:", error);
-        alert("Failed to view document. Please check console for details.");
+        console.error('Error viewing document:', error);
+        alert('Failed to view document. Please check console for details.');
       } finally {
         this.viewLoading[parentId] = false;
       }
@@ -374,7 +363,7 @@ export default {
       const maverickId = item.maverick_info?.id;
 
       if (!parentId || !documentType) {
-        console.error("Missing parent_id or document_type");
+        console.error('Missing parent_id or document_type');
         return;
       }
 
@@ -385,23 +374,23 @@ export default {
       this.regenerateLoading[loadingKey] = true;
 
       try {
-         const response = await api.post('/local-dash', {
+        const response = await api.post('/local-dash', {
           action_type: action,
           parent_id: parentId.toString(),
           document_type: documentType,
           maverick_id: item.maverick_info?.id,
           instructions: {
-            action: "generate_report_document"
-          }
+            action: 'generate_report_document',
+          },
         });
-        console.log("Regenerate document raw response:", response);
+        console.log('Regenerate document raw response:', response);
 
         if (response.data.success) {
           // Emit refresh to reload the logs
           this.$emit('refresh');
         }
       } catch (error) {
-        console.error("Error regenerating document:", error);
+        console.error('Error regenerating document:', error);
       } finally {
         this.regenerateLoading[loadingKey] = false;
       }
@@ -431,37 +420,37 @@ export default {
 }
 
 :deep(.v-data-table .v-data-table__wrapper::-webkit-scrollbar-track) {
-  background: #F3F4F6;
+  background: #f3f4f6;
   border-radius: 4px;
 }
 
 :deep(.v-theme--dark .v-data-table .v-data-table__wrapper::-webkit-scrollbar-track) {
-  background: #1F2937;
+  background: #1f2937;
 }
 
 :deep(.v-data-table .v-data-table__wrapper::-webkit-scrollbar-thumb) {
-  background: #D1D5DB;
+  background: #d1d5db;
   border-radius: 4px;
 }
 
 :deep(.v-theme--dark .v-data-table .v-data-table__wrapper::-webkit-scrollbar-thumb) {
-  background: #4B5563;
+  background: #4b5563;
 }
 
 :deep(.v-data-table .v-data-table__wrapper::-webkit-scrollbar-thumb:hover) {
-  background: #9CA3AF;
+  background: #9ca3af;
 }
 
 :deep(.v-theme--dark .v-data-table .v-data-table__wrapper::-webkit-scrollbar-thumb:hover) {
-  background: #6B7280;
+  background: #6b7280;
 }
 
 /* Table Headers */
 :deep(.v-data-table thead tr th) {
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
-  color: #64748B !important;
-  background: #F9FAFB !important;
+  color: #64748b !important;
+  background: #f9fafb !important;
   text-transform: uppercase !important;
   letter-spacing: 0.03em !important;
   padding: 12px 16px !important;
@@ -470,19 +459,19 @@ export default {
   top: 0 !important;
   z-index: 10 !important;
   line-height: 1.3 !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  border-bottom: 1px solid #e5e7eb !important;
 }
 
 :deep(.v-theme--dark .v-data-table thead tr th) {
-  color: #94A3B8 !important;
-  background: #0F172A !important;
+  color: #94a3b8 !important;
+  background: #0f172a !important;
   border-bottom-color: #334155 !important;
 }
 
 /* Table Cells */
 :deep(.v-data-table tbody tr td) {
-  color: #1E293B !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e5e7eb !important;
   font-size: 0.875rem !important;
   padding: 12px 16px !important;
   vertical-align: top !important;
@@ -492,7 +481,7 @@ export default {
 }
 
 :deep(.v-theme--dark .v-data-table tbody tr td) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
   border-bottom-color: #334155 !important;
 }
 
@@ -536,12 +525,12 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .dialog-header {
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
   border-bottom-color: #334155;
 }
 
@@ -552,7 +541,7 @@ export default {
 }
 
 .header-icon {
-  color: #3B82F6;
+  color: #3b82f6;
   margin-top: 2px;
 }
 
@@ -565,17 +554,17 @@ export default {
 }
 
 .v-theme--dark .dialog-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .dialog-subtitle {
   font-size: 0.875rem;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .dialog-subtitle {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .close-btn {
@@ -587,14 +576,14 @@ export default {
 }
 
 .preview-section {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
 }
 
 .v-theme--dark .preview-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -603,12 +592,12 @@ export default {
   align-items: center;
   gap: 8px;
   padding: 16px 20px;
-  background: #F9FAFB;
-  border-bottom: 1px solid #E2E8F0;
+  background: #f9fafb;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .section-header {
-  background: #0F172A;
+  background: #0f172a;
   border-bottom-color: #334155;
 }
 
@@ -620,17 +609,17 @@ export default {
 }
 
 .v-theme--dark .section-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .iframe-wrapper {
   width: 100%;
   height: 600px;
-  background: #F3F4F6;
+  background: #f3f4f6;
 }
 
 .v-theme--dark .iframe-wrapper {
-  background: #0F172A;
+  background: #0f172a;
 }
 
 .iframe-wrapper iframe {
@@ -641,13 +630,13 @@ export default {
 
 .section-actions {
   padding: 16px 20px;
-  border-top: 1px solid #E2E8F0;
-  background: #FAFBFC;
+  border-top: 1px solid #e2e8f0;
+  background: #fafbfc;
 }
 
 .v-theme--dark .section-actions {
   border-top-color: #334155;
-  background: #151E2E;
+  background: #151e2e;
 }
 
 .action-btn {
@@ -693,12 +682,12 @@ export default {
 
 .log-detail-header {
   padding: 16px 20px;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .log-detail-header {
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
   border-bottom-color: #334155;
 }
 
@@ -717,7 +706,7 @@ export default {
 }
 
 .v-theme--dark .log-detail-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .log-detail-content {
@@ -729,7 +718,7 @@ export default {
 .no-logs-message {
   text-align: center;
   padding: 40px 20px;
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .no-logs-message p {
@@ -744,14 +733,14 @@ export default {
 }
 
 .log-entry {
-  background: #F9FAFB;
-  border: 1px solid #E2E8F0;
+  background: #f9fafb;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 12px 16px;
 }
 
 .v-theme--dark .log-entry {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -760,13 +749,13 @@ export default {
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
-  color: #6B7280;
+  color: #6b7280;
   margin-bottom: 10px;
   font-weight: 500;
 }
 
 .v-theme--dark .log-timestamp {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .log-details {
@@ -794,28 +783,28 @@ export default {
 }
 
 .v-theme--dark .log-label {
-  color: #D1D5DB;
+  color: #d1d5db;
 }
 
 .log-value {
   font-size: 0.8125rem;
-  color: #1E293B;
+  color: #1e293b;
 }
 
 .v-theme--dark .log-value {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .log-message {
   font-size: 0.8125rem;
-  color: #6B7280;
+  color: #6b7280;
   line-height: 1.5;
   margin-top: 4px;
   word-wrap: break-word;
 }
 
 .v-theme--dark .log-message {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .status-chip {
@@ -826,7 +815,7 @@ export default {
 .action-buttons {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   gap: 8px;

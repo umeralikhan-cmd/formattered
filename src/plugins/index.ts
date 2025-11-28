@@ -5,15 +5,15 @@
  */
 
 // Plugins
-import vuetify from './vuetify'
-import pinia from '../stores'
-import router from '../router'
-import { VueQueryPlugin } from '@tanstack/vue-query'
-import Toast from 'vue-toastification'
-import 'vue-toastification/dist/index.css'
+import vuetify from './vuetify';
+import pinia from '../stores';
+import router from '../router';
+import { VueQueryPlugin } from '@tanstack/vue-query';
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 
 // Types
-import type { App } from 'vue'
+import type { App } from 'vue';
 
 // Toast options
 const toastOptions = {
@@ -32,9 +32,9 @@ const toastOptions = {
   transition: 'Vue-Toastification__bounce',
   maxToasts: 5,
   newestOnTop: true,
-}
+};
 
-export function registerPlugins (app: App) {
+export function registerPlugins(app: App) {
   app
     .use(vuetify)
     .use(router)
@@ -50,5 +50,5 @@ export function registerPlugins (app: App) {
           },
         },
       },
-    })
+    });
 }

@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent } from 'vue';
 
-const DevBoard = defineAsyncComponent(() => import("@/components/DevBoard.vue"));
+const DevBoard = defineAsyncComponent(() => import('@/components/DevBoard.vue'));
 
 export default {
   components: {
@@ -53,13 +53,13 @@ export default {
 }
 
 .loading-state p {
-  color: #6B7280;
+  color: #6b7280;
   font-size: 0.875rem;
   font-weight: 500;
   margin: 0;
 }
 
 .v-theme--dark .loading-state p {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 </style>

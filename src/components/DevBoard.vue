@@ -4,34 +4,27 @@
     <div v-if="!isAuthenticated" class="password-screen">
       <div class="password-card">
         <div class="password-header">
-          <v-icon size="48" color="primary">mdi-shield-lock</v-icon>
+          <v-icon size="48" color="primary"> mdi-shield-lock </v-icon>
           <h2 class="password-title">Developer Tools Access</h2>
           <p class="password-subtitle">Authentication required for advanced tools</p>
         </div>
-        
+
         <div class="password-content">
-        <v-text-field
-          v-model="passwordInput"
+          <v-text-field
+            v-model="passwordInput"
             label="Enter Password"
-          type="password"
-          variant="outlined"
+            type="password"
+            variant="outlined"
             density="comfortable"
-          @keyup.enter="checkPassword"
-          :error-messages="passwordError"
+            :error-messages="passwordError"
             prepend-inner-icon="mdi-lock"
             hide-details="auto"
-        ></v-text-field>
-          
-        <v-btn
-          color="primary"
-          block
-          size="large"
-          @click="checkPassword"
-            class="access-btn"
-            prepend-icon="mdi-login"
-        >
-          Enable Access
-        </v-btn>
+            @keyup.enter="checkPassword"
+          />
+
+          <v-btn color="primary" block size="large" class="access-btn" prepend-icon="mdi-login" @click="checkPassword">
+            Enable Access
+          </v-btn>
         </div>
       </div>
     </div>
@@ -39,40 +32,39 @@
     <!-- Main Content (shown after authentication) -->
     <div v-else class="dev-board-content">
       <div class="content-wrapper">
-        
         <!-- Info Message -->
         <div class="dev-info-message">
-          <v-icon class="mr-2">mdi-information-outline</v-icon>
+          <v-icon class="mr-2"> mdi-information-outline </v-icon>
           <div>
             <div class="alert-title">Developer Testing Board</div>
             <div class="alert-text">
-              This interface provides various utilities for document processing and data management.
-              For development/testing purposes only.
+              This interface provides various utilities for document processing and data management. For
+              development/testing purposes only.
             </div>
           </div>
         </div>
         <!-- Basic Utilities Section -->
         <div class="tools-section">
           <div class="section-header">
-            <v-icon class="section-icon" color="primary">mdi-toolbox</v-icon>
+            <v-icon class="section-icon" color="primary"> mdi-toolbox </v-icon>
             <h3 class="section-title">Basic Utilities</h3>
           </div>
           <div class="tools-grid">
             <v-btn
               color="primary"
               :loading="loading"
-              @click="testSignEndpoint"
               class="tool-btn"
               prepend-icon="mdi-account-details"
+              @click="testSignEndpoint"
             >
-             MAV INFO
+              MAV INFO
             </v-btn>
             <v-btn
               color="primary"
               :loading="loading"
-              @click="testFacilityInfoFlow(facility_id)"
               class="tool-btn"
               prepend-icon="mdi-domain"
+              @click="testFacilityInfoFlow(facility_id)"
             >
               Facility Info
             </v-btn>
@@ -82,67 +74,61 @@
         <!-- File Upload Tools Section -->
         <div class="tools-section">
           <div class="section-header">
-            <v-icon class="section-icon" color="success">mdi-file-upload</v-icon>
+            <v-icon class="section-icon" color="success"> mdi-file-upload </v-icon>
             <h3 class="section-title">File Upload Tools</h3>
           </div>
           <div class="tools-grid">
             <v-btn
               color="primary"
               :loading="csvLoading"
-              @click="triggerFileUpload"
               class="tool-btn"
               prepend-icon="mdi-file-delimited"
+              @click="triggerFileUpload"
             >
               Upload CSV
             </v-btn>
             <v-btn
               color="primary"
               :loading="edovoLoading"
-              @click="triggerEdovoFileUpload"
               class="tool-btn"
               prepend-icon="mdi-file-document-outline"
+              @click="triggerEdovoFileUpload"
             >
               Extract Edovo Info
             </v-btn>
-            <input
-              ref="fileInput"
-              type="file"
-              accept=".csv"
-              style="display: none"
-              @change="handleFileUpload"
-            >
+            <input ref="fileInput" type="file" accept=".csv" style="display: none" @change="handleFileUpload" />
             <input
               ref="edovoFileInput"
               type="file"
               accept=".csv"
               style="display: none"
               @change="handleEdovoFileUpload"
-            >
+            />
           </div>
         </div>
 
         <!-- Data Processing Section -->
         <div class="tools-section">
           <div class="section-header">
-            <v-icon class="section-icon" color="warning">mdi-cog-refresh</v-icon>
+            <v-icon class="section-icon" color="warning"> mdi-cog-refresh </v-icon>
             <h3 class="section-title">Data Processing</h3>
           </div>
           <div class="tools-grid">
             <v-btn
               color="warning"
               :loading="matchLoading"
-              @click="findMatchMavericks"
               class="tool-btn"
               prepend-icon="mdi-account-search"
+              @click="findMatchMavericks"
             >
               Find Match Mavericks
             </v-btn>
             <v-btn
               color="success"
               :loading="updateLoading"
-              @click="updateParentIds"
               class="tool-btn"
               prepend-icon="mdi-update"
+              @click="updateParentIds"
             >
               Update Parent IDs
             </v-btn>
@@ -152,52 +138,52 @@
         <!-- Logs Management Section -->
         <div class="tools-section">
           <div class="section-header">
-            <v-icon class="section-icon" color="error">mdi-clipboard-text-multiple</v-icon>
+            <v-icon class="section-icon" color="error"> mdi-clipboard-text-multiple </v-icon>
             <h3 class="section-title">Logs Management</h3>
           </div>
           <div class="tools-grid">
             <v-btn
               color="error"
               :loading="logsLoading"
-              @click="makeMissingLogs"
               class="tool-btn"
               prepend-icon="mdi-clipboard-text"
+              @click="makeMissingLogs"
             >
               Make Logs
             </v-btn>
             <v-btn
               color="purple"
               :loading="sendLogsLoading"
-              @click="makeSendLogs"
               class="tool-btn"
               prepend-icon="mdi-send"
+              @click="makeSendLogs"
             >
               Make Send Logs
             </v-btn>
             <v-btn
               color="indigo"
               :loading="queueLogsLoading"
-              @click="makeQueueLogs"
               class="tool-btn"
               prepend-icon="mdi-playlist-check"
+              @click="makeQueueLogs"
             >
               Make Queue
             </v-btn>
             <v-btn
               color="cyan"
               :loading="edovoProcessLogsLoading"
-              @click="processEdovoLogs"
               class="tool-btn"
               prepend-icon="mdi-file-document-edit"
+              @click="processEdovoLogs"
             >
               Edovo Process Logs
             </v-btn>
             <v-btn
               color="orange"
               :loading="cleanProcessLogsLoading"
-              @click="cleanProcessLogsData"
               class="tool-btn"
               prepend-icon="mdi-database-refresh"
+              @click="cleanProcessLogsData"
             >
               Clean Process Logs
             </v-btn>
@@ -207,34 +193,34 @@
         <!-- Matching & Cleanup Section -->
         <div class="tools-section">
           <div class="section-header">
-            <v-icon class="section-icon" color="info">mdi-account-group</v-icon>
+            <v-icon class="section-icon" color="info"> mdi-account-group </v-icon>
             <h3 class="section-title">Matching & Cleanup</h3>
           </div>
           <div class="tools-grid">
             <v-btn
               color="info"
               :loading="matchLogsLoading"
-              @click="matchLogsToMavs"
               class="tool-btn"
               prepend-icon="mdi-account-arrow-right"
+              @click="matchLogsToMavs"
             >
               Match Logs to Mavs
             </v-btn>
             <v-btn
               color="teal"
               :loading="matchApplicantsLoading"
-              @click="matchApplicantsNoMaverick"
               class="tool-btn"
               prepend-icon="mdi-account-multiple-check"
+              @click="matchApplicantsNoMaverick"
             >
               Match Applicants
             </v-btn>
             <v-btn
               color="purple"
               :loading="fillEdovoLoading"
-              @click="fillAllEdovo"
               class="tool-btn"
               prepend-icon="mdi-table-edit"
+              @click="fillAllEdovo"
             >
               Fill Edovo
             </v-btn>
@@ -244,7 +230,7 @@
         <!-- Document Processing Section -->
         <div class="tools-section document-section">
           <div class="section-header">
-            <v-icon class="section-icon" color="primary">mdi-file-document-multiple</v-icon>
+            <v-icon class="section-icon" color="primary"> mdi-file-document-multiple </v-icon>
             <h3 class="section-title">Document Processing</h3>
           </div>
           <div class="document-content">
@@ -261,24 +247,24 @@
               prepend-inner-icon="mdi-file-document"
               hide-details="auto"
             >
-              <template v-slot:item="{ item, props }">
+              <template #item="{ item, props }">
                 <v-list-item v-bind="props">
                   <v-list-item-title>{{ item.raw.name }}</v-list-item-title>
-                  <v-list-item-subtitle>{{
-                    item.raw.description
-                  }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{ item.raw.description }}
+                  </v-list-item-subtitle>
                 </v-list-item>
               </template>
             </v-select>
 
             <v-btn
-              @click="startProcess"
               :disabled="!selectedDocumentType || loading"
               :loading="loading"
               color="primary"
               size="x-large"
               class="start-btn"
               prepend-icon="mdi-play-circle"
+              @click="startProcess"
             >
               START PROCESS
             </v-btn>
@@ -287,28 +273,12 @@
 
         <!-- Progress/Status Section -->
         <div v-if="statusMessage || loading" class="status-section">
-            <div
-              v-if="statusMessage"
-              class="status-message text-body-2 py-2"
-              :class="`text-${alertType}`"
-            >
-              {{ statusMessage }}
-              <v-btn
-                icon="mdi-close"
-                size="x-small"
-                variant="text"
-                @click="clearStatus"
-                class="ml-2"
-              />
-            </div>
+          <div v-if="statusMessage" class="status-message text-body-2 py-2" :class="`text-${alertType}`">
+            {{ statusMessage }}
+            <v-btn icon="mdi-close" size="x-small" variant="text" class="ml-2" @click="clearStatus" />
+          </div>
 
-            <v-progress-linear
-              v-if="loading"
-              indeterminate
-              color="primary"
-            height="8"
-            class="status-progress"
-            ></v-progress-linear>
+          <v-progress-linear v-if="loading" indeterminate color="primary" height="8" class="status-progress" />
         </div>
 
         <!-- CSV Match Results Section -->
@@ -316,28 +286,24 @@
           <div class="results-card">
             <div class="results-header">
               <div class="results-header-content">
-                <v-icon class="results-icon">mdi-account-check</v-icon>
+                <v-icon class="results-icon"> mdi-account-check </v-icon>
                 <span class="results-title">Applicant Match Results ({{ csvMatchResults.length }} found)</span>
               </div>
             </div>
             <div class="results-body">
-                <v-data-table
-                  :headers="csvResultHeaders"
-                  :items="csvMatchResults"
-                  :items-per-page="10"
+              <v-data-table
+                :headers="csvResultHeaders"
+                :items="csvMatchResults"
+                :items-per-page="10"
                 class="results-table"
                 density="comfortable"
-                >
-                  <template v-slot:item.match_status="{ item }">
-                    <v-chip
-                      :color="getStatusColor(item.match_status)"
-                    size="small"
-                    class="font-weight-bold"
-                    >
-                      {{ item.match_status }}
-                    </v-chip>
-                  </template>
-                </v-data-table>
+              >
+                <template #item.match_status="{ item }">
+                  <v-chip :color="getStatusColor(item.match_status)" size="small" class="font-weight-bold">
+                    {{ item.match_status }}
+                  </v-chip>
+                </template>
+              </v-data-table>
             </div>
           </div>
         </div>
@@ -347,48 +313,46 @@
           <div class="results-card">
             <div class="results-header">
               <div class="results-header-content">
-                <v-icon class="results-icon">mdi-update</v-icon>
-                <span class="results-title">Parent ID Update Results ({{ updateResults.length }} applications processed)</span>
+                <v-icon class="results-icon"> mdi-update </v-icon>
+                <span class="results-title"
+                  >Parent ID Update Results ({{ updateResults.length }} applications processed)</span
+                >
               </div>
             </div>
             <div class="results-body">
-                <v-data-table
-                  :headers="updateResultHeaders"
-                  :items="updateResults"
-                  :items-per-page="10"
+              <v-data-table
+                :headers="updateResultHeaders"
+                :items="updateResults"
+                :items-per-page="10"
                 class="results-table"
                 density="comfortable"
-                >
-                  <template v-slot:item.status="{ item }">
-                    <v-chip
-                      :color="getUpdateStatusColor(item.status)"
-                    size="small"
-                    class="font-weight-bold"
-                    >
-                      {{ item.status }}
-                    </v-chip>
-                  </template>
-                  <template v-slot:item.applications_updated="{ item }">
-                    <v-icon :color="item.applications_updated ? 'success' : 'error'">
-                      {{ item.applications_updated ? 'mdi-check' : 'mdi-close' }}
-                    </v-icon>
-                  </template>
-                  <template v-slot:item.edovo_updated="{ item }">
-                    <v-icon :color="item.edovo_updated ? 'success' : 'grey'">
-                      {{ item.edovo_updated ? 'mdi-check' : 'mdi-minus' }}
-                    </v-icon>
-                  </template>
-                  <template v-slot:item.extracted_updated="{ item }">
-                    <v-icon :color="item.extracted_updated ? 'success' : 'grey'">
-                      {{ item.extracted_updated ? 'mdi-check' : 'mdi-minus' }}
-                    </v-icon>
-                  </template>
-                  <template v-slot:item.bubble_sheet_updated="{ item }">
-                    <v-icon :color="item.bubble_sheet_updated ? 'success' : 'grey'">
-                      {{ item.bubble_sheet_updated ? 'mdi-check' : 'mdi-minus' }}
-                    </v-icon>
-                  </template>
-                </v-data-table>
+              >
+                <template #item.status="{ item }">
+                  <v-chip :color="getUpdateStatusColor(item.status)" size="small" class="font-weight-bold">
+                    {{ item.status }}
+                  </v-chip>
+                </template>
+                <template #item.applications_updated="{ item }">
+                  <v-icon :color="item.applications_updated ? 'success' : 'error'">
+                    {{ item.applications_updated ? 'mdi-check' : 'mdi-close' }}
+                  </v-icon>
+                </template>
+                <template #item.edovo_updated="{ item }">
+                  <v-icon :color="item.edovo_updated ? 'success' : 'grey'">
+                    {{ item.edovo_updated ? 'mdi-check' : 'mdi-minus' }}
+                  </v-icon>
+                </template>
+                <template #item.extracted_updated="{ item }">
+                  <v-icon :color="item.extracted_updated ? 'success' : 'grey'">
+                    {{ item.extracted_updated ? 'mdi-check' : 'mdi-minus' }}
+                  </v-icon>
+                </template>
+                <template #item.bubble_sheet_updated="{ item }">
+                  <v-icon :color="item.bubble_sheet_updated ? 'success' : 'grey'">
+                    {{ item.bubble_sheet_updated ? 'mdi-check' : 'mdi-minus' }}
+                  </v-icon>
+                </template>
+              </v-data-table>
             </div>
           </div>
         </div>
@@ -398,32 +362,30 @@
           <div class="results-card">
             <div class="results-header">
               <div class="results-header-content">
-                <v-icon class="results-icon">mdi-account-search</v-icon>
-                <span class="results-title">Maverick Match Results ({{ matchResults.length }} applications processed)</span>
+                <v-icon class="results-icon"> mdi-account-search </v-icon>
+                <span class="results-title"
+                  >Maverick Match Results ({{ matchResults.length }} applications processed)</span
+                >
               </div>
             </div>
             <div class="results-body">
-                <v-data-table
-                  :headers="matchResultHeaders"
-                  :items="matchResults"
-                  :items-per-page="10"
+              <v-data-table
+                :headers="matchResultHeaders"
+                :items="matchResults"
+                :items-per-page="10"
                 class="results-table"
                 density="comfortable"
-                >
-                  <template v-slot:item.match_status="{ item }">
-                    <v-chip
-                      :color="getMatchStatusColor(item.match_status)"
-                    size="small"
-                    class="font-weight-bold"
-                    >
-                      {{ item.match_status }}
-                    </v-chip>
-                  </template>
-                  <template v-slot:item.match_score="{ item }">
-                    <span v-if="item.match_score">{{ Math.round(item.match_score) }}%</span>
+              >
+                <template #item.match_status="{ item }">
+                  <v-chip :color="getMatchStatusColor(item.match_status)" size="small" class="font-weight-bold">
+                    {{ item.match_status }}
+                  </v-chip>
+                </template>
+                <template #item.match_score="{ item }">
+                  <span v-if="item.match_score">{{ Math.round(item.match_score) }}%</span>
                   <span v-else class="text-grey">-</span>
-                  </template>
-                </v-data-table>
+                </template>
+              </v-data-table>
             </div>
           </div>
         </div>
@@ -433,29 +395,30 @@
           <div class="results-card">
             <div class="results-header">
               <div class="results-header-content">
-                <v-icon class="results-icon">mdi-file-document-outline</v-icon>
-                <span class="results-title">Edovo Questions Extracted ({{ edovoResults.length }} unique questions)</span>
-                </div>
-                <v-btn
-                  color="success"
-                  :loading="downloadLoading"
-                  @click="downloadEdovoCSV"
-                  size="small"
+                <v-icon class="results-icon"> mdi-file-document-outline </v-icon>
+                <span class="results-title"
+                  >Edovo Questions Extracted ({{ edovoResults.length }} unique questions)</span
+                >
+              </div>
+              <v-btn
+                color="success"
+                :loading="downloadLoading"
+                size="small"
                 prepend-icon="mdi-download"
                 class="download-btn"
-                >
-                  Download CSV
-                </v-btn>
+                @click="downloadEdovoCSV"
+              >
+                Download CSV
+              </v-btn>
             </div>
             <div class="results-body">
-                <v-data-table
-                  :headers="edovoResultHeaders"
-                  :items="edovoResults"
-                  :items-per-page="10"
+              <v-data-table
+                :headers="edovoResultHeaders"
+                :items="edovoResults"
+                :items-per-page="10"
                 class="results-table"
                 density="comfortable"
-                >
-                </v-data-table>
+              />
             </div>
           </div>
         </div>
@@ -465,16 +428,17 @@
           <div class="results-card">
             <div class="results-header">
               <div class="results-header-content">
-                <v-icon class="results-icon">mdi-clipboard-text</v-icon>
+                <v-icon class="results-icon"> mdi-clipboard-text </v-icon>
                 <span class="results-title">Results</span>
               </div>
             </div>
             <div class="results-body">
-              <div class="json-result">{{ JSON.stringify(results, null, 2) }}</div>
+              <div class="json-result">
+                {{ JSON.stringify(results, null, 2) }}
+              </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -484,19 +448,19 @@
 </template>
 
 <script>
-import api from "@/plugins/axios";
-import ProcessLogs from "./ProcessLogs.vue";
+import api from '@/plugins/axios';
+import ProcessLogs from './ProcessLogs.vue';
 
 export default {
-  name: "DevBoard",
+  name: 'DevBoard',
   components: {
-    ProcessLogs
+    ProcessLogs,
   },
   data() {
     return {
       isAuthenticated: false,
-      passwordInput: "",
-      passwordError: "",
+      passwordInput: '',
+      passwordError: '',
       maverick_id: 20586,
       selectedDocumentType: null,
       loading: false,
@@ -516,9 +480,9 @@ export default {
       lastUploadedEdovoFile: null,
       matchResults: null,
       updateResults: null,
-      statusMessage: "",
-      alertType: "info",
-      facility_id: "CA_CDCR_ASP",
+      statusMessage: '',
+      alertType: 'info',
+      facility_id: 'CA_CDCR_ASP',
       results: null,
       csvMatchResults: null,
       edovoResults: null,
@@ -526,7 +490,7 @@ export default {
         { title: 'Question Number', key: 'question_number', align: 'center' },
         { title: 'Question', key: 'question', align: 'start' },
         { title: 'Lesson', key: 'lesson', align: 'start' },
-        { title: 'Question Type', key: 'question_type', align: 'start' }
+        { title: 'Question Type', key: 'question_type', align: 'start' },
       ],
       matchResultHeaders: [
         { title: 'Application ID', key: 'application_id', align: 'center' },
@@ -539,7 +503,7 @@ export default {
         { title: 'Match Score', key: 'match_score', align: 'center' },
         { title: 'Match Facility', key: 'maverick_facility', align: 'center' },
         { title: 'Match DOC', key: 'maverick_doc', align: 'start' },
-        { title: 'Match Reason', key: 'match_type', align: 'start' }
+        { title: 'Match Reason', key: 'match_type', align: 'start' },
       ],
       updateResultHeaders: [
         { title: 'Application ID', key: 'application_id', align: 'center' },
@@ -549,111 +513,111 @@ export default {
         { title: 'Edovo Table Updated', key: 'edovo_updated', align: 'center' },
         { title: 'Extracted Table Updated', key: 'extracted_updated', align: 'center' },
         { title: 'Bubble Sheet Updated', key: 'bubble_sheet_updated', align: 'center' },
-        { title: 'Status', key: 'status', align: 'center' }
+        { title: 'Status', key: 'status', align: 'center' },
       ],
       csvResultHeaders: [
         { title: 'Name', key: 'name', align: 'start' },
         { title: 'DOC ID Number', key: 'doc_id_number', align: 'start' },
         { title: 'Maverick ID', key: 'maverick_id', align: 'center' },
         { title: 'Match Status', key: 'match_status', align: 'center' },
-        { title: 'Facility Name', key: 'facility_name', align: 'start' }
+        { title: 'Facility Name', key: 'facility_name', align: 'start' },
       ],
-      url: "http://127.0.0.1:8000/dash",
-      url2: "https://app.hustle20.com/dash",
-      url3: "https://app.hustle20.com/sign",
-      url4: "http://127.0.0.1:8000/sign",
+      url: 'http://127.0.0.1:8000/dash',
+      url2: 'https://app.hustle20.com/dash',
+      url3: 'https://app.hustle20.com/sign',
+      url4: 'http://127.0.0.1:8000/sign',
       documentTypes: [
         {
-          name: "English Transform Your Hustle",
-          value: "English Transform Your Hustle",
-          description: "New format of English Transform Your Hustle documents",
+          name: 'English Transform Your Hustle',
+          value: 'English Transform Your Hustle',
+          description: 'New format of English Transform Your Hustle documents',
         },
         {
-          name: "Preseason v2",
-          value: "Preseason v2",
-          description: "Preseason version 2 documents",
+          name: 'Preseason v2',
+          value: 'Preseason v2',
+          description: 'Preseason version 2 documents',
         },
         {
-          name: "Preseason v1",
-          value: "Preseason v1",
-          description: "Preseason version 1 documents",
+          name: 'Preseason v1',
+          value: 'Preseason v1',
+          description: 'Preseason version 1 documents',
         },
         {
-          name: "Program Application",
-          value: "Program Application",
-          description: "Program application documents",
+          name: 'Program Application',
+          value: 'Program Application',
+          description: 'Program application documents',
         },
         {
-          name: "Book Two",
-          value: "Book Two",
-          description: "Book Two documents",
+          name: 'Book Two',
+          value: 'Book Two',
+          description: 'Book Two documents',
         },
         {
-          name: "Book One Enrollment",
-          value: "Book One Enrollment",
-          description: "Book One enrollment documents",
+          name: 'Book One Enrollment',
+          value: 'Book One Enrollment',
+          description: 'Book One enrollment documents',
         },
         {
-          name: "Book One",
-          value: "Book One",
-          description: "Book One documents",
+          name: 'Book One',
+          value: 'Book One',
+          description: 'Book One documents',
         },
         {
-          name: "Book Two Enrollment",
-          value: "Book Two Enrollment",
-          description: "Book Two enrollment documents",
+          name: 'Book Two Enrollment',
+          value: 'Book Two Enrollment',
+          description: 'Book Two enrollment documents',
         },
       ],
     };
   },
   methods: {
     checkPassword() {
-      const correctPassword = "root";
-      const dummyPassword = "123"; // TODO: Remove this dummy password later
+      const correctPassword = 'root';
+      const dummyPassword = '123'; // TODO: Remove this dummy password later
       if (this.passwordInput === correctPassword || this.passwordInput === dummyPassword) {
         this.isAuthenticated = true;
-        this.passwordError = "";
-        this.passwordInput = "";
+        this.passwordError = '';
+        this.passwordInput = '';
       } else {
-        this.passwordError = "Incorrect password";
+        this.passwordError = 'Incorrect password';
       }
     },
 
     async startProcess() {
       if (!this.selectedDocumentType) {
-        this.showStatus("Please select a document type first.", "error");
+        this.showStatus('Please select a document type first.', 'error');
         return;
       }
 
       this.loading = true;
       this.results = null;
-      this.showStatus("Starting process...", "info");
+      this.showStatus('Starting process...', 'info');
 
       try {
         // Call the backend API - adjust the endpoint as needed
-        const response = await api.post("/dev-start-process", {
+        const response = await api.post('/dev-start-process', {
           document_type: this.selectedDocumentType,
         });
 
         if (response.status === 200) {
           this.results = response.data;
-          console.log("Process completed successfully:", this.results);
-          this.showStatus("Process completed successfully!", "success");
+          console.log('Process completed successfully:', this.results);
+          this.showStatus('Process completed successfully!', 'success');
         } else {
-          this.showStatus("Process completed with warnings.", "warning");
+          this.showStatus('Process completed with warnings.', 'warning');
           this.results = response.data;
         }
       } catch (error) {
-        console.error("Error starting process:", error);
+        console.error('Error starting process:', error);
 
-        let errorMessage = "An error occurred while starting the process.";
+        let errorMessage = 'An error occurred while starting the process.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.loading = false;
       }
@@ -662,34 +626,34 @@ export default {
     async testSignEndpoint() {
       this.loading = true;
       this.results = null;
-      this.showStatus("Fetching maverick info...", "info");
+      this.showStatus('Fetching maverick info...', 'info');
 
       try {
         const INTERNAL_KEY = import.meta.env.VITE_DASH_SIGN_KEY;
-        console.log("Using INTERNAL_KEY:", INTERNAL_KEY ? "***" + INTERNAL_KEY.slice(-4) : "UNDEFINED");
+        console.log('Using INTERNAL_KEY:', INTERNAL_KEY ? '***' + INTERNAL_KEY.slice(-4) : 'UNDEFINED');
 
         // Create the payload that will be base64 encoded
         const payloadData = {
           maverick_info: this.maverick_id.toString(),
           instructions: {
-            action: "maverick_info"
-          }
+            action: 'maverick_info',
+          },
         };
 
         // Base64 encode the JSON payload
         const jsonString = JSON.stringify(payloadData);
         const b64Payload = btoa(jsonString);
-        console.log("Payload data:", payloadData);
-        console.log("Base64 payload:", b64Payload);
+        console.log('Payload data:', payloadData);
+        console.log('Base64 payload:', b64Payload);
 
         const response = await fetch(this.url2, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "X-Api-Key": INTERNAL_KEY,
+            'Content-Type': 'application/json',
+            'X-Api-Key': INTERNAL_KEY,
           },
           body: JSON.stringify({
-            b64: b64Payload
+            b64: b64Payload,
           }),
         });
 
@@ -698,58 +662,56 @@ export default {
         }
 
         const data = await response.json();
-        console.log("Maverick info response:", data);
+        console.log('Maverick info response:', data);
 
         // Display the results
         this.results = data;
-        this.showStatus("Maverick info retrieved successfully!", "success");
+        this.showStatus('Maverick info retrieved successfully!', 'success');
 
         return data;
       } catch (error) {
-        console.error("Error:", error);
+        console.error('Error:', error);
 
-        let errorMessage = "An error occurred while fetching maverick info.";
+        let errorMessage = 'An error occurred while fetching maverick info.';
         if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.loading = false;
       }
     },
     async testFacilityInfoFlow() {
       try {
-        console.log("=== Testing Complete Facility Info Flow ===");
+        console.log('=== Testing Complete Facility Info Flow ===');
         const INTERNAL_KEY = import.meta.env.VITE_INTERNAL_SIGN_KEY;
         const payloadData = {
           facility_id: this.facility_id,
           instructions: {
-            action: "facility_info"
-          }
+            action: 'facility_info',
+          },
         };
 
         // Base64 encode the JSON payload
         const jsonString = JSON.stringify(payloadData);
         const b64Payload = btoa(jsonString);
         // Step 1: Get signed token from /sign endpoint
-        console.log("Step 1: Getting signed token...");
+        console.log('Step 1: Getting signed token...');
         const response = await fetch(this.url3, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "X-Api-Key": INTERNAL_KEY,
+            'Content-Type': 'application/json',
+            'X-Api-Key': INTERNAL_KEY,
           },
           body: JSON.stringify({
-            b64: b64Payload
+            b64: b64Payload,
           }),
         });
         const data = await response.json();
-        console.log("Facility info response:", data);
-
-
+        console.log('Facility info response:', data);
       } catch (error) {
-        console.error("❌ Error in facility info flow:", error);
+        console.error('❌ Error in facility info flow:', error);
         return {
           success: false,
           error: error.message,
@@ -770,13 +732,13 @@ export default {
       if (!file) return;
 
       if (!file.name.toLowerCase().endsWith('.csv')) {
-        this.showStatus("Please select a CSV file.", "error");
+        this.showStatus('Please select a CSV file.', 'error');
         return;
       }
 
       this.csvLoading = true;
       this.csvMatchResults = null;
-      this.showStatus("Processing CSV file...", "info");
+      this.showStatus('Processing CSV file...', 'info');
 
       try {
         const formData = new FormData();
@@ -797,22 +759,22 @@ export default {
 
           this.showStatus(
             `CSV processed successfully! ${matchedCount} matches, ${createdCount} new records created, ${failedCount} failures.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("CSV processed with warnings.", "warning");
+          this.showStatus('CSV processed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error uploading CSV:", error);
+        console.error('Error uploading CSV:', error);
 
-        let errorMessage = "An error occurred while processing the CSV file.";
+        let errorMessage = 'An error occurred while processing the CSV file.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.csvLoading = false;
         // Reset file input
@@ -825,14 +787,14 @@ export default {
       if (!file) return;
 
       if (!file.name.toLowerCase().endsWith('.csv')) {
-        this.showStatus("Please select a CSV file.", "error");
+        this.showStatus('Please select a CSV file.', 'error');
         return;
       }
 
       this.edovoLoading = true;
       this.edovoResults = null;
       this.lastUploadedEdovoFile = file; // Store file for download
-      this.showStatus("Extracting Edovo information...", "info");
+      this.showStatus('Extracting Edovo information...', 'info');
 
       try {
         const formData = new FormData();
@@ -850,22 +812,22 @@ export default {
 
           this.showStatus(
             `Edovo information extracted successfully! Found ${totalQuestions} unique questions.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Edovo extraction completed with warnings.", "warning");
+          this.showStatus('Edovo extraction completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error extracting Edovo information:", error);
+        console.error('Error extracting Edovo information:', error);
 
-        let errorMessage = "An error occurred while extracting Edovo information.";
+        let errorMessage = 'An error occurred while extracting Edovo information.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.edovoLoading = false;
         // Reset file input
@@ -875,12 +837,12 @@ export default {
 
     async downloadEdovoCSV() {
       if (!this.lastUploadedEdovoFile) {
-        this.showStatus("No file available for download. Please upload a file first.", "error");
+        this.showStatus('No file available for download. Please upload a file first.', 'error');
         return;
       }
 
       this.downloadLoading = true;
-      this.showStatus("Generating CSV download...", "info");
+      this.showStatus('Generating CSV download...', 'info');
 
       try {
         const formData = new FormData();
@@ -890,7 +852,7 @@ export default {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-          responseType: 'blob'
+          responseType: 'blob',
         });
 
         if (response.status === 200) {
@@ -905,19 +867,19 @@ export default {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
 
-          this.showStatus("CSV downloaded successfully!", "success");
+          this.showStatus('CSV downloaded successfully!', 'success');
         }
       } catch (error) {
-        console.error("Error downloading CSV:", error);
+        console.error('Error downloading CSV:', error);
 
-        let errorMessage = "An error occurred while downloading the CSV file.";
+        let errorMessage = 'An error occurred while downloading the CSV file.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.downloadLoading = false;
       }
@@ -926,7 +888,7 @@ export default {
     async findMatchMavericks() {
       this.matchLoading = true;
       this.matchResults = null;
-      this.showStatus("Finding maverick matches...", "info");
+      this.showStatus('Finding maverick matches...', 'info');
 
       try {
         const response = await api.get('/find-match-mavericks');
@@ -939,22 +901,22 @@ export default {
 
           this.showStatus(
             `Matching completed! Processed ${totalApplications} applications. ${matchedCount} matches found, ${noMatchCount} no matches.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Matching completed with warnings.", "warning");
+          this.showStatus('Matching completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error finding maverick matches:", error);
+        console.error('Error finding maverick matches:', error);
 
-        let errorMessage = "An error occurred while finding maverick matches.";
+        let errorMessage = 'An error occurred while finding maverick matches.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.matchLoading = false;
       }
@@ -963,7 +925,7 @@ export default {
     async updateParentIds() {
       this.updateLoading = true;
       this.updateResults = null;
-      this.showStatus("Updating parent IDs...", "info");
+      this.showStatus('Updating parent IDs...', 'info');
 
       try {
         const response = await api.post('/update-parent-ids');
@@ -976,22 +938,22 @@ export default {
 
           this.showStatus(
             `Parent ID update completed! ${totalUpdated} updated, ${totalSkipped} skipped, ${totalFailed} failed.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Parent ID update completed with warnings.", "warning");
+          this.showStatus('Parent ID update completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error updating parent IDs:", error);
+        console.error('Error updating parent IDs:', error);
 
-        let errorMessage = "An error occurred while updating parent IDs.";
+        let errorMessage = 'An error occurred while updating parent IDs.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.updateLoading = false;
       }
@@ -1000,7 +962,7 @@ export default {
     async makeMissingLogs() {
       this.logsLoading = true;
       this.results = null;
-      this.showStatus("Creating missing logs...", "info");
+      this.showStatus('Creating missing logs...', 'info');
 
       try {
         const response = await api.post('/make-missing-logs');
@@ -1013,22 +975,22 @@ export default {
 
           this.showStatus(
             `Missing logs creation completed! ${totalProcessed} records processed, ${totalSuccess} succeeded, ${totalFailed} failed.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Log creation completed with warnings.", "warning");
+          this.showStatus('Log creation completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error creating missing logs:", error);
+        console.error('Error creating missing logs:', error);
 
-        let errorMessage = "An error occurred while creating missing logs.";
+        let errorMessage = 'An error occurred while creating missing logs.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.logsLoading = false;
       }
@@ -1037,7 +999,7 @@ export default {
     async makeSendLogs() {
       this.sendLogsLoading = true;
       this.results = null;
-      this.showStatus("Creating send logs...", "info");
+      this.showStatus('Creating send logs...', 'info');
 
       try {
         const response = await api.post('/make-send-logs');
@@ -1050,22 +1012,22 @@ export default {
 
           this.showStatus(
             `Send logs creation completed! ${totalProcessed} records processed, ${totalCreated} send logs created, ${totalSkipped} skipped (already exist).`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Send logs creation completed with warnings.", "warning");
+          this.showStatus('Send logs creation completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error creating send logs:", error);
+        console.error('Error creating send logs:', error);
 
-        let errorMessage = "An error occurred while creating send logs.";
+        let errorMessage = 'An error occurred while creating send logs.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.sendLogsLoading = false;
       }
@@ -1074,7 +1036,7 @@ export default {
     async matchLogsToMavs() {
       this.matchLogsLoading = true;
       this.results = null;
-      this.showStatus("Matching logs to maverick IDs...", "info");
+      this.showStatus('Matching logs to maverick IDs...', 'info');
 
       try {
         const response = await api.post('/match-logs-to-mavs');
@@ -1087,22 +1049,22 @@ export default {
 
           this.showStatus(
             `Logs matching completed! ${totalProcessed} logs processed, ${totalMatched} matched with maverick IDs, ${totalFailed} failed.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Logs matching completed with warnings.", "warning");
+          this.showStatus('Logs matching completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error matching logs to maverick IDs:", error);
+        console.error('Error matching logs to maverick IDs:', error);
 
-        let errorMessage = "An error occurred while matching logs to maverick IDs.";
+        let errorMessage = 'An error occurred while matching logs to maverick IDs.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.matchLogsLoading = false;
       }
@@ -1111,7 +1073,7 @@ export default {
     async matchApplicantsNoMaverick() {
       this.matchApplicantsLoading = true;
       this.results = null;
-      this.showStatus("Matching applicants without maverick IDs...", "info");
+      this.showStatus('Matching applicants without maverick IDs...', 'info');
 
       try {
         const response = await api.post('/match-applicants-no-maverick');
@@ -1124,22 +1086,22 @@ export default {
 
           this.showStatus(
             `Applicant matching completed! ${totalProcessed} records processed, ${totalInserted} inserted into Applications table, ${totalFailed} failed.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Applicant matching completed with warnings.", "warning");
+          this.showStatus('Applicant matching completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error matching applicants:", error);
+        console.error('Error matching applicants:', error);
 
-        let errorMessage = "An error occurred while matching applicants.";
+        let errorMessage = 'An error occurred while matching applicants.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.matchApplicantsLoading = false;
       }
@@ -1148,7 +1110,7 @@ export default {
     async fillAllEdovo() {
       this.fillEdovoLoading = true;
       this.results = null;
-      this.showStatus("Filling Edovo table columns...", "info");
+      this.showStatus('Filling Edovo table columns...', 'info');
 
       try {
         const response = await api.post('/fill-all-edovo');
@@ -1158,24 +1120,21 @@ export default {
           const totalUpdated = response.data.total_updated || 0;
           const totalFailed = response.data.total_failed || 0;
 
-          this.showStatus(
-            `Edovo fill completed! ${totalUpdated} records updated, ${totalFailed} failed.`,
-            "success"
-          );
+          this.showStatus(`Edovo fill completed! ${totalUpdated} records updated, ${totalFailed} failed.`, 'success');
         } else {
-          this.showStatus("Edovo fill completed with warnings.", "warning");
+          this.showStatus('Edovo fill completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error filling Edovo tables:", error);
+        console.error('Error filling Edovo tables:', error);
 
-        let errorMessage = "An error occurred while filling Edovo tables.";
+        let errorMessage = 'An error occurred while filling Edovo tables.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.fillEdovoLoading = false;
       }
@@ -1184,7 +1143,7 @@ export default {
     async makeQueueLogs() {
       this.queueLogsLoading = true;
       this.results = null;
-      this.showStatus("Creating queue logs from exam logs...", "info");
+      this.showStatus('Creating queue logs from exam logs...', 'info');
 
       try {
         const response = await api.post('/make-queue-logs');
@@ -1197,22 +1156,22 @@ export default {
 
           this.showStatus(
             `Queue logs creation completed! ${totalProcessed} exam records processed, ${totalSuccess} succeeded, ${totalFailed} failed.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Queue log creation completed with warnings.", "warning");
+          this.showStatus('Queue log creation completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error creating queue logs:", error);
+        console.error('Error creating queue logs:', error);
 
-        let errorMessage = "An error occurred while creating queue logs.";
+        let errorMessage = 'An error occurred while creating queue logs.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.queueLogsLoading = false;
       }
@@ -1221,7 +1180,7 @@ export default {
     async processEdovoLogs() {
       this.edovoProcessLogsLoading = true;
       this.results = null;
-      this.showStatus("Processing Edovo Transform Your Hustle logs...", "info");
+      this.showStatus('Processing Edovo Transform Your Hustle logs...', 'info');
 
       try {
         const response = await api.post('/edovo-process-logs');
@@ -1234,22 +1193,22 @@ export default {
 
           this.showStatus(
             `Edovo logs processing completed! ${totalProcessed} records processed, ${totalSuccess} succeeded, ${totalFailed} failed.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Edovo log processing completed with warnings.", "warning");
+          this.showStatus('Edovo log processing completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error processing Edovo logs:", error);
+        console.error('Error processing Edovo logs:', error);
 
-        let errorMessage = "An error occurred while processing Edovo logs.";
+        let errorMessage = 'An error occurred while processing Edovo logs.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.edovoProcessLogsLoading = false;
       }
@@ -1258,7 +1217,7 @@ export default {
     async cleanProcessLogsData() {
       this.cleanProcessLogsLoading = true;
       this.results = null;
-      this.showStatus("Cleaning and repopulating process logs data...", "info");
+      this.showStatus('Cleaning and repopulating process logs data...', 'info');
 
       try {
         const response = await api.post('/clean-process-logs-data');
@@ -1271,22 +1230,22 @@ export default {
 
           this.showStatus(
             `Process logs cleaning completed! ${totalProcessed} exam logs processed, ${totalSuccess} succeeded, ${totalFailed} failed.`,
-            "success"
+            'success'
           );
         } else {
-          this.showStatus("Process logs cleaning completed with warnings.", "warning");
+          this.showStatus('Process logs cleaning completed with warnings.', 'warning');
         }
       } catch (error) {
-        console.error("Error cleaning process logs:", error);
+        console.error('Error cleaning process logs:', error);
 
-        let errorMessage = "An error occurred while cleaning process logs.";
+        let errorMessage = 'An error occurred while cleaning process logs.';
         if (error.response?.data?.detail) {
           errorMessage = error.response.data.detail;
         } else if (error.message) {
           errorMessage = error.message;
         }
 
-        this.showStatus(errorMessage, "error");
+        this.showStatus(errorMessage, 'error');
       } finally {
         this.cleanProcessLogsLoading = false;
       }
@@ -1335,13 +1294,13 @@ export default {
       }
     },
 
-    showStatus(message, type = "info") {
+    showStatus(message, type = 'info') {
       this.statusMessage = message;
       this.alertType = type;
     },
 
     clearStatus() {
-      this.statusMessage = "";
+      this.statusMessage = '';
     },
 
     resetForm() {
@@ -1381,17 +1340,19 @@ export default {
 }
 
 .password-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 20px;
-  border: 1px solid #E2E8F0;
-  box-shadow: 0 10px 40px rgba(99, 102, 241, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  box-shadow:
+    0 10px 40px rgba(99, 102, 241, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.08);
   max-width: 450px;
   width: 100%;
   overflow: hidden;
 }
 
 .v-theme--dark .password-card {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
@@ -1399,12 +1360,12 @@ export default {
 .password-header {
   padding: 48px 40px 32px 40px;
   text-align: center;
-  background: linear-gradient(to bottom, #FAFBFC, #FFFFFF);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #ffffff);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .password-header {
-  background: linear-gradient(to bottom, #1E293B, #1A2332);
+  background: linear-gradient(to bottom, #1e293b, #1a2332);
   border-bottom-color: #334155;
 }
 
@@ -1417,17 +1378,17 @@ export default {
 }
 
 .v-theme--dark .password-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .password-subtitle {
   font-size: 0.9375rem;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .password-subtitle {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .password-content {
@@ -1465,11 +1426,11 @@ export default {
 /* Info Alert */
 .dev-info-alert {
   border-radius: 12px !important;
-  border: 1px solid #DBEAFE !important;
+  border: 1px solid #dbeafe !important;
 }
 
 .v-theme--dark .dev-info-alert {
-  border-color: #1E40AF !important;
+  border-color: #1e40af !important;
 }
 
 .alert-title {
@@ -1485,21 +1446,25 @@ export default {
 
 /* Tools Section */
 .tools-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
   overflow: hidden;
 }
 
 .tools-section:hover {
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.06), 0 2px 4px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 4px 12px rgba(99, 102, 241, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
 }
 
 .v-theme--dark .tools-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -1514,12 +1479,12 @@ export default {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .section-header {
-  background: linear-gradient(to bottom, #1E293B, #1A2332);
+  background: linear-gradient(to bottom, #1e293b, #1a2332);
   border-bottom-color: #334155;
 }
 
@@ -1536,7 +1501,7 @@ export default {
 }
 
 .v-theme--dark .section-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .tools-grid {
@@ -1604,21 +1569,25 @@ export default {
 }
 
 .results-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
   overflow: hidden;
 }
 
 .results-card:hover {
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08), 0 2px 4px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 4px 12px rgba(99, 102, 241, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
 }
 
 .v-theme--dark .results-card {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -1633,14 +1602,14 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
+  border-bottom: 1px solid #e2e8f0;
   flex-wrap: wrap;
   gap: 12px;
 }
 
 .v-theme--dark .results-header {
-  background: linear-gradient(to bottom, #1E293B, #1A2332);
+  background: linear-gradient(to bottom, #1e293b, #1a2332);
   border-bottom-color: #334155;
 }
 
@@ -1651,12 +1620,12 @@ export default {
 }
 
 .results-icon {
-  color: #6366F1 !important;
+  color: #6366f1 !important;
   opacity: 0.8;
 }
 
 .v-theme--dark .results-icon {
-  color: #818CF8 !important;
+  color: #818cf8 !important;
 }
 
 .results-title {
@@ -1667,7 +1636,7 @@ export default {
 }
 
 .v-theme--dark .results-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .download-btn {
@@ -1681,65 +1650,65 @@ export default {
 
 .results-body {
   padding: 28px;
-  background: #FAFBFC;
+  background: #fafbfc;
 }
 
 .v-theme--dark .results-body {
-  background: #151E2E;
+  background: #151e2e;
 }
 
 /* Results Table */
 .results-table {
-  background: #FFFFFF !important;
-  border: 1px solid #E2E8F0 !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
   border-radius: 12px !important;
   overflow: hidden !important;
 }
 
 .v-theme--dark .results-table {
-  background: #1E293B !important;
+  background: #1e293b !important;
   border-color: #334155 !important;
 }
 
 :deep(.results-table .v-data-table__th) {
-  background: #F9FAFB !important;
-  color: #64748B !important;
+  background: #f9fafb !important;
+  color: #64748b !important;
   font-weight: 600 !important;
   font-size: 0.75rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  border-bottom: 2px solid #E2E8F0 !important;
+  border-bottom: 2px solid #e2e8f0 !important;
 }
 
 :deep(.v-theme--dark .results-table .v-data-table__th) {
-  background: #0F172A !important;
-  color: #94A3B8 !important;
+  background: #0f172a !important;
+  color: #94a3b8 !important;
   border-bottom-color: #334155 !important;
 }
 
 :deep(.results-table .v-data-table__td) {
-  border-bottom: 1px solid #F3F4F6 !important;
+  border-bottom: 1px solid #f3f4f6 !important;
   font-size: 0.875rem !important;
   color: #374151 !important;
 }
 
 :deep(.v-theme--dark .results-table .v-data-table__td) {
-  border-bottom-color: #1E293B !important;
-  color: #D1D5DB !important;
+  border-bottom-color: #1e293b !important;
+  color: #d1d5db !important;
 }
 
 :deep(.results-table tbody tr:hover) {
-  background: #F8FAFC !important;
+  background: #f8fafc !important;
 }
 
 :deep(.v-theme--dark .results-table tbody tr:hover) {
-  background: #1F2937 !important;
+  background: #1f2937 !important;
 }
 
 /* JSON Result */
 .json-result {
-  background: #0F172A;
-  color: #E0E7FF;
+  background: #0f172a;
+  color: #e0e7ff;
   padding: 24px;
   border-radius: 12px;
   font-family: 'Courier New', monospace;
@@ -1750,12 +1719,12 @@ export default {
   white-space: pre-wrap;
   word-wrap: break-word;
   scrollbar-width: thin;
-  scrollbar-color: #475569 #1E293B;
+  scrollbar-color: #475569 #1e293b;
 }
 
 .v-theme--dark .json-result {
-  background: #0C1220;
-  color: #C7D2FE;
+  background: #0c1220;
+  color: #c7d2fe;
 }
 
 .json-result::-webkit-scrollbar {
@@ -1763,7 +1732,7 @@ export default {
 }
 
 .json-result::-webkit-scrollbar-track {
-  background: #1E293B;
+  background: #1e293b;
   border-radius: 4px;
 }
 

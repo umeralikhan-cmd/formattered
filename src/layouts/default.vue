@@ -19,31 +19,31 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import Sidebar from '@/components/Sidebar.vue'
-import TopNavbar from '@/components/TopNavbar.vue'
+import { ref } from 'vue';
+import Sidebar from '@/components/Sidebar.vue';
+import TopNavbar from '@/components/TopNavbar.vue';
 
-const mobileSidebarOpen = ref(false)
-const sidebarCollapsed = ref(false)
+const mobileSidebarOpen = ref(false);
+const sidebarCollapsed = ref(false);
 
 const toggleMobileSidebar = () => {
-  mobileSidebarOpen.value = !mobileSidebarOpen.value
-}
+  mobileSidebarOpen.value = !mobileSidebarOpen.value;
+};
 
 const handleSidebarCollapse = (collapsed: boolean) => {
-  sidebarCollapsed.value = collapsed
-}
+  sidebarCollapsed.value = collapsed;
+};
 </script>
 
 <style scoped>
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background: #F8FAFC;
+  background: #f8fafc;
 }
 
 .v-theme--dark .app-layout {
-  background: #0F172A;
+  background: #0f172a;
 }
 
 .main-content {
@@ -94,7 +94,9 @@ const handleSidebarCollapse = (collapsed: boolean) => {
 /* Page transition */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .fade-enter-from {

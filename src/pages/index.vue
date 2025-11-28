@@ -2,7 +2,7 @@
   <div class="page-container">
     <Suspense>
       <template #default>
-        <UploadFiles :refreshScan="refreshScan" />
+        <UploadFiles :refresh-scan="refreshScan" />
       </template>
       <template #fallback>
         <div class="loading-state">
@@ -15,10 +15,10 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent } from 'vue';
 
 // Lazy load components for better performance
-const UploadFiles = defineAsyncComponent(() => import("@/components/UploadFiles.vue"));
+const UploadFiles = defineAsyncComponent(() => import('@/components/UploadFiles.vue'));
 
 export default {
   components: {
@@ -53,13 +53,12 @@ export default {
 }
 
 .loading-state p {
-  color: #6B7280;
+  color: #6b7280;
   font-size: 0.875rem;
   margin: 0;
 }
 
 .v-theme--dark .loading-state p {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 </style>
-

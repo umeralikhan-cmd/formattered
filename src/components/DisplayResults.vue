@@ -5,143 +5,127 @@
       <div class="filters-section">
         <div class="filters-header">
           <div class="filters-title-group">
-            <v-icon size="20" class="filters-icon">mdi-filter-outline</v-icon>
+            <v-icon size="20" class="filters-icon"> mdi-filter-outline </v-icon>
             <h2 class="filters-title">Filters</h2>
           </div>
           <v-btn
-            @click="openExportResultsDialog"
             color="primary"
             size="large"
             class="export-btn"
             :disabled="selectedIDS.length === 0"
+            @click="openExportResultsDialog"
           >
-            <v-icon start>mdi-download</v-icon>
+            <v-icon start> mdi-download </v-icon>
             Export ({{ selectedIDS.length }})
           </v-btn>
         </div>
 
         <div class="filters-content">
-        <v-row dense>
-          <v-col cols="12" sm="6" md="4" lg="2">
-          <v-select
-            v-model="selectedQuestionType"
-            :items="questionTypes"
-              label="Document Type"
-              variant="outlined"
-              density="comfortable"
-            :disabled="loader"
-              hide-details
-              :menu-props="{ maxHeight: 400, closeOnContentClick: true }"
-          ></v-select>
-        </v-col>
-          <v-col cols="12" sm="6" md="4" lg="2">
-          <v-autocomplete
-              label="Facility"
-            v-model="selectedFacility"
-            :items="facilityOptions"
-            item-value="facility_id"
-            item-title="facility_name"
-              variant="outlined"
-              density="comfortable"
-            clearable
-            :loading="facilitiesLoading"
-            :disabled="facilitiesLoading"
-              hide-details
-              :menu-props="{ maxHeight: 400, closeOnContentClick: true }"
-            no-filter
-            auto-select-first
-          >
-            <template v-slot:selection="{ item }">
-              <span v-if="item && item.raw" class="text-truncate">
-                {{ item.raw.facility_name || 'Unknown' }}
-              </span>
-            </template>
-            <template v-slot:item="{ item, props }">
-              <v-list-item v-bind="props" class="facility-list-item" :key="item.raw.facility_id">
-                <v-list-item-title class="facility-name">
-                  {{ item.raw.facility_name || 'Unknown Facility' }}
-                </v-list-item-title>
-                <v-list-item-subtitle 
-                  v-for="(address, idx) in (item.raw.mailing_addresses || [])" 
-                  :key="`${item.raw.facility_id}-${idx}`"
-                  class="facility-address"
-                >
-                    {{ address }}
-                  </v-list-item-subtitle>
-              </v-list-item>
-            </template>
-          </v-autocomplete>
-        </v-col>
-          <v-col cols="12" sm="6" md="4" lg="2">
-            <v-select
-              v-model="matchStatus"
-              :items="['All', 'Matched', 'Unmatched']"
-              label="Match Status"
-              variant="outlined"
-              density="comfortable"
-              hide-details
-              :menu-props="{ maxHeight: 400 }"
-            ></v-select>
-        </v-col>
-          <v-col cols="12" sm="6" md="4" lg="3">
-          <v-text-field
-            v-model="search"
-              label="Search Name"
-              variant="outlined"
-              density="comfortable"
-              clearable
-              prepend-inner-icon="mdi-magnify"
-              hide-details
-          ></v-text-field>
-        </v-col>
-          <v-col cols="12" sm="6" md="4" lg="3">
-          <v-menu
-            v-model="dateMenu"
-            :close-on-content-click="false"
-            transition="scale-transition"
-            offset-y
-            min-width="290px"
-          >
-            <template #activator="{ props }">
-              <v-text-field
-                v-model="dateRangeText"
-                label="Date Range"
-                readonly
-                v-bind="props"
-                  variant="outlined"
-                  density="comfortable"
-                clearable
-                @click:clear="clearDateRange"
-                placeholder="Select date range"
-                  prepend-inner-icon="mdi-calendar-range"
-                  hide-details
+          <v-row dense>
+            <v-col cols="12" sm="6" md="4" lg="2">
+              <v-select
+                v-model="selectedQuestionType"
+                :items="questionTypes"
+                label="Document Type"
+                variant="outlined"
+                density="comfortable"
+                :disabled="loader"
+                hide-details
+                :menu-props="{ maxHeight: 400, closeOnContentClick: true }"
               />
-            </template>
-            <v-date-picker
-              :model-value="dateRangeArr"
-              range
-              @update:model-value="onDateRangeChange"
-            >
-              <template v-slot:actions>
-                <v-btn
-                  color="primary"
-                  variant="text"
-                  @click="dateMenu = false"
-                >
-                  Close
-                </v-btn>
-                <v-btn
-                  color="primary"
-                  variant="text"
-                  @click="clearDateRange"
-                >
-                  Clear
-                </v-btn>
-              </template>
-            </v-date-picker>
-          </v-menu>
-        </v-col>
-      </v-row>
+            </v-col>
+            <v-col cols="12" sm="6" md="4" lg="2">
+              <v-autocomplete
+                v-model="selectedFacility"
+                label="Facility"
+                :items="facilityOptions"
+                item-value="facility_id"
+                item-title="facility_name"
+                variant="outlined"
+                density="comfortable"
+                clearable
+                :loading="facilitiesLoading"
+                :disabled="facilitiesLoading"
+                hide-details
+                :menu-props="{ maxHeight: 400, closeOnContentClick: true }"
+                no-filter
+                auto-select-first
+              >
+                <template #selection="{ item }">
+                  <span v-if="item && item.raw" class="text-truncate">
+                    {{ item.raw.facility_name || 'Unknown' }}
+                  </span>
+                </template>
+                <template #item="{ item, props }">
+                  <v-list-item v-bind="props" :key="item.raw.facility_id" class="facility-list-item">
+                    <v-list-item-title class="facility-name">
+                      {{ item.raw.facility_name || 'Unknown Facility' }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle
+                      v-for="(address, idx) in item.raw.mailing_addresses || []"
+                      :key="`${item.raw.facility_id}-${idx}`"
+                      class="facility-address"
+                    >
+                      {{ address }}
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                </template>
+              </v-autocomplete>
+            </v-col>
+            <v-col cols="12" sm="6" md="4" lg="2">
+              <v-select
+                v-model="matchStatus"
+                :items="['All', 'Matched', 'Unmatched']"
+                label="Match Status"
+                variant="outlined"
+                density="comfortable"
+                hide-details
+                :menu-props="{ maxHeight: 400 }"
+              />
+            </v-col>
+            <v-col cols="12" sm="6" md="4" lg="3">
+              <v-text-field
+                v-model="search"
+                label="Search Name"
+                variant="outlined"
+                density="comfortable"
+                clearable
+                prepend-inner-icon="mdi-magnify"
+                hide-details
+              />
+            </v-col>
+            <v-col cols="12" sm="6" md="4" lg="3">
+              <v-menu
+                v-model="dateMenu"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+                min-width="290px"
+              >
+                <template #activator="{ props }">
+                  <v-text-field
+                    v-model="dateRangeText"
+                    label="Date Range"
+                    readonly
+                    v-bind="props"
+                    variant="outlined"
+                    density="comfortable"
+                    clearable
+                    placeholder="Select date range"
+                    prepend-inner-icon="mdi-calendar-range"
+                    hide-details
+                    @click:clear="clearDateRange"
+                  />
+                </template>
+                <v-date-picker :model-value="dateRangeArr" range @update:model-value="onDateRangeChange">
+                  <template #actions>
+                    <v-btn color="primary" variant="text" @click="dateMenu = false"> Close </v-btn>
+                    <v-btn color="primary" variant="text" @click="clearDateRange"> Clear </v-btn>
+                  </template>
+                </v-date-picker>
+              </v-menu>
+            </v-col>
+          </v-row>
         </div>
       </div>
 
@@ -149,25 +133,12 @@
       <div class="table-section">
         <div class="table-header">
           <div class="table-stats">
-            <v-icon size="20" class="stats-icon">mdi-table</v-icon>
+            <v-icon size="20" class="stats-icon"> mdi-table </v-icon>
             <span class="stats-text">
               {{ filteredItems.length }} {{ filteredItems.length === 1 ? 'Result' : 'Results' }}
             </span>
-            <v-progress-circular
-              v-if="isFetching"
-              indeterminate
-              color="primary"
-              size="20"
-              width="2"
-              class="ml-2"
-            />
-            <v-chip
-              v-if="selectedIDS.length > 0"
-              size="small"
-              color="primary"
-              variant="flat"
-              class="ml-3"
-            >
+            <v-progress-circular v-if="isFetching" indeterminate color="primary" size="20" width="2" class="ml-2" />
+            <v-chip v-if="selectedIDS.length > 0" size="small" color="primary" variant="flat" class="ml-3">
               {{ selectedIDS.length }} Selected
             </v-chip>
           </div>
@@ -175,27 +146,22 @@
 
         <div class="table-content">
           <div v-if="loader" class="loader-container">
-            <v-progress-circular
-              :size="60"
-              :width="6"
-              color="primary"
-              indeterminate
-            ></v-progress-circular>
+            <v-progress-circular :size="60" :width="6" color="primary" indeterminate />
             <p class="loader-text">Loading results...</p>
           </div>
 
           <div v-else class="table-wrapper">
             <v-data-table
-            v-model="selectedIDS"
+              v-model="selectedIDS"
+              v-model:expanded="expanded"
               :headers="headers"
               :items="paginatedItems"
               :loading="loader || isFetching"
               :items-per-page="-1"
               show-expand
               item-value="result_uid"
-              v-model:expanded="expanded"
               :search="search"
-               show-select
+              show-select
               :custom-filter="firstAndLastNameFilter"
               :row-props="rowProps"
               hide-default-footer
@@ -203,74 +169,64 @@
               height="500"
             >
               <!-- Display First Name -->
-              <template v-slot:item.first_name="{ item }">
+              <template #item.first_name="{ item }">
                 {{ item.first_name }}
               </template>
 
               <!-- Display Last Name -->
-              <template v-slot:item.last_name="{ item }">
+              <template #item.last_name="{ item }">
                 {{ item.last_name }}
               </template>
 
               <!-- Display Middle Name -->
-              <template v-slot:item.middle_name="{ item }">
+              <template #item.middle_name="{ item }">
                 {{ item.middle_name }}
               </template>
-              
+
               <!-- Display Document Type -->
-              <template v-slot:item.document_type="{ item }">
+              <template #item.document_type="{ item }">
                 {{ item.document_type }}
               </template>
-              
+
               <!-- Display DOC Number -->
-              <template v-slot:item.doc_number="{ item }">
+              <template #item.doc_number="{ item }">
                 {{ item.doc_number }}
               </template>
 
               <!-- Display Facility Name -->
-              <template v-slot:item.facility_name="{ item }">
+              <template #item.facility_name="{ item }">
                 {{ item.facility_name }}
               </template>
 
               <!-- Display Inmate Number -->
-              <template v-slot:item.inmate_number="{ item }">
+              <template #item.inmate_number="{ item }">
                 {{ item.inmate_number }}
               </template>
 
-              <template v-slot:item.mark="{ item }">
+              <template #item.mark="{ item }">
                 {{ item.score }}
               </template>
-              
+
               <template #item.date_created="{ item }">
                 {{ formatToLocal(item.date_created) }}
               </template>
-              
-              <template v-slot:item.mailing_address="{ item }">
-                  {{ item.mailing_address }}
+
+              <template #item.mailing_address="{ item }">
+                {{ item.mailing_address }}
               </template>
 
-              <template
-                v-slot:item.data-table-expand="{
-                  internalItem,
-                  isExpanded,
-                  toggleExpand,
-                }"
-              >
+              <template #item.data-table-expand="{ internalItem, isExpanded, toggleExpand }">
                 <v-btn
-                  :append-icon="
-                    isExpanded(internalItem)
-                      ? 'mdi-arrow-collapse'
-                      : 'mdi-arrow-expand'
-                  "
+                  :append-icon="isExpanded(internalItem) ? 'mdi-arrow-collapse' : 'mdi-arrow-expand'"
                   :text="isExpanded(internalItem) ? 'Hide' : 'Show'"
                   variant="text"
                   size="small"
-                  @click="toggleExpand(internalItem)"
                   class="expand-btn"
-                ></v-btn>
+                  @click="toggleExpand(internalItem)"
+                />
               </template>
 
-              <template v-slot:expanded-row="{ columns, item }">
+              <template #expanded-row="{ columns, item }">
                 <tr>
                   <td :colspan="columns.length">
                     <v-sheet rounded="lg" border>
@@ -291,23 +247,17 @@
                               </thead>
                               <tbody>
                                 <tr v-for="q in getEdovoQuestionsWithAnswerKey(item)" :key="q.questionNumber">
-                                  <td class="font-weight-bold">{{ q.questionNumber }}</td>
+                                  <td class="font-weight-bold">
+                                    {{ q.questionNumber }}
+                                  </td>
                                   <td>{{ q.lesson || '-' }}</td>
                                   <td>{{ q.question || '-' }}</td>
                                   <td>{{ q.answer || '(empty)' }}</td>
                                   <td>
-                                    <v-chip
-                                      v-if="q.required"
-                                      color="error"
-                                      size="x-small"
-                                      variant="flat"
-                                    >Required</v-chip>
-                                    <v-chip
-                                      v-else
-                                      color="grey"
-                                      size="x-small"
-                                      variant="outlined"
-                                    >Optional</v-chip>
+                                    <v-chip v-if="q.required" color="error" size="x-small" variant="flat">
+                                      Required
+                                    </v-chip>
+                                    <v-chip v-else color="grey" size="x-small" variant="outlined"> Optional </v-chip>
                                   </td>
                                 </tr>
                               </tbody>
@@ -320,9 +270,9 @@
                         v-else
                         :user="item"
                         :facilities="facilityOptions"
-                        @documentDeleted="documentDeleted"
-                        @documentRegraded="documentRegraded"
-                        @scoreUpdated="scoreUpdated"
+                        @document-deleted="documentDeleted"
+                        @document-regraded="documentRegraded"
+                        @score-updated="scoreUpdated"
                       />
                     </v-sheet>
                   </td>
@@ -334,96 +284,91 @@
           <!-- Pagination Footer - Outside scrollable area -->
           <div class="pagination-footer">
             <div class="d-flex justify-space-between align-center">
-                  <!-- Left side: Items per page selector -->
-                  <div class="d-flex align-center">
+              <!-- Left side: Items per page selector -->
+              <div class="d-flex align-center">
                 <span class="mr-3 text-body-2 items-per-page-label">Items per page:</span>
-                    <v-select
-                      v-model="itemsPerPage"
+                <v-select
+                  v-model="itemsPerPage"
                   :items="[10, 20, 30, 50, 100]"
-                      density="compact"
-                      variant="outlined"
-                      class="items-per-page-select"
-                      hide-details
-                    ></v-select>
-                  </div>
+                  density="compact"
+                  variant="outlined"
+                  class="items-per-page-select"
+                  hide-details
+                />
+              </div>
 
-                  <!-- Center: Pagination -->
-                  <div>
-                    <v-pagination
-                      v-model="page"
-                      :length="pageCount"
-                      :total-visible="5"
-                      size="small"
-                    ></v-pagination>
-                  </div>
+              <!-- Center: Pagination -->
+              <div>
+                <v-pagination v-model="page" :length="pageCount" :total-visible="5" size="small" />
+              </div>
 
-                  <!-- Right side: Items info -->
-                  <div class="text-body-2">
-                    {{ currentRangeText }} of {{ filteredItems.length }} items
-                  </div>
-                </div>
-    </div>
+              <!-- Right side: Items info -->
+              <div class="text-body-2">{{ currentRangeText }} of {{ filteredItems.length }} items</div>
+            </div>
           </div>
+        </div>
       </div>
     </div>
   </div>
 
   <v-dialog v-model="ExportResultsDialog">
-    <Exports :applicants="selectedItems" @close="ExportResultsDialog = false" :questionType="selectedQuestionType"
-    @documentDeleted="documentDeletedBulk"/>
-
+    <Exports
+      :applicants="selectedItems"
+      :question-type="selectedQuestionType"
+      @close="ExportResultsDialog = false"
+      @document-deleted="documentDeletedBulk"
+    />
   </v-dialog>
-
 </template>
 
-<script setup>
-import { ref, computed, watch } from "vue";
-import { useQuery } from "@tanstack/vue-query";
-import api from "@/plugins/axios";
-import resultsDetails from "./resultsDetails.vue";
-import Exports from "./Exports.vue";
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
+import api from '@/plugins/axios';
+import resultsDetails from './resultsDetails.vue';
+import Exports from './Exports.vue';
 
 const props = defineProps({
-    refresh: {
-      type: Boolean,
-      default: false,
-    },
+  refresh: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // Reactive state
 const selectedFacility = ref(null);
-const selectedQuestionType = ref("All");
+const selectedQuestionType = ref('All');
 const dateMenu = ref(false);
 const dateRangeArr = ref([]);
-const matchStatus = ref("All");
+const matchStatus = ref('All');
 const selectedDocumentId = ref(null);
 const dialog = ref(false);
 const loading = ref([]);
 const expandedDocumentId = ref(null);
 const expanded = ref([]);
-const search = ref("");
+const search = ref('');
 const ExportResultsDialog = ref(false);
 const selectedIDS = ref([]);
 const page = ref(1);
 const itemsPerPage = ref(20);
 
 const headers = [
-        { title: "First Name", key: "first_name" },
-        { title: "Middle Name", key: "middle_name" },
-        { title: "Last Name", key: "last_name" },
-        { title: "Document Type", key: "document_type" },
-        { title: "Score", key: "score" },
-        { title: "Created", key: "created_at" },
-        { title: "DOC Number", key: "doc_number" },
-        { title: "Facility Name", key: "facility_name" },
+  { title: 'First Name', key: 'first_name' },
+  { title: 'Middle Name', key: 'middle_name' },
+  { title: 'Last Name', key: 'last_name' },
+  { title: 'Document Type', key: 'document_type' },
+  { title: 'Score', key: 'score' },
+  { title: 'Created', key: 'created_at' },
+  { title: 'DOC Number', key: 'doc_number' },
+  { title: 'Facility Name', key: 'facility_name' },
 ];
 
 // TanStack Query for question types (cached, fetches once)
 const { data: questionTypesData } = useQuery({
   queryKey: ['questionTypes'],
   queryFn: async () => {
-    const res = await api.post("/get-question-types");
-    return ["All", ...res.data];
+    const res = await api.post('/get-question-types');
+    return ['All', ...res.data];
   },
   staleTime: Infinity, // Never goes stale - this data rarely changes
   gcTime: 1000 * 60 * 60, // 60 minutes - data stays in cache
@@ -432,23 +377,23 @@ const { data: questionTypesData } = useQuery({
   refetchOnReconnect: false,
 });
 
-const questionTypes = computed(() => questionTypesData.value || ["All"]);
+const questionTypes = computed(() => questionTypesData.value || ['All']);
 
 // TanStack Query for facilities (cached, rarely changes)
 const { data: facilitiesData, isLoading: facilitiesLoading } = useQuery({
   queryKey: ['facilityProfiles'], // UNIQUE KEY - different from Facilities page
   queryFn: async () => {
-    const res = await api.get("/get-facility-profile");
+    const res = await api.get('/get-facility-profile');
     // Ensure consistent data structure
     const normalized = res.data.map((facility) => ({
-      facility_id: facility["Facility ID"] || facility.facility_id,
-      facility_name: facility["Facility Name"] || facility.facility_name,
+      facility_id: facility['Facility ID'] || facility.facility_id,
+      facility_name: facility['Facility Name'] || facility.facility_name,
       id: facility.id,
-      mailing_addresses: Array.isArray(facility.mailing_addresses) 
-        ? facility.mailing_addresses 
-        : facility.mailing_addresses 
-        ? [facility.mailing_addresses] 
-        : [],
+      mailing_addresses: Array.isArray(facility.mailing_addresses)
+        ? facility.mailing_addresses
+        : facility.mailing_addresses
+          ? [facility.mailing_addresses]
+          : [],
     }));
     console.log('Facility profiles loaded:', normalized.length);
     return normalized;
@@ -472,7 +417,7 @@ const facilityOptions = computed(() => {
 const { data: edovoAnswerKeysData } = useQuery({
   queryKey: ['edovoAnswerKeys'],
   queryFn: async () => {
-    const res = await api.post("/get-edovo-answer-key");
+    const res = await api.post('/get-edovo-answer-key');
     return res.data;
   },
   staleTime: Infinity, // Never goes stale - this data rarely changes
@@ -485,14 +430,19 @@ const { data: edovoAnswerKeysData } = useQuery({
 const edovoAnswerKeys = computed(() => edovoAnswerKeysData.value || {});
 
 // TanStack Query for results (refetches when filters change)
-const { data: resultsData, isLoading: loader, isFetching, refetch: refetchResults } = useQuery({
+const {
+  data: resultsData,
+  isLoading: loader,
+  isFetching,
+  refetch: refetchResults,
+} = useQuery({
   queryKey: ['markedResults', selectedQuestionType, selectedFacility], // Reactive query key
   queryFn: async () => {
     console.log('Fetching results:', {
       question_type: selectedQuestionType.value,
-      facility_id: selectedFacility.value
+      facility_id: selectedFacility.value,
     });
-    const res = await api.post("/get-marked-results", {
+    const res = await api.post('/get-marked-results', {
       question_type: selectedQuestionType.value,
       facility_id: selectedFacility.value,
     });
@@ -515,11 +465,14 @@ const items = computed(() => {
 });
 
 // Watch for refresh prop
-watch(() => props.refresh, (newValue) => {
-  if (newValue) {
-    refetchResults();
+watch(
+  () => props.refresh,
+  (newValue) => {
+    if (newValue) {
+      refetchResults();
+    }
   }
-});
+);
 
 // Watch for pagination changes - reset to page 1
 watch(itemsPerPage, () => {
@@ -540,42 +493,35 @@ watch(matchStatus, () => {
 
 // Computed properties
 const dateRangeText = computed(() => {
-  if (!dateRangeArr.value || !Array.isArray(dateRangeArr.value) || dateRangeArr.value.length === 0)
-        return "";
-      const formatDate = (dateStr) => {
-        if (!dateStr) return "";
-        const [year, month, day] = dateStr.split("-");
-        return `${month}/${day}/${year}`;
-      };
+  if (!dateRangeArr.value || !Array.isArray(dateRangeArr.value) || dateRangeArr.value.length === 0) return '';
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const [year, month, day] = dateStr.split('-');
+    return `${month}/${day}/${year}`;
+  };
   if (dateRangeArr.value.length === 1 && dateRangeArr.value[0]) {
     return formatDate(dateRangeArr.value[0]);
-      }
+  }
   if (dateRangeArr.value.length >= 2 && dateRangeArr.value[0] && dateRangeArr.value[1]) {
     const sortedDates = [...dateRangeArr.value].sort();
-        return `${formatDate(sortedDates[0])} - ${formatDate(sortedDates[1])}`;
-      }
-      return "";
+    return `${formatDate(sortedDates[0])} - ${formatDate(sortedDates[1])}`;
+  }
+  return '';
 });
 
 const filteredItems = computed(() => {
   let filtered = items.value;
 
-      // Filter by match status based on parent_id
+  // Filter by match status based on parent_id
   if (matchStatus.value === 'Matched') {
-        filtered = filtered.filter(item => item.parent_id);
+    filtered = filtered.filter((item) => item.parent_id);
   } else if (matchStatus.value === 'Unmatched') {
-        filtered = filtered.filter(item => !item.parent_id);
-      }
+    filtered = filtered.filter((item) => !item.parent_id);
+  }
 
-      // Filter by search text
+  // Filter by search text
   if (search.value) {
-        filtered = filtered.filter((item) =>
-      firstAndLastNameFilter(
-        null,
-        search.value,
-        { columns: item }
-      )
-    );
+    filtered = filtered.filter((item) => firstAndLastNameFilter(null, search.value, { columns: item }));
   }
 
   // Filter by date range
@@ -587,39 +533,37 @@ const filteredItems = computed(() => {
     dateRangeArr.value[1]
   ) {
     const [startDateStr, endDateStr] = [...dateRangeArr.value].sort();
-        
-        const start = new Date(startDateStr);
-        start.setHours(0, 0, 0, 0);
-        
-        const end = new Date(endDateStr);
-        end.setHours(23, 59, 59, 999);
 
-        filtered = filtered.filter(item => {
-          const dateValue = item.date_created || item.created_at;
-          if (!dateValue) return false;
+    const start = new Date(startDateStr);
+    start.setHours(0, 0, 0, 0);
 
-          try {
-            let created = new Date(dateValue);
-            
-            if (isNaN(created.getTime())) {
-              return false;
-            }
-            
-            const isInRange = created >= start && created <= end;
-            return isInRange;
-          } catch (error) {
-            return false;
-          }
-        });
+    const end = new Date(endDateStr);
+    end.setHours(23, 59, 59, 999);
+
+    filtered = filtered.filter((item) => {
+      const dateValue = item.date_created || item.created_at;
+      if (!dateValue) return false;
+
+      try {
+        const created = new Date(dateValue);
+
+        if (isNaN(created.getTime())) {
+          return false;
+        }
+
+        const isInRange = created >= start && created <= end;
+        return isInRange;
+      } catch (error) {
+        return false;
       }
+    });
+  }
 
-      return filtered;
+  return filtered;
 });
 
 const selectedItems = computed(() => {
-  return items.value.filter((item) =>
-    selectedIDS.value.includes(item.document_id)
-  );
+  return items.value.filter((item) => selectedIDS.value.includes(item.document_id));
 });
 
 const pageCount = computed(() => {
@@ -636,14 +580,14 @@ const currentRangeText = computed(() => {
   if (filteredItems.value.length === 0) return '0-0';
   const start = (page.value - 1) * itemsPerPage.value + 1;
   const end = Math.min(page.value * itemsPerPage.value, filteredItems.value.length);
-      return `${start}-${end}`;
+  return `${start}-${end}`;
 });
 
 // Methods
 const rowProps = (row) => {
-      const data = row && row.item ? row.item : null;
-      const noParent = data == null || data.parent_id === null || data.parent_id === undefined;
-      return noParent ? { class: 'row-orange' } : {};
+  const data = row && row.item ? row.item : null;
+  const noParent = data == null || data.parent_id === null || data.parent_id === undefined;
+  return noParent ? { class: 'row-orange' } : {};
 };
 
 const documentDeletedBulk = (item) => {
@@ -652,81 +596,79 @@ const documentDeletedBulk = (item) => {
 };
 
 const onDateRangeChange = (val) => {
-      const formatDateToString = (date) => {
-        if (!date) return null;
-        
-        if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-          return date;
-        }
-        
-        if (date instanceof Date) {
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          const day = String(date.getDate()).padStart(2, '0');
-          return `${year}-${month}-${day}`;
-        }
-        
-        try {
-          const dateObj = new Date(date);
-          if (!isNaN(dateObj.getTime())) {
-            const year = dateObj.getFullYear();
-            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const day = String(dateObj.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-          }
-        } catch (e) {
-          console.warn("Could not parse date:", date);
-        }
-        
-        return null;
-      };
+  const formatDateToString = (date) => {
+    if (!date) return null;
 
-      if (!val || (Array.isArray(val) && val.length === 0)) {
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return date;
+    }
+
+    if (date instanceof Date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    try {
+      const dateObj = new Date(date);
+      if (!isNaN(dateObj.getTime())) {
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    } catch (e) {
+      console.warn('Could not parse date:', date);
+    }
+
+    return null;
+  };
+
+  if (!val || (Array.isArray(val) && val.length === 0)) {
     dateRangeArr.value = [];
-      } else if (Array.isArray(val)) {
-        const validDates = val
-          .map(formatDateToString)
-          .filter(d => d !== null);
-        
-        if (validDates.length === 0) {
+  } else if (Array.isArray(val)) {
+    const validDates = val.map(formatDateToString).filter((d) => d !== null);
+
+    if (validDates.length === 0) {
       dateRangeArr.value = [];
-        } else if (validDates.length === 1) {
+    } else if (validDates.length === 1) {
       dateRangeArr.value = validDates;
-        } else if (validDates.length === 2) {
-          const sortedDates = [...validDates].sort();
+    } else if (validDates.length === 2) {
+      const sortedDates = [...validDates].sort();
       dateRangeArr.value = sortedDates;
-          
-          setTimeout(() => {
+
+      setTimeout(() => {
         dateMenu.value = false;
-          }, 300);
-        } else {
-          const sortedDates = [...validDates].sort();
+      }, 300);
+    } else {
+      const sortedDates = [...validDates].sort();
       dateRangeArr.value = [sortedDates[0], sortedDates[sortedDates.length - 1]];
-        }
-      } else {
-        const formattedDate = formatDateToString(val);
-        
-        if (!formattedDate) {
+    }
+  } else {
+    const formattedDate = formatDateToString(val);
+
+    if (!formattedDate) {
       dateRangeArr.value = [];
-        } else {
+    } else {
       if (dateRangeArr.value && dateRangeArr.value.length === 1) {
         const firstDate = dateRangeArr.value[0];
-            
-            if (firstDate === formattedDate) {
+
+        if (firstDate === formattedDate) {
           dateRangeArr.value = [formattedDate];
-            } else {
-              const sortedDates = [firstDate, formattedDate].sort();
+        } else {
+          const sortedDates = [firstDate, formattedDate].sort();
           dateRangeArr.value = sortedDates;
-              setTimeout(() => {
+          setTimeout(() => {
             dateMenu.value = false;
-              }, 300);
-            }
-          } else {
+          }, 300);
+        }
+      } else {
         dateRangeArr.value = [formattedDate];
       }
     }
   }
-  
+
   page.value = 1;
 };
 
@@ -737,7 +679,7 @@ const clearDateRange = () => {
 };
 
 const documentDeleted = (item) => {
-  console.log("Document deleted:", item);
+  console.log('Document deleted:', item);
   refetchResults();
   selectedDocumentId.value = null;
 };
@@ -751,33 +693,29 @@ const scoreUpdated = (scoreData) => {
 };
 
 const formatToLocal = (dateString) => {
-      if (!dateString) return "";
+  if (!dateString) return '';
 
-      const options = {
-        year: "2-digit",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      };
+  const options = {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  };
 
-      const date = new Date(dateString);
-      return new Intl.DateTimeFormat(undefined, options).format(date);
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat(undefined, options).format(date);
 };
 
 const firstAndLastNameFilter = (value, query, item) => {
-      if (!query) return true;
+  if (!query) return true;
 
-      const fullName =
-        `${item.columns.first_name} ${item.columns.last_name}`.toLowerCase();
-      const reversedFullName =
-        `${item.columns.last_name} ${item.columns.first_name}`.toLowerCase();
-      const lowerQuery = query.toLowerCase();
+  const fullName = `${item.columns.first_name} ${item.columns.last_name}`.toLowerCase();
+  const reversedFullName = `${item.columns.last_name} ${item.columns.first_name}`.toLowerCase();
+  const lowerQuery = query.toLowerCase();
 
-      return (
-        fullName.includes(lowerQuery) || reversedFullName.includes(lowerQuery)
-      );
+  return fullName.includes(lowerQuery) || reversedFullName.includes(lowerQuery);
 };
 
 const openExportResultsDialog = () => {
@@ -792,40 +730,40 @@ const getResults = () => {
 };
 
 const isEdovoDocument = (item) => {
-      return item.document_type?.startsWith("Edovo") || item.extracted_table?.startsWith("Edovo");
+  return item.document_type?.startsWith('Edovo') || item.extracted_table?.startsWith('Edovo');
 };
 
 const getEdovoQuestionsWithAnswerKey = (item) => {
-      let documentType = item.document_type || item.extracted_table || '';
-      documentType = documentType.replace('Edovo ', '').trim();
+  let documentType = item.document_type || item.extracted_table || '';
+  documentType = documentType.replace('Edovo ', '').trim();
 
   const answerKeys = edovoAnswerKeys.value[documentType] || [];
 
-      const questions = [];
-      for (const answerKey of answerKeys) {
-        const questionNumber = answerKey.question_number;
-        const qColumn = `Q${questionNumber}`;
-        const answer = item[qColumn];
+  const questions = [];
+  for (const answerKey of answerKeys) {
+    const questionNumber = answerKey.question_number;
+    const qColumn = `Q${questionNumber}`;
+    const answer = item[qColumn];
 
-        questions.push({
-          questionNumber: questionNumber,
-          lesson: answerKey.lesson,
-          question: answerKey.question,
-          answer: answer,
-          required: answerKey.required
-        });
-      }
+    questions.push({
+      questionNumber: questionNumber,
+      lesson: answerKey.lesson,
+      question: answerKey.question,
+      answer: answer,
+      required: answerKey.required,
+    });
+  }
 
-      questions.sort((a, b) => a.questionNumber - b.questionNumber);
+  questions.sort((a, b) => a.questionNumber - b.questionNumber);
 
-      return questions;
+  return questions;
 };
 </script>
 
 <style scoped>
 .results-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none; /* Firefox */
@@ -836,7 +774,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .v-theme--dark .results-container {
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
 /* Hide all scrollbars for Chrome, Safari and Opera */
@@ -879,10 +817,12 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 
 /* Filters Section */
 .filters-section {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
   width: 100%;
   max-width: 100%;
@@ -891,13 +831,15 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .filters-section:hover {
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08), 0 4px 8px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 8px 24px rgba(99, 102, 241, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
   transform: translateY(-2px);
 }
 
 .v-theme--dark .filters-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -910,17 +852,17 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 
 .filters-header {
   padding: 24px 28px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
 }
 
 .v-theme--dark .filters-header {
   border-bottom-color: #334155;
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
 }
 
 .filters-title-group {
@@ -930,25 +872,25 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .filters-icon {
-  color: #6366F1;
+  color: #6366f1;
   opacity: 0.7;
 }
 
 .v-theme--dark .filters-icon {
-  color: #818CF8;
+  color: #818cf8;
   opacity: 0.8;
 }
 
 .filters-title {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
   letter-spacing: -0.01em;
 }
 
 .v-theme--dark .filters-title {
-  color: #F8FAFC;
+  color: #f8fafc;
 }
 
 .export-btn {
@@ -956,7 +898,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   font-weight: 600 !important;
   letter-spacing: 0 !important;
   box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2) !important;
-  border: 1px solid #6366F1 !important;
+  border: 1px solid #6366f1 !important;
   padding: 10px 24px !important;
   height: auto !important;
   min-height: 40px !important;
@@ -964,7 +906,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .export-btn:hover {
-  border-color: #4F46E5 !important;
+  border-color: #4f46e5 !important;
   box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3) !important;
   transform: translateY(-1px);
 }
@@ -979,8 +921,8 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background: #FAFBFC;
-  border-top: 1px solid #E2E8F0;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
   width: 100%;
   max-width: 100%;
   overflow: hidden;
@@ -988,7 +930,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .v-theme--dark .filters-content {
-  background: #151E2E;
+  background: #151e2e;
   border-top-color: #334155;
 }
 
@@ -1021,24 +963,24 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 :deep(.v-field:hover) {
-  border-color: #A5B4FC !important;
+  border-color: #a5b4fc !important;
 }
 
 :deep(.v-field--focused) {
-  border-color: #6366F1 !important;
+  border-color: #6366f1 !important;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1) !important;
 }
 
 /* Selected text in filters - clean without background */
 :deep(.v-select__selection),
 :deep(.v-autocomplete__selection) {
-  color: #1F2937 !important;
+  color: #1f2937 !important;
   font-weight: 500 !important;
 }
 
 :deep(.v-theme--dark .v-select__selection),
 :deep(.v-theme--dark .v-autocomplete__selection) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
 }
 
 /* Dropdown Menu Styling - All Filters */
@@ -1098,11 +1040,11 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 
 :deep(.v-list-item--active .v-list-item-title) {
   font-weight: 600 !important;
-  color: #1F2937 !important;
+  color: #1f2937 !important;
 }
 
 :deep(.v-theme--dark .v-list-item--active .v-list-item-title) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
 }
 
 /* Facility Dropdown Styling */
@@ -1114,7 +1056,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 
 .facility-list-item .facility-name {
   font-weight: 600 !important;
-  color: #1E293B !important;
+  color: #1e293b !important;
   font-size: 0.9375rem !important;
   margin-bottom: 4px !important;
   white-space: normal !important;
@@ -1123,12 +1065,12 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .v-theme--dark .facility-list-item .facility-name {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
 }
 
 .facility-list-item .facility-address {
   font-size: 0.8125rem !important;
-  color: #64748B !important;
+  color: #64748b !important;
   margin-top: 2px !important;
   white-space: normal !important;
   word-wrap: break-word !important;
@@ -1137,7 +1079,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .v-theme--dark .facility-list-item .facility-address {
-  color: #94A3B8 !important;
+  color: #94a3b8 !important;
 }
 
 .facility-list-item {
@@ -1162,11 +1104,13 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 
 /* Table Section */
 .table-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
   width: 100%;
   max-width: 100%;
@@ -1174,13 +1118,15 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .table-section:hover {
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08), 0 4px 8px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 8px 24px rgba(99, 102, 241, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
   transform: translateY(-2px);
 }
 
 .v-theme--dark .table-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -1193,17 +1139,17 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 
 .table-header {
   padding: 24px 28px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
 }
 
 .v-theme--dark .table-header {
   border-bottom-color: #334155;
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
 }
 
 .table-stats {
@@ -1213,12 +1159,12 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .stats-icon {
-  color: #6366F1;
+  color: #6366f1;
   opacity: 0.7;
 }
 
 .v-theme--dark .stats-icon {
-  color: #818CF8;
+  color: #818cf8;
   opacity: 0.8;
 }
 
@@ -1229,22 +1175,22 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .v-theme--dark .stats-text {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 /* Selected items chip - match upload page badge style */
 .table-stats :deep(.v-chip) {
-  background: linear-gradient(135deg, #EEF2FF, #E0E7FF) !important;
-  color: #4F46E5 !important;
-  border: 1px solid #C7D2FE !important;
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff) !important;
+  color: #4f46e5 !important;
+  border: 1px solid #c7d2fe !important;
   box-shadow: 0 1px 2px rgba(99, 102, 241, 0.1) !important;
   font-weight: 600 !important;
 }
 
 .v-theme--dark .table-stats :deep(.v-chip) {
-  background: linear-gradient(135deg, #312E81, #3730A3) !important;
-  color: #A5B4FC !important;
-  border: 1px solid #4C1D95 !important;
+  background: linear-gradient(135deg, #312e81, #3730a3) !important;
+  color: #a5b4fc !important;
+  border: 1px solid #4c1d95 !important;
 }
 
 .table-content {
@@ -1252,8 +1198,8 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  background: #FAFBFC;
-  border-top: 1px solid #E2E8F0;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
   width: 100%;
   max-width: 100%;
   overflow: hidden; /* Prevent content from overflowing */
@@ -1261,7 +1207,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .v-theme--dark .table-content {
-  background: #151E2E;
+  background: #151e2e;
   border-top-color: #334155;
 }
 
@@ -1273,32 +1219,32 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   min-height: 400px;
   gap: 16px;
   padding: 40px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
 }
 
 .v-theme--dark .loader-container {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .loader-text {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .loader-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .table-wrapper {
   width: 100%;
   max-width: 100%;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-sizing: border-box;
   overflow: hidden;
@@ -1308,7 +1254,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .v-theme--dark .table-wrapper {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -1360,7 +1306,8 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 :deep(.v-data-table__td:nth-child(3)),  /* Middle name */
 :deep(.v-data-table__td:nth-child(4)),  /* Last name */
 :deep(.v-data-table__td:nth-child(6)),  /* Score */
-:deep(.v-data-table__td:nth-child(8)) { /* Doc number */
+:deep(.v-data-table__td:nth-child(8)) {
+  /* Doc number */
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
@@ -1369,7 +1316,8 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 /* Long content columns - allow wrap */
 :deep(.v-data-table__td:nth-child(5)),  /* Document type */
 :deep(.v-data-table__td:nth-child(7)),  /* Date created */
-:deep(.v-data-table__td:nth-child(9)) { /* Facility name */
+:deep(.v-data-table__td:nth-child(9)) {
+  /* Facility name */
   white-space: normal !important;
   word-break: break-word !important;
   overflow-wrap: break-word !important;
@@ -1409,8 +1357,8 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 :deep(.v-data-table__th) {
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
-  color: #64748B !important;
-  background: #F9FAFB !important;
+  color: #64748b !important;
+  background: #f9fafb !important;
   text-transform: uppercase !important;
   letter-spacing: 0.03em !important;
   white-space: nowrap !important;
@@ -1432,13 +1380,13 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 :deep(.v-theme--dark .v-data-table__th) {
-  color: #94A3B8 !important;
-  background: #0F172A !important;
+  color: #94a3b8 !important;
+  background: #0f172a !important;
 }
 
 :deep(.v-data-table__td) {
-  color: #1E293B !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e5e7eb !important;
   font-size: 0.875rem !important;
   white-space: normal !important; /* Allow text wrapping */
   padding: 12px 16px !important;
@@ -1449,7 +1397,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 :deep(.v-theme--dark .v-data-table__td) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
   border-bottom-color: #334155 !important;
 }
 
@@ -1471,8 +1419,8 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 
 /* Expanded Row Styling */
 :deep(.v-data-table__expanded__content) {
-  background: #F9FAFB !important;
-  border-top: 2px solid #E5E7EB !important;
+  background: #f9fafb !important;
+  border-top: 2px solid #e5e7eb !important;
   padding: 20px !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -1492,7 +1440,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 :deep(.v-theme--dark .v-data-table__expanded__content) {
-  background: #0F172A !important;
+  background: #0f172a !important;
   border-top-color: #334155 !important;
 }
 
@@ -1509,7 +1457,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 
 /* Style the sheet inside expanded row */
 :deep(.v-data-table__expanded__content .v-sheet) {
-  background: #FFFFFF !important;
+  background: #ffffff !important;
   padding: 16px !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -1520,7 +1468,7 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 :deep(.v-theme--dark .v-data-table__expanded__content .v-sheet) {
-  background: #1E293B !important;
+  background: #1e293b !important;
 }
 
 /* Edovo table inside expanded row - allow text wrapping */
@@ -1584,24 +1532,24 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 /* Pagination Footer - Outside scroll area */
 .pagination-footer {
   padding: 16px 20px;
-  background: #FFFFFF;
-  border-top: 1px solid #E2E8F0;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
   width: 100%;
   box-sizing: border-box;
 }
 
 .v-theme--dark .pagination-footer {
-  background: #1E293B;
+  background: #1e293b;
   border-top-color: #334155;
 }
 
 .items-per-page-label {
-  color: #4B5563 !important;
+  color: #4b5563 !important;
   font-weight: 500 !important;
 }
 
 .v-theme--dark .items-per-page-label {
-  color: #9CA3AF !important;
+  color: #9ca3af !important;
 }
 
 .items-per-page-select {
@@ -1609,13 +1557,13 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .items-per-page-select :deep(.v-field__input) {
-  color: #1F2937 !important;
+  color: #1f2937 !important;
   font-weight: 500 !important;
   font-size: 0.875rem !important;
 }
 
 .v-theme--dark .items-per-page-select :deep(.v-field__input) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
 }
 
 .items-per-page-select :deep(.v-field) {
@@ -1623,24 +1571,24 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
 }
 
 .pagination-footer .text-body-2 {
-  color: #4B5563 !important;
+  color: #4b5563 !important;
   font-weight: 500 !important;
 }
 
 .v-theme--dark .pagination-footer .text-body-2 {
-  color: #9CA3AF !important;
+  color: #9ca3af !important;
 }
 
 /* Pagination Styling */
 :deep(.v-data-table__footer) {
-  border-top: 1px solid #E5E7EB;
-  background: #F9FAFB;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
   padding: 12px 16px;
 }
 
 :deep(.v-theme--dark .v-data-table__footer) {
   border-top-color: #334155;
-  background: #0F172A;
+  background: #0f172a;
 }
 
 :deep(.v-pagination__item) {
@@ -1658,7 +1606,6 @@ const getEdovoQuestionsWithAnswerKey = (item) => {
   box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3) !important;
   color: white !important;
 }
-
 
 :deep(.v-pagination__prev),
 :deep(.v-pagination__next),

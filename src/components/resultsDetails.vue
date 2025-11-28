@@ -6,26 +6,21 @@
       <div class="actions-group">
         <v-btn
           class="action-btn action-search"
-          @click="lookUpUsersDialog = true"
           prepend-icon="mdi-magnify"
           size="default"
+          @click="lookUpUsersDialog = true"
         >
           Search Mav
         </v-btn>
         <v-btn
           class="action-btn action-regrade"
-          @click="refreshDialog = true"
           prepend-icon="mdi-refresh-auto"
           size="default"
+          @click="refreshDialog = true"
         >
           Regrade Mav
         </v-btn>
-        <v-btn
-          class="action-btn action-delete"
-          @click="deleteDialog = true"
-          prepend-icon="mdi-delete"
-          size="default"
-        >
+        <v-btn class="action-btn action-delete" prepend-icon="mdi-delete" size="default" @click="deleteDialog = true">
           Delete
         </v-btn>
       </div>
@@ -36,21 +31,17 @@
       <!-- Left Section: Bubbles/Missions/Thank You -->
       <div class="left-section">
         <div class="section-card">
-          <v-tabs
-            v-model="tab2"
-            class="custom-tabs"
-            bg-color="transparent"
-          >
+          <v-tabs v-model="tab2" class="custom-tabs" bg-color="transparent">
             <v-tab value="bubble" class="custom-tab">
-              <v-icon start>mdi-checkbox-multiple-marked-circle</v-icon>
+              <v-icon start> mdi-checkbox-multiple-marked-circle </v-icon>
               Bubbles
             </v-tab>
             <v-tab v-if="showMissionsTab" value="missions" class="custom-tab">
-              <v-icon start>mdi-target</v-icon>
+              <v-icon start> mdi-target </v-icon>
               Missions
             </v-tab>
             <v-tab v-if="showThankYouTab" value="thankyou" class="custom-tab">
-              <v-icon start>mdi-heart</v-icon>
+              <v-icon start> mdi-heart </v-icon>
               Thank You
             </v-tab>
           </v-tabs>
@@ -60,29 +51,35 @@
             <v-tabs-window-item value="bubble">
               <div class="table-container">
                 <v-table class="bubbles-table" density="comfortable">
-                <thead>
-                  <tr>
+                  <thead>
+                    <tr>
                       <th>Question</th>
                       <th>Answer</th>
                       <th>Correct</th>
                       <th>Status</th>
                       <th>Variant</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item, index) in items" :key="index" :class="{ 'correct-row': scoreStatus(item) === 'Correct' }">
-                      <td class="fw-bold">{{ item.question }}</td>
-                    <td>
-                      <v-select
-                        v-model="item.answer"
-                        :items="answerOptions"
-                        density="compact"
-                        hide-details
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in items"
+                      :key="index"
+                      :class="{ 'correct-row': scoreStatus(item) === 'Correct' }"
+                    >
+                      <td class="fw-bold">
+                        {{ item.question }}
+                      </td>
+                      <td>
+                        <v-select
+                          v-model="item.answer"
+                          :items="answerOptions"
+                          density="compact"
+                          hide-details
                           variant="outlined"
-                        @update:modelValue="() => saveNewAnswer(item)"
-                          style="min-width: 60px; max-width: 80px;"
-                      />
-                    </td>
+                          style="min-width: 60px; max-width: 80px"
+                          @update:model-value="() => saveNewAnswer(item)"
+                        />
+                      </td>
                       <td>{{ item.correct }}</td>
                       <td>
                         <v-chip
@@ -92,11 +89,11 @@
                         >
                           {{ scoreStatus(item) }}
                         </v-chip>
-                    </td>
-                    <td>{{ item.variant }}</td>
-                  </tr>
-                </tbody>
-              </v-table>
+                      </td>
+                      <td>{{ item.variant }}</td>
+                    </tr>
+                  </tbody>
+                </v-table>
               </div>
             </v-tabs-window-item>
 
@@ -108,97 +105,93 @@
                     <div v-for="m in missions.slice(0, 5)" :key="m.key" class="mission-row">
                       <div class="mission-label" @click="toggleMission(m.key)">
                         <span class="mission-text">{{ m.label }}</span>
-                          <span class="show-text">Show</span>
+                        <span class="show-text">Show</span>
                       </div>
-                          <v-btn-toggle
-                            v-model="m.value"
-                            divided
-                            mandatory
-                            density="comfortable"
-                            @update:modelValue="val => onMissionChange(m, val)"
-                          >
-                            <v-btn
-                              :value="true"
-                              :color="m.value === true ? 'success' : undefined"
-                              variant="outlined"
-                              size="small"
-                            >
-                              Pass
-                            </v-btn>
-                            <v-btn
-                              :value="false"
-                              :color="m.value === false ? 'error' : undefined"
-                              variant="outlined"
-                              size="small"
-                            >
-                              Fail
-                            </v-btn>
-                          </v-btn-toggle>
+                      <v-btn-toggle
+                        v-model="m.value"
+                        divided
+                        mandatory
+                        density="comfortable"
+                        @update:model-value="(val) => onMissionChange(m, val)"
+                      >
+                        <v-btn
+                          :value="true"
+                          :color="m.value === true ? 'success' : undefined"
+                          variant="outlined"
+                          size="small"
+                        >
+                          Pass
+                        </v-btn>
+                        <v-btn
+                          :value="false"
+                          :color="m.value === false ? 'error' : undefined"
+                          variant="outlined"
+                          size="small"
+                        >
+                          Fail
+                        </v-btn>
+                      </v-btn-toggle>
                     </div>
                   </v-col>
                   <v-col cols="6">
                     <div v-for="m in missions.slice(5, 10)" :key="m.key" class="mission-row">
                       <div class="mission-label" @click="toggleMission(m.key)">
                         <span class="mission-text">{{ m.label }}</span>
-                          <span class="show-text">Show</span>
+                        <span class="show-text">Show</span>
                       </div>
-                          <v-btn-toggle
-                            v-model="m.value"
-                            divided
-                            mandatory
-                            density="comfortable"
-                            @update:modelValue="val => onMissionChange(m, val)"
-                          >
-                            <v-btn
-                              :value="true"
-                              :color="m.value === true ? 'success' : undefined"
-                              variant="outlined"
-                              size="small"
-                            >
-                              Pass
-                            </v-btn>
-                            <v-btn
-                              :value="false"
-                              :color="m.value === false ? 'error' : undefined"
-                              variant="outlined"
-                              size="small"
-                            >
-                              Fail
-                            </v-btn>
-                          </v-btn-toggle>
+                      <v-btn-toggle
+                        v-model="m.value"
+                        divided
+                        mandatory
+                        density="comfortable"
+                        @update:model-value="(val) => onMissionChange(m, val)"
+                      >
+                        <v-btn
+                          :value="true"
+                          :color="m.value === true ? 'success' : undefined"
+                          variant="outlined"
+                          size="small"
+                        >
+                          Pass
+                        </v-btn>
+                        <v-btn
+                          :value="false"
+                          :color="m.value === false ? 'error' : undefined"
+                          variant="outlined"
+                          size="small"
+                        >
+                          Fail
+                        </v-btn>
+                      </v-btn-toggle>
                     </div>
-                        </v-col>
-                    </v-row>
+                  </v-col>
+                </v-row>
 
                 <!-- Selected Mission Answers -->
-                <div class="selected-mission-card" v-if="selectedMissionKey">
+                <div v-if="selectedMissionKey" class="selected-mission-card">
                   <h3 class="mission-card-title">
                     Answers for {{ selectedMissionLabel || selectedMissionKey.toUpperCase() }}
                   </h3>
                   <div v-if="selectedMissionAnswers" class="mission-answers">
-                    <div
-                          v-for="(val, akey) in selectedMissionAnswers"
-                          :key="akey"
-                      class="answer-item"
-                        >
-                            <strong>{{ akey }}:</strong>
+                    <div v-for="(val, akey) in selectedMissionAnswers" :key="akey" class="answer-item">
+                      <strong>{{ akey }}:</strong>
                       <span>{{ val }}</span>
                     </div>
-                    </div>
-                    <p v-else class="text-body-2 text-grey text-center py-4">
-                      <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
-                      No answers available for this mission.
-                    </p>
+                  </div>
+                  <p v-else class="text-body-2 text-grey text-center py-4">
+                    <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
+                    No answers available for this mission.
+                  </p>
                 </div>
                 <p v-else class="text-body-2 text-grey text-center py-4 mt-4">
-                  <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
+                  <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
                   Select a mission to view its answers.
                 </p>
               </div>
             </v-tabs-window-item>
 
             <!-- Thank You Tab -->
-            <v-tabs-window-item v-if="showThankYouTab" value="thankyou"> 
+            <v-tabs-window-item v-if="showThankYouTab" value="thankyou">
               <ThankYouNotes :user="user" />
             </v-tabs-window-item>
           </v-tabs-window>
@@ -210,22 +203,24 @@
         <!-- Score Summary Card -->
         <div class="score-card">
           <div class="score-header">
-            <v-icon class="score-icon">mdi-chart-box</v-icon>
+            <v-icon class="score-icon"> mdi-chart-box </v-icon>
             <h3 class="score-title">Score Summary</h3>
           </div>
           <div class="score-content">
             <v-table density="compact" class="score-table">
-                <thead>
-                  <tr>
+              <thead>
+                <tr>
                   <th>Variant</th>
                   <th>Score</th>
                   <th>Correct</th>
                   <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(mark, index) in marks" :key="index">
-                  <td class="fw-medium">{{ mark.variant }}</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(mark, index) in marks" :key="index">
+                  <td class="fw-medium">
+                    {{ mark.variant }}
+                  </td>
                   <td>
                     <v-chip
                       :color="mark.score >= 80 ? 'success' : mark.score >= 60 ? 'warning' : 'error'"
@@ -235,10 +230,10 @@
                       {{ mark.score }}%
                     </v-chip>
                   </td>
-                    <td>{{ mark.correct }}</td>
-                    <td>{{ mark.total }}</td>
-                  </tr>
-                    <tr v-if="showMissionsTab">
+                  <td>{{ mark.correct }}</td>
+                  <td>{{ mark.total }}</td>
+                </tr>
+                <tr v-if="showMissionsTab">
                   <td class="fw-medium">Missions</td>
                   <td>
                     <v-chip
@@ -249,51 +244,47 @@
                       {{ missionsPoints }}
                     </v-chip>
                   </td>
-                    <td>{{ missionsPassCount }}</td>
-                    <td>900</td>
-                    </tr>
-                </tbody>
-              </v-table>
+                  <td>{{ missionsPassCount }}</td>
+                  <td>900</td>
+                </tr>
+              </tbody>
+            </v-table>
           </div>
         </div>
 
         <!-- Document Preview Card -->
         <div class="preview-card">
-          <v-tabs
-            v-model="tab"
-            class="custom-tabs"
-            bg-color="transparent"
-          >
+          <v-tabs v-model="tab" class="custom-tabs" bg-color="transparent">
             <v-tab value="pdf" class="custom-tab">
-              <v-icon start>mdi-file-document</v-icon>
+              <v-icon start> mdi-file-document </v-icon>
               Document
             </v-tab>
             <v-tab value="image" class="custom-tab">
-              <v-icon start>mdi-image</v-icon>
+              <v-icon start> mdi-image </v-icon>
               Bubble Sheet
             </v-tab>
             <v-tab v-if="showCertificateTab" value="certificate" class="custom-tab">
-              <v-icon start>mdi-certificate</v-icon>
+              <v-icon start> mdi-certificate </v-icon>
               Certificate
             </v-tab>
             <v-tab v-if="showReportTab" value="report" class="custom-tab">
-              <v-icon start>mdi-file-chart</v-icon>
+              <v-icon start> mdi-file-chart </v-icon>
               Report
             </v-tab>
-            </v-tabs>
+          </v-tabs>
 
           <!-- Content -->
           <div class="preview-content">
             <!-- Sign in prompt when not authenticated -->
             <div v-if="!isGoogleSignedIn" class="signin-prompt">
-              <v-icon size="64" color="primary" class="mb-4">mdi-google-drive</v-icon>
+              <v-icon size="64" color="primary" class="mb-4"> mdi-google-drive </v-icon>
               <p class="signin-text">Sign in with Google to view document previews.</p>
               <v-btn
                 color="primary"
                 variant="elevated"
                 size="large"
-                @click="handleGoogleSignIn"
                 prepend-icon="mdi-google"
+                @click="handleGoogleSignIn"
               >
                 Sign in with Google
               </v-btn>
@@ -302,228 +293,234 @@
             <!-- Document tabs when signed in -->
             <v-tabs-window v-else v-model="tab">
               <!-- PDF Document Tab -->
-                <v-tabs-window-item value="pdf">
+              <v-tabs-window-item value="pdf">
                 <div class="document-viewer">
-                      <v-progress-circular
-                        v-if="loading[0]"
-                        indeterminate
-                        color="primary"
-                        size="50"
+                  <v-progress-circular
+                    v-if="loading[0]"
+                    indeterminate
+                    color="primary"
+                    size="50"
                     class="loading-spinner"
-                      ></v-progress-circular>
+                  />
 
                   <div v-if="!documentId && !loading[0]" class="no-content">
-                        <p class="text-body-2 text-grey text-center py-4">
-                          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
-                          Document ID not available
-                        </p>
-                      </div>
+                    <p class="text-body-2 text-grey text-center py-4">
+                      <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
+                      Document ID not available
+                    </p>
+                  </div>
 
                   <div v-else-if="documentId" class="document-content">
-                        <v-btn
-                          color="primary"
-                          variant="outlined"
-                      @click="openInNewTab(`https://drive.google.com/file/d/${documentId}/view`)"
+                    <v-btn
+                      color="primary"
+                      variant="outlined"
                       class="open-btn"
                       prepend-icon="mdi-open-in-new"
+                      @click="openInNewTab(`https://drive.google.com/file/d/${documentId}/view`)"
                     >
-                          Open PDF in New Tab
-                        </v-btn>
+                      Open PDF in New Tab
+                    </v-btn>
 
                     <div v-if="pdfBlobUrl" class="iframe-container">
-                        <iframe
-                          :src="pdfBlobUrl"
-                          width="100%"
-                          height="800"
-                          frameborder="0"
-                          allow="fullscreen"
-                          @error="onIframeError"
-                        ></iframe>
-                      </div>
                       <iframe
-                        v-else
-                        :src="`https://drive.google.com/file/d/${documentId}/preview?usp=sharing`"
+                        :src="pdfBlobUrl"
                         width="100%"
                         height="800"
                         frameborder="0"
-                        allowfullscreen
-                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                        allow="fullscreen"
                         @error="onIframeError"
-                      ></iframe>
+                      />
+                    </div>
+                    <iframe
+                      v-else
+                      :src="`https://drive.google.com/file/d/${documentId}/preview?usp=sharing`"
+                      width="100%"
+                      height="800"
+                      frameborder="0"
+                      allowfullscreen
+                      sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                      @error="onIframeError"
+                    />
                   </div>
                 </div>
-                </v-tabs-window-item>
+              </v-tabs-window-item>
 
               <!-- Bubble Sheet Image Tab -->
-                <v-tabs-window-item value="image">
+              <v-tabs-window-item value="image">
                 <div class="document-viewer">
                   <div v-if="!imageID" class="no-content">
-                        <p class="text-body-2 text-grey text-center py-4">
-                          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
-                          Image ID not available
-                        </p>
-                      </div>
+                    <p class="text-body-2 text-grey text-center py-4">
+                      <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
+                      Image ID not available
+                    </p>
+                  </div>
 
                   <div v-else class="document-content">
-                        <v-btn
-                          color="primary"
-                          variant="outlined"
-                      @click="openInNewTab(`https://drive.google.com/file/d/${imageID}/view`)"
+                    <v-btn
+                      color="primary"
+                      variant="outlined"
                       class="open-btn"
                       prepend-icon="mdi-open-in-new"
+                      @click="openInNewTab(`https://drive.google.com/file/d/${imageID}/view`)"
                     >
-                          Open Bubble Sheet in New Tab
-                        </v-btn>
+                      Open Bubble Sheet in New Tab
+                    </v-btn>
 
                     <div v-if="imageBlobUrl" class="image-container">
-                        <img
-                          :src="imageBlobUrl"
-                          alt="Bubble Sheet"
-                        class="bubble-sheet-image"
-                        />
-                      </div>
-                      <iframe
-                        v-else
-                        :src="`https://drive.google.com/file/d/${imageID}/preview?usp=sharing`"
-                        width="100%"
-                        height="800"
-                        frameborder="0"
-                        allowfullscreen
-                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
-                        @error="onIframeError"
-                    ></iframe>
+                      <img :src="imageBlobUrl" alt="Bubble Sheet" class="bubble-sheet-image" />
+                    </div>
+                    <iframe
+                      v-else
+                      :src="`https://drive.google.com/file/d/${imageID}/preview?usp=sharing`"
+                      width="100%"
+                      height="800"
+                      frameborder="0"
+                      allowfullscreen
+                      sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                      @error="onIframeError"
+                    />
                   </div>
                 </div>
-                </v-tabs-window-item>
+              </v-tabs-window-item>
 
               <!-- Certificate Tab -->
-                <v-tabs-window-item v-if="showCertificateTab" value="certificate">
+              <v-tabs-window-item v-if="showCertificateTab" value="certificate">
                 <div class="document-viewer">
                   <div class="document-actions">
-                      <template v-if="user.certificate_id">
+                    <template v-if="user.certificate_id">
+                      <v-btn
+                        color="primary"
+                        variant="outlined"
+                        :loading="certificateLoading"
+                        :disabled="certificateLoading"
+                        prepend-icon="mdi-download"
+                        @click="
+                          downloadFromUrl(
+                            user.certificate_id,
+                            `Certificate_${user.maverick_name_first}_${user.maverick_name_last}.pdf`
+                          )
+                        "
+                      >
+                        Download Certificate
+                      </v-btn>
+                      <v-btn
+                        color="warning"
+                        variant="outlined"
+                        :loading="certificateLoading"
+                        :disabled="certificateLoading"
+                        prepend-icon="mdi-refresh"
+                        @click="generateCertificate()"
+                      >
+                        Re-generate
+                      </v-btn>
+                    </template>
+                    <template v-else>
+                      <div v-if="user.parent_id">
                         <v-btn
                           color="primary"
-                          variant="outlined"
+                          variant="elevated"
                           :loading="certificateLoading"
                           :disabled="certificateLoading"
-                        @click="downloadFromUrl(user.certificate_id, `Certificate_${user.maverick_name_first}_${user.maverick_name_last}.pdf`)"
-                        prepend-icon="mdi-download"
-                      >
-                          Download Certificate
-                        </v-btn>
-                        <v-btn
-                          color="warning"
-                          variant="outlined"
-                          :loading="certificateLoading"
-                          :disabled="certificateLoading"
-                          @click="generateCertificate()"
-                        prepend-icon="mdi-refresh"
-                        >
-                        Re-generate
-                        </v-btn>
-                      </template>
-                      <template v-else>
-                        <div v-if="user.parent_id">
-                          <v-btn
-                            color="primary"
-                            variant="elevated"
-                            :loading="certificateLoading"
-                            :disabled="certificateLoading"
-                            @click="generateCertificate()"
                           prepend-icon="mdi-certificate"
-                          >
-                            Generate Certificate
-                          </v-btn>
-                        </div>
+                          @click="generateCertificate()"
+                        >
+                          Generate Certificate
+                        </v-btn>
+                      </div>
                       <p v-else class="text-body-2 text-warning text-center py-2">
-                            <v-icon size="small" class="mr-1">mdi-alert</v-icon>
-                            Match Maverick to Results
-                          </p>
-                      </template>
+                        <v-icon size="small" class="mr-1"> mdi-alert </v-icon>
+                        Match Maverick to Results
+                      </p>
+                    </template>
                   </div>
 
                   <div v-if="!user.certificate_id" class="no-content">
-                        <p class="text-body-2 text-grey text-center py-4">
-                          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
-                          Certificate not available
-                        </p>
-                      </div>
-                      <iframe
-                        v-else
-                        :src="user.certificate_id"
-                        width="100%"
-                        height="800"
-                        frameborder="0"
-                        allow="fullscreen"
-                        @error="onIframeError"
-                      ></iframe>
+                    <p class="text-body-2 text-grey text-center py-4">
+                      <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
+                      Certificate not available
+                    </p>
+                  </div>
+                  <iframe
+                    v-else
+                    :src="user.certificate_id"
+                    width="100%"
+                    height="800"
+                    frameborder="0"
+                    allow="fullscreen"
+                    @error="onIframeError"
+                  />
                 </div>
-                </v-tabs-window-item>
+              </v-tabs-window-item>
 
               <!-- Report Tab -->
-                <v-tabs-window-item v-if="showReportTab" value="report">
+              <v-tabs-window-item v-if="showReportTab" value="report">
                 <div class="document-viewer">
                   <div class="document-actions">
-                      <template v-if="user.report_id">
+                    <template v-if="user.report_id">
+                      <v-btn
+                        color="primary"
+                        variant="outlined"
+                        :loading="reportLoading"
+                        :disabled="reportLoading"
+                        prepend-icon="mdi-download"
+                        @click="
+                          downloadFromUrl(
+                            user.report_id,
+                            `Report_${user.maverick_name_first}_${user.maverick_name_last}.pdf`
+                          )
+                        "
+                      >
+                        Download Report
+                      </v-btn>
+                      <v-btn
+                        color="warning"
+                        variant="outlined"
+                        :loading="reportLoading"
+                        :disabled="reportLoading"
+                        prepend-icon="mdi-refresh"
+                        @click="generateReport()"
+                      >
+                        Re-generate
+                      </v-btn>
+                    </template>
+                    <template v-else>
+                      <div v-if="user.parent_id">
                         <v-btn
                           color="primary"
-                          variant="outlined"
+                          variant="elevated"
                           :loading="reportLoading"
                           :disabled="reportLoading"
-                        @click="downloadFromUrl(user.report_id, `Report_${user.maverick_name_first}_${user.maverick_name_last}.pdf`)"
-                        prepend-icon="mdi-download"
-                      >
-                          Download Report
-                        </v-btn>
-                        <v-btn
-                          color="warning"
-                          variant="outlined"
-                          :loading="reportLoading"
-                          :disabled="reportLoading"
-                          @click="generateReport()"
-                        prepend-icon="mdi-refresh"
-                        >
-                        Re-generate
-                        </v-btn>
-                      </template>
-                      <template v-else>
-                        <div v-if="user.parent_id">
-                          <v-btn
-                            color="primary"
-                            variant="elevated"
-                            :loading="reportLoading"
-                            :disabled="reportLoading"
-                            @click="generateReport()"
                           prepend-icon="mdi-file-document"
-                          >
-                            Generate Report
-                          </v-btn>
-                        </div>
+                          @click="generateReport()"
+                        >
+                          Generate Report
+                        </v-btn>
+                      </div>
                       <p v-else class="text-body-2 text-warning text-center py-2">
-                            <v-icon size="small" class="mr-1">mdi-alert</v-icon>
-                            Match Maverick to Results
-                          </p>
-                      </template>
+                        <v-icon size="small" class="mr-1"> mdi-alert </v-icon>
+                        Match Maverick to Results
+                      </p>
+                    </template>
                   </div>
 
                   <div v-if="!user.report_id" class="no-content">
-                        <p class="text-body-2 text-grey text-center py-4">
-                          <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
-                          Report not available
-                        </p>
-                      </div>
-                      <iframe
-                        v-else
-                        :src="user.report_id"
-                        width="100%"
-                        height="800"
-                        frameborder="0"
-                        allow="fullscreen"
-                        @error="onIframeError"
-                      ></iframe>
+                    <p class="text-body-2 text-grey text-center py-4">
+                      <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
+                      Report not available
+                    </p>
+                  </div>
+                  <iframe
+                    v-else
+                    :src="user.report_id"
+                    width="100%"
+                    height="800"
+                    frameborder="0"
+                    allow="fullscreen"
+                    @error="onIframeError"
+                  />
                 </div>
-                </v-tabs-window-item>
-              </v-tabs-window>
+              </v-tabs-window-item>
+            </v-tabs-window>
           </div>
         </div>
       </div>
@@ -533,26 +530,12 @@
   <!-- Dialogs -->
   <v-dialog v-model="deleteDialog" max-width="500px">
     <v-card class="dialog-card">
-      <v-card-title class="dialog-title">Delete Document</v-card-title>
-      <v-card-text class="dialog-text">
-        Are you sure you want to delete this document?
-      </v-card-text>
+      <v-card-title class="dialog-title"> Delete Document </v-card-title>
+      <v-card-text class="dialog-text"> Are you sure you want to delete this document? </v-card-text>
       <v-card-actions class="dialog-actions">
-        <v-btn
-          color="grey"
-          variant="text"
-          @click="deleteDialog = false"
-          :disabled="deleteLoading"
-        >
-          Cancel
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn
-          color="error"
-          variant="elevated"
-          @click="deleteDocumentFunction"
-          :loading="deleteLoading"
-        >
+        <v-btn color="grey" variant="text" :disabled="deleteLoading" @click="deleteDialog = false"> Cancel </v-btn>
+        <v-spacer />
+        <v-btn color="error" variant="elevated" :loading="deleteLoading" @click="deleteDocumentFunction">
           Delete
         </v-btn>
       </v-card-actions>
@@ -561,57 +544,40 @@
 
   <v-dialog v-model="refreshDialog" max-width="600px" persistent>
     <v-card class="dialog-card">
-      <v-card-title class="dialog-title">Re-grade Document</v-card-title>
+      <v-card-title class="dialog-title"> Re-grade Document </v-card-title>
       <v-card-text class="dialog-text">
         Current document will be deleted and re-graded. Are you sure you want to proceed?
         <div v-if="displayMore" class="progress-messages">
           <div
-                v-for="(msg, index) in progressMessages"
-                :key="index"
+            v-for="(msg, index) in progressMessages"
+            :key="index"
             class="progress-message"
-                :class="getMessageClass(msg)"
-              >
+            :class="getMessageClass(msg)"
+          >
             <v-icon :color="getIconColor(msg)" size="small">
-                  {{ getIcon(msg) }}
-                </v-icon>
+              {{ getIcon(msg) }}
+            </v-icon>
             <span>{{ msg }}</span>
           </div>
         </div>
       </v-card-text>
       <v-card-actions class="dialog-actions">
-        <v-btn
-          color="grey"
-          variant="text"
-          @click="refreshDialog = false"
-        >
-          Cancel
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn
-          v-if="!displayMore"
-          color="error"
-          variant="elevated"
-          @click="refreshDocumentFunction"
-        >
-          Re-grade
-        </v-btn>
+        <v-btn color="grey" variant="text" @click="refreshDialog = false"> Cancel </v-btn>
+        <v-spacer />
+        <v-btn v-if="!displayMore" color="error" variant="elevated" @click="refreshDocumentFunction"> Re-grade </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <v-dialog v-model="lookUpUsersDialog" persistent max-width="800px">
-    <LookupUsers
-      :user="user"
-      @closeDialog="closeLookupDialog"
-      :facilities="facilities"
-    />
+    <LookupUsers :user="user" :facilities="facilities" @close-dialog="closeLookupDialog" />
   </v-dialog>
 </template>
 
 <script>
-import api from "@/plugins/axios";
-import LookupUsers from "./LookupUsers.vue";
-import ThankYouNotes from "./ThankYouNotes.vue";
+import api from '@/plugins/axios';
+import LookupUsers from './LookupUsers.vue';
+import ThankYouNotes from './ThankYouNotes.vue';
 
 export default {
   components: {
@@ -626,65 +592,20 @@ export default {
       type: Array,
     },
   },
-  emits: ["documentDeleted", "documentRegraded", "scoreUpdated"],
-  computed: {
-    showMissionsTab() {
-      const t = this.user?.document_type;
-      return ["Book One", "Book One New", "Book Two", "Book Two New", "Test Extracted"].includes(t);
-    },
-    showThankYouTab() {
-      const t = this.user?.document_type;
-      return ["Book One", "Book One New", "Book Two", "Book Two New", "Test Extracted", "Preseason v2"].includes(t);
-    },
-    showCertificateTab() {
-      const t = this.user?.document_type;
-      const allowed = [
-        "Book One",
-        "Book One New",
-        "Book Two",
-        "Book Two New",
-        "Test Extracted",
-        "Preseason v2",
-        "Spanish Transform Your Hustle",
-        "English Transform Your Hustle",
-        "English Transform Your Hustle 1",
-      ];
-      return allowed.includes(t);
-    },
-    showReportTab() {
-      return this.showCertificateTab;
-    },
-    missionsPassCount() {
-      return (this.missions || []).filter(m => m.value === true).length;
-    },
-    missionsPoints() {
-      return this.missionsPassCount * 90;
-    },
-    selectedMission() {
-      if (!this.selectedMissionKey) return null;
-      return (this.missions || []).find(m => m.key === this.selectedMissionKey) || null;
-    },
-    selectedMissionLabel() {
-      return this.selectedMission ? this.selectedMission.label : null;
-    },
-    selectedMissionAnswers() {
-      if (!this.selectedMissionKey || !this.missionsContent) return null;
-      return this.missionsContent[this.selectedMissionKey] || null;
-    },
-  },
+  emits: ['documentDeleted', 'documentRegraded', 'scoreUpdated'],
   data() {
     return {
       documentId: null,
       marks: {},
       pdfBlobUrl: null,
       imageBlobUrl: null,
-      currentView: "pdf",
+      currentView: 'pdf',
       items: [],
       loading: [true],
-      tab: "pdf",
-      tab2: "bubble",
+      tab: 'pdf',
+      tab2: 'bubble',
       imageID: null,
-      answerOptions: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+      answerOptions: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
       selectedDocument: null,
       deleteDialog: false,
       refreshDialog: false,
@@ -703,12 +624,94 @@ export default {
       googleTokenExpiryAt: 0,
       googleRefreshTimer: null,
       certificateLoading: false,
-  reportLoading: false,
+      reportLoading: false,
       missions: [],
-  missionsLoaded: false,
-  missionsContent: null,
-  selectedMissionKey: null,
+      missionsLoaded: false,
+      missionsContent: null,
+      selectedMissionKey: null,
     };
+  },
+  computed: {
+    showMissionsTab() {
+      const t = this.user?.document_type;
+      return ['Book One', 'Book One New', 'Book Two', 'Book Two New', 'Test Extracted'].includes(t);
+    },
+    showThankYouTab() {
+      const t = this.user?.document_type;
+      return ['Book One', 'Book One New', 'Book Two', 'Book Two New', 'Test Extracted', 'Preseason v2'].includes(t);
+    },
+    showCertificateTab() {
+      const t = this.user?.document_type;
+      const allowed = [
+        'Book One',
+        'Book One New',
+        'Book Two',
+        'Book Two New',
+        'Test Extracted',
+        'Preseason v2',
+        'Spanish Transform Your Hustle',
+        'English Transform Your Hustle',
+        'English Transform Your Hustle 1',
+      ];
+      return allowed.includes(t);
+    },
+    showReportTab() {
+      return this.showCertificateTab;
+    },
+    missionsPassCount() {
+      return (this.missions || []).filter((m) => m.value === true).length;
+    },
+    missionsPoints() {
+      return this.missionsPassCount * 90;
+    },
+    selectedMission() {
+      if (!this.selectedMissionKey) return null;
+      return (this.missions || []).find((m) => m.key === this.selectedMissionKey) || null;
+    },
+    selectedMissionLabel() {
+      return this.selectedMission ? this.selectedMission.label : null;
+    },
+    selectedMissionAnswers() {
+      if (!this.selectedMissionKey || !this.missionsContent) return null;
+      return this.missionsContent[this.selectedMissionKey] || null;
+    },
+  },
+  watch: {
+    refreshDialog(newValue) {
+      if (!newValue) {
+        this.displayMore = false;
+      }
+    },
+    googleToken(newVal) {
+      if (newVal) this.prepareDrivePreviews();
+    },
+    documentId(newVal) {
+      if (newVal && this.isGoogleSignedIn) this.prepareDrivePreviews();
+    },
+    imageID(newVal) {
+      if (newVal && this.isGoogleSignedIn) this.prepareDrivePreviews();
+    },
+    'user.certificate_id'(newVal) {
+      if (newVal && this.isGoogleSignedIn) this.prepareDrivePreviews();
+    },
+    'user.document_type'() {
+      this.ensureValidTab2();
+      this.ensureValidMainTab && this.ensureValidMainTab();
+    },
+    tab2(newVal, oldVal) {
+      if (newVal === 'missions') {
+        this.loadMissionsContentOnce();
+      }
+    },
+    user: {
+      handler() {
+        this.initMissionsFromUser();
+        this.ensureValidTab2 && this.ensureValidTab2();
+        this.ensureValidMainTab && this.ensureValidMainTab();
+        this.missionsLoaded = false;
+      },
+      deep: true,
+    },
   },
   mounted() {
     this.processUserData();
@@ -720,7 +723,7 @@ export default {
 
   beforeUnmount() {
     if (this.eventSource) {
-      console.log("Closing EventSource on component unmount");
+      console.log('Closing EventSource on component unmount');
       this.eventSource.close();
       this.eventSource = null;
     }
@@ -747,21 +750,17 @@ export default {
         this.initGoogleOAuth();
         this.tryRestoreGoogleSession();
       } catch (e) {
-        console.warn("Failed to initialize Google Sign-In:", e);
+        console.warn('Failed to initialize Google Sign-In:', e);
       }
     },
     loadGoogleScript() {
       return new Promise((resolve, reject) => {
-        if (
-          window.google &&
-          window.google.accounts &&
-          window.google.accounts.oauth2
-        ) {
+        if (window.google && window.google.accounts && window.google.accounts.oauth2) {
           resolve();
           return;
         }
-        const script = document.createElement("script");
-        script.src = "https://accounts.google.com/gsi/client";
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
         script.async = true;
         script.defer = true;
         script.onload = () => resolve();
@@ -772,14 +771,12 @@ export default {
     initGoogleOAuth() {
       const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
       if (!clientId) {
-        console.warn(
-          "VITE_GOOGLE_CLIENT_ID is not set. Google Sign-In will not work."
-        );
+        console.warn('VITE_GOOGLE_CLIENT_ID is not set. Google Sign-In will not work.');
         return;
       }
       this.googleClient = window.google.accounts.oauth2.initTokenClient({
         client_id: clientId,
-        scope: "https://www.googleapis.com/auth/drive.readonly",
+        scope: 'https://www.googleapis.com/auth/drive.readonly',
         callback: (tokenResponse) => {
           if (tokenResponse && tokenResponse.access_token) {
             this.onGoogleTokenReceived(tokenResponse);
@@ -792,11 +789,8 @@ export default {
       this.isGoogleSignedIn = true;
       const expiresInSec = Number(tokenResponse.expires_in || 3600);
       this.googleTokenExpiryAt = Date.now() + expiresInSec * 1000;
-      localStorage.setItem("drive_access_token", this.googleToken);
-      localStorage.setItem(
-        "drive_token_expiry",
-        String(this.googleTokenExpiryAt)
-      );
+      localStorage.setItem('drive_access_token', this.googleToken);
+      localStorage.setItem('drive_token_expiry', String(this.googleTokenExpiryAt));
       this.prepareDrivePreviews();
       this.scheduleTokenRefresh(this.googleTokenExpiryAt - 60 * 1000);
     },
@@ -809,10 +803,8 @@ export default {
     },
     tryRestoreGoogleSession() {
       try {
-        const storedToken = localStorage.getItem("drive_access_token");
-        const storedExpiry = Number(
-          localStorage.getItem("drive_token_expiry") || 0
-        );
+        const storedToken = localStorage.getItem('drive_access_token');
+        const storedExpiry = Number(localStorage.getItem('drive_token_expiry') || 0);
         if (storedToken && storedExpiry && Date.now() < storedExpiry) {
           this.googleToken = storedToken;
           this.googleTokenExpiryAt = storedExpiry;
@@ -823,15 +815,15 @@ export default {
           this.silentRefreshToken();
         }
       } catch (e) {
-        console.warn("Failed to restore Google session:", e);
+        console.warn('Failed to restore Google session:', e);
       }
     },
     silentRefreshToken() {
       if (!this.googleClient) return;
       try {
-        this.googleClient.requestAccessToken({ prompt: "" });
+        this.googleClient.requestAccessToken({ prompt: '' });
       } catch (e) {
-        console.warn("Silent token refresh failed:", e);
+        console.warn('Silent token refresh failed:', e);
       }
     },
     handleGoogleSignIn() {
@@ -840,25 +832,22 @@ export default {
         if (!this.googleClient) return;
       }
       try {
-        this.googleClient.requestAccessToken({ prompt: "consent" });
+        this.googleClient.requestAccessToken({ prompt: 'consent' });
       } catch (e) {
-        console.error("Google Sign-In failed:", e);
+        console.error('Google Sign-In failed:', e);
       }
     },
     async fetchDriveFileBlobUrl(fileId) {
       if (!this.googleToken || !fileId) return null;
       try {
-        const res = await fetch(
-          `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
-          {
-            headers: { Authorization: `Bearer ${this.googleToken}` },
-          }
-        );
+        const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+          headers: { Authorization: `Bearer ${this.googleToken}` },
+        });
         if (!res.ok) throw new Error(`Drive fetch failed: ${res.status}`);
         const blob = await res.blob();
         return URL.createObjectURL(blob);
       } catch (e) {
-        console.warn("Failed to fetch Drive file via API:", e);
+        console.warn('Failed to fetch Drive file via API:', e);
         return null;
       }
     },
@@ -874,10 +863,10 @@ export default {
     },
     downloadFromUrl(url, filename) {
       try {
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.href = url;
-        link.download = filename || "download.pdf";
-        link.target = "_blank";
+        link.download = filename || 'download.pdf';
+        link.target = '_blank';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -888,13 +877,13 @@ export default {
     async deleteDocumentFunction() {
       this.deleteLoading = true;
       try {
-        const res = await api.post("/delete-results-document", {
+        const res = await api.post('/delete-results-document', {
           document_type: this.user.document_type,
           bubble_id: this.user.bubble_id,
         });
         if (res.status === 200) {
           this.deleteDialog = false;
-          this.$emit("documentDeleted", this.documentId);
+          this.$emit('documentDeleted', this.documentId);
           this.deleteLoading = false;
         }
       } catch (err) {
@@ -911,99 +900,90 @@ export default {
           this.eventSource.close();
         }
 
-        const backendUrl = import.meta.env.VITE_API_URL || "/api";
+        const backendUrl = import.meta.env.VITE_API_URL || '/api';
 
         this.eventSource = new EventSource(
-          `${backendUrl}/stream-regrade-ocr?document_id=${
-            this.documentId
-          }&_=${Date.now()}`
+          `${backendUrl}/stream-regrade-ocr?document_id=${this.documentId}&_=${Date.now()}`
         );
 
-        console.log("EventSource created, connecting to server...");
+        console.log('EventSource created, connecting to server...');
 
         this.eventSource.onopen = () => {
-          console.log("SSE connection opened");
-          this.progressMessages.push("Connection established with server...");
+          console.log('SSE connection opened');
+          this.progressMessages.push('Connection established with server...');
         };
 
         this.eventSource.onmessage = (event) => {
-          console.log("Received SSE message:", event.data);
+          console.log('Received SSE message:', event.data);
 
           const msg = event.data.trim();
           this.progressMessages.push(msg);
 
           this.$nextTick(() => {
-            const container = document.querySelector(".progress-messages");
+            const container = document.querySelector('.progress-messages');
             if (container) {
               container.scrollTop = container.scrollHeight;
             }
           });
 
-          if (
-            msg === "DONE" ||
-            msg.includes("Regrading completed successfully")
-          ) {
-            console.log("Processing complete, closing EventSource");
+          if (msg === 'DONE' || msg.includes('Regrading completed successfully')) {
+            console.log('Processing complete, closing EventSource');
             this.eventSource.close();
             this.refreshDialog = false;
             this.loadDocumentFiles();
             this.processUserData();
-            this.$emit("documentRegraded", this.documentId);
+            this.$emit('documentRegraded', this.documentId);
           }
         };
 
         this.eventSource.onerror = (err) => {
-          console.error("SSE connection error", err);
-          this.progressMessages.push(
-            `Error: Connection to server failed or was interrupted.`
-          );
+          console.error('SSE connection error', err);
+          this.progressMessages.push(`Error: Connection to server failed or was interrupted.`);
           this.eventSource.close();
         };
       } catch (err) {
-        console.error("Error setting up SSE connection:", err);
+        console.error('Error setting up SSE connection:', err);
         this.progressMessages.push(`Error: ${err.message}`);
       }
     },
 
     scoreStatus(item) {
       if (item.answer === item.correct) {
-        return "Correct";
-      } else if (item.correct === "Any") {
-        return "Correct";
-      } else if (item.answer.split(",").includes(item.correct)) {
-        return "Correct";
+        return 'Correct';
+      } else if (item.correct === 'Any') {
+        return 'Correct';
+      } else if (item.answer.split(',').includes(item.correct)) {
+        return 'Correct';
       }
-      return "Incorrect";
+      return 'Incorrect';
     },
     async saveNewAnswer(item) {
       try {
         this.calculateMarks();
         const mandatoryScore = this.getMandatoryScore();
 
-        const res = await api.post("/save-new-answer", {
+        const res = await api.post('/save-new-answer', {
           bubble_id: this.user.bubble_id,
           question_number: item.question_number,
           answer: item.answer,
           type: item.type,
           score: mandatoryScore,
         });
-        console.log("Answer saved:", res.data);
-        
+        console.log('Answer saved:', res.data);
+
         // Emit scoreUpdated only when actually saving
-        this.$emit("scoreUpdated", {
+        this.$emit('scoreUpdated', {
           documentId: this.documentId,
           bubble_id: this.user.bubble_id,
           marks: this.marks,
         });
       } catch (err) {
-        console.error("Error saving answer:", err);
+        console.error('Error saving answer:', err);
       }
-      console.log("Answer updated:", item.question, "→", item.answer);
+      console.log('Answer updated:', item.question, '→', item.answer);
     },
     getMandatoryScore() {
-      const mandatoryMark = this.marks.find(
-        (mark) => mark.variant && mark.variant.toLowerCase() === "mandatory"
-      );
+      const mandatoryMark = this.marks.find((mark) => mark.variant && mark.variant.toLowerCase() === 'mandatory');
       return mandatoryMark ? mandatoryMark.score : null;
     },
     updateMarks(new_item) {
@@ -1012,13 +992,13 @@ export default {
         mark.score = new_item.score;
         mark.correct = new_item.correct;
       } else {
-        console.warn("Variant not found in marks:", new_item.variant);
+        console.warn('Variant not found in marks:', new_item.variant);
       }
     },
     async loadDocumentFiles() {
       this.loading[0] = true;
       try {
-        const res = await api.post("/get-document-image", {
+        const res = await api.post('/get-document-image', {
           document_id: this.documentId,
         });
         this.imageID = res.data.image_document_id;
@@ -1032,32 +1012,25 @@ export default {
 
     base64ToBlob(base64, mimeType) {
       const byteCharacters = atob(base64);
-      const byteNumbers = new Array(byteCharacters.length)
-        .fill()
-        .map((_, i) => byteCharacters.charCodeAt(i));
+      const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
       const byteArray = new Uint8Array(byteNumbers);
       return new Blob([byteArray], { type: mimeType });
     },
     nextPage() {
-      this.currentView = this.currentView === "pdf" ? "image" : "pdf";
+      this.currentView = this.currentView === 'pdf' ? 'image' : 'pdf';
     },
     prevPage() {
-      this.currentView = this.currentView === "pdf" ? "image" : "pdf";
+      this.currentView = this.currentView === 'pdf' ? 'image' : 'pdf';
     },
     async getDocumentDetails() {
-      console.warn(
-        "getDocumentDetails called but data should come from user prop"
-      );
+      console.warn('getDocumentDetails called but data should come from user prop');
       this.processUserData();
     },
     processUserData() {
-      console.log("Processing user data:", this.user);
+      console.log('Processing user data:', this.user);
 
-      if (
-        this.user.bubble_sheet_data &&
-        this.user.bubble_sheet_data["Document ID"]
-      ) {
-        this.documentId = this.user.bubble_sheet_data["Document ID"];
+      if (this.user.bubble_sheet_data && this.user.bubble_sheet_data['Document ID']) {
+        this.documentId = this.user.bubble_sheet_data['Document ID'];
       } else if (this.user.document_id) {
         this.documentId = this.user.document_id;
       }
@@ -1068,9 +1041,9 @@ export default {
         Name_first: this.user.maverick_name_first,
         Name_middle: this.user.maverick_name_middle,
         Name_last: this.user.maverick_name_last,
-        "DOC ID Number": this.user.maverick_doc_id,
-        "Date of Birth": this.user.maverick_date_of_birth,
-        "Last Known Facility ID": this.user.maverick_facility_id,
+        'DOC ID Number': this.user.maverick_doc_id,
+        'Date of Birth': this.user.maverick_date_of_birth,
+        'Last Known Facility ID': this.user.maverick_facility_id,
       };
 
       this.getAnswerKey();
@@ -1079,7 +1052,7 @@ export default {
     },
     async getAnswerKey() {
       try {
-        const res = await api.post("/get-answer-key", {
+        const res = await api.post('/get-answer-key', {
           document_type: this.user.document_type,
         });
 
@@ -1087,15 +1060,12 @@ export default {
           this.answerKeyData = res.data;
 
           if (this.answerKeyData && this.bubbleSheetData) {
-            this.items = this.processAnswerData(
-              this.answerKeyData,
-              this.bubbleSheetData
-            );
+            this.items = this.processAnswerData(this.answerKeyData, this.bubbleSheetData);
             this.calculateMarks();
           }
         }
       } catch (err) {
-        console.error("Error fetching answer key:", err);
+        console.error('Error fetching answer key:', err);
         if (this.bubbleSheetData) {
           this.items = this.processAnswerDataWithoutKey(this.bubbleSheetData);
           this.calculateMarks();
@@ -1112,9 +1082,9 @@ export default {
 
           items.push({
             question: `Question ${questionNumber}`,
-            answer: userAnswer || "",
-            correct: "Unknown",
-            variant: "Unknown",
+            answer: userAnswer || '',
+            correct: 'Unknown',
+            variant: 'Unknown',
             type: this.user.document_type,
             question_number: questionNumber,
           });
@@ -1132,7 +1102,7 @@ export default {
 
       const variantGroups = {};
       this.items.forEach((item) => {
-        const variant = item.variant || "Unknown";
+        const variant = item.variant || 'Unknown';
         if (!variantGroups[variant]) {
           variantGroups[variant] = [];
         }
@@ -1146,15 +1116,12 @@ export default {
         let correctAnswers = 0;
 
         variantItems.forEach((item) => {
-          if (this.scoreStatus(item) === "Correct") {
+          if (this.scoreStatus(item) === 'Correct') {
             correctAnswers++;
           }
         });
 
-        const scorePercentage =
-          totalQuestions > 0
-            ? Math.round((correctAnswers / totalQuestions) * 100)
-            : 0;
+        const scorePercentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 
         this.marks.push({
           variant: variant,
@@ -1167,29 +1134,29 @@ export default {
       this.marks.sort((a, b) => a.variant.localeCompare(b.variant));
     },
     getIcon(msg) {
-      if (msg.includes("✅")) return "mdi-check-circle";
-      if (msg.toLowerCase().includes("error")) return "mdi-alert-circle";
-      if (msg.toLowerCase().includes("starting")) return "mdi-play-circle";
-      if (msg.toLowerCase().includes("uploaded")) return "mdi-cloud-upload";
-      if (msg.toLowerCase().includes("extracted")) return "mdi-file-document";
-      return "mdi-information";
+      if (msg.includes('✅')) return 'mdi-check-circle';
+      if (msg.toLowerCase().includes('error')) return 'mdi-alert-circle';
+      if (msg.toLowerCase().includes('starting')) return 'mdi-play-circle';
+      if (msg.toLowerCase().includes('uploaded')) return 'mdi-cloud-upload';
+      if (msg.toLowerCase().includes('extracted')) return 'mdi-file-document';
+      return 'mdi-information';
     },
     getIconColor(msg) {
-      if (msg.includes("✅")) return "green";
-      if (msg.toLowerCase().includes("error")) return "red";
-      if (msg.toLowerCase().includes("starting")) return "blue";
-      if (msg.toLowerCase().includes("uploaded")) return "orange";
-      return "grey";
+      if (msg.includes('✅')) return 'green';
+      if (msg.toLowerCase().includes('error')) return 'red';
+      if (msg.toLowerCase().includes('starting')) return 'blue';
+      if (msg.toLowerCase().includes('uploaded')) return 'orange';
+      return 'grey';
     },
     getMessageClass(msg) {
-      if (msg.includes("✅")) return "text-success";
-      if (msg.toLowerCase().includes("error")) return "text-error";
-      if (msg.toLowerCase().includes("starting")) return "text-primary";
-      return "text-body-2";
+      if (msg.includes('✅')) return 'text-success';
+      if (msg.toLowerCase().includes('error')) return 'text-error';
+      if (msg.toLowerCase().includes('starting')) return 'text-primary';
+      return 'text-body-2';
     },
     processAnswerData(answerKey, bubbleSheet) {
       if (!answerKey || !bubbleSheet) {
-        console.warn("Missing answer key or bubble sheet data");
+        console.warn('Missing answer key or bubble sheet data');
         return [];
       }
       const items = [];
@@ -1199,7 +1166,7 @@ export default {
       answerKey.forEach((key) => {
         if (key.question) {
           answerMap[key.question] = key.answer;
-          variantMap[key.question] = key.variant || "Unknown";
+          variantMap[key.question] = key.variant || 'Unknown';
         }
       });
 
@@ -1207,12 +1174,12 @@ export default {
         const questionNumber = parseInt(key);
         if (!isNaN(questionNumber) && questionNumber > 0) {
           const userAnswer = bubbleSheet[key];
-          const correctAnswer = answerMap[questionNumber] || "Unknown";
-          const variant = variantMap[questionNumber] || "Unknown";
+          const correctAnswer = answerMap[questionNumber] || 'Unknown';
+          const variant = variantMap[questionNumber] || 'Unknown';
 
           items.push({
             question: `Question ${questionNumber}`,
-            answer: userAnswer || "",
+            answer: userAnswer || '',
             correct: correctAnswer,
             variant: variant,
             type: this.user.document_type,
@@ -1226,11 +1193,11 @@ export default {
       return items;
     },
     openInNewTab(url) {
-      window.open(url, "_blank");
+      window.open(url, '_blank');
     },
     downloadFile(fileId, filename) {
       const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = downloadUrl;
       link.download = filename;
       document.body.appendChild(link);
@@ -1238,7 +1205,7 @@ export default {
       document.body.removeChild(link);
     },
     onIframeError(event) {
-      console.error("Iframe failed to load:", event);
+      console.error('Iframe failed to load:', event);
     },
     updateUserData(updatedUser) {
       this.user = updatedUser;
@@ -1252,13 +1219,13 @@ export default {
           document_type: this.user.document_type,
           id: this.user.id,
         };
-        const res = await api.post("/generate-certificate", payload);
+        const res = await api.post('/generate-certificate', payload);
         const url = res?.data?.file_url || res?.data?.storage_path || null;
         if (url) {
           this.user.certificate_id = url;
         }
       } catch (e) {
-        console.error("Failed to generate certificate:", e);
+        console.error('Failed to generate certificate:', e);
       } finally {
         this.certificateLoading = false;
       }
@@ -1272,20 +1239,20 @@ export default {
           document_type: this.user.document_type,
           id: this.user.id,
         };
-        const res = await api.post("/generate-report", payload);
+        const res = await api.post('/generate-report', payload);
         const url = res?.data?.file_url || res?.data?.storage_path || null;
         if (url) {
           this.user.report_id = url;
         }
       } catch (e) {
-        console.error("Failed to generate report:", e);
+        console.error('Failed to generate report:', e);
       } finally {
         this.reportLoading = false;
       }
     },
     ensureValidTab2() {
-      if (this.tab2 === "missions" && !this.showMissionsTab) this.tab2 = "bubble";
-      if (this.tab2 === "thankyou" && !this.showThankYouTab) this.tab2 = "bubble";
+      if (this.tab2 === 'missions' && !this.showMissionsTab) this.tab2 = 'bubble';
+      if (this.tab2 === 'thankyou' && !this.showThankYouTab) this.tab2 = 'bubble';
     },
     ensureValidMainTab() {
       if (this.tab === 'certificate' && !this.showCertificateTab) this.tab = 'pdf';
@@ -1339,50 +1306,13 @@ export default {
       }
     },
   },
-  watch: {
-    refreshDialog(newValue) {
-      if (!newValue) {
-        this.displayMore = false;
-      }
-    },
-    googleToken(newVal) {
-      if (newVal) this.prepareDrivePreviews();
-    },
-    documentId(newVal) {
-      if (newVal && this.isGoogleSignedIn) this.prepareDrivePreviews();
-    },
-    imageID(newVal) {
-      if (newVal && this.isGoogleSignedIn) this.prepareDrivePreviews();
-    },
-    "user.certificate_id"(newVal) {
-      if (newVal && this.isGoogleSignedIn) this.prepareDrivePreviews();
-    },
-    "user.document_type"() {
-      this.ensureValidTab2();
-      this.ensureValidMainTab && this.ensureValidMainTab();
-    },
-    tab2(newVal, oldVal) {
-      if (newVal === 'missions') {
-        this.loadMissionsContentOnce();
-      }
-    },
-    user: {
-      handler() {
-        this.initMissionsFromUser();
-        this.ensureValidTab2 && this.ensureValidTab2();
-        this.ensureValidMainTab && this.ensureValidMainTab();
-        this.missionsLoaded = false;
-      },
-      deep: true,
-    },
-  },
 };
 </script>
 
 <style scoped>
 .details-container {
   padding: 24px;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
   width: 100%;
   max-width: 100%;
@@ -1391,7 +1321,7 @@ export default {
 }
 
 .v-theme--dark .details-container {
-  background: #1E293B;
+  background: #1e293b;
 }
 
 /* Actions Header */
@@ -1401,7 +1331,7 @@ export default {
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #E5E7EB;
+  border-bottom: 2px solid #e5e7eb;
 }
 
 .v-theme--dark .actions-header {
@@ -1411,12 +1341,12 @@ export default {
 .details-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1E293B;
+  color: #1e293b;
   margin: 0;
 }
 
 .v-theme--dark .details-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .actions-group {
@@ -1437,30 +1367,30 @@ export default {
 }
 
 .action-search {
-  background: #3B82F6 !important;
+  background: #3b82f6 !important;
   color: white !important;
 }
 
 .action-search:hover {
-  background: #2563EB !important;
+  background: #2563eb !important;
 }
 
 .action-regrade {
-  background: #8B5CF6 !important;
+  background: #8b5cf6 !important;
   color: white !important;
 }
 
 .action-regrade:hover {
-  background: #7C3AED !important;
+  background: #7c3aed !important;
 }
 
 .action-delete {
-  background: #EF4444 !important;
+  background: #ef4444 !important;
   color: white !important;
 }
 
 .action-delete:hover {
-  background: #DC2626 !important;
+  background: #dc2626 !important;
 }
 
 /* Content Grid */
@@ -1484,8 +1414,8 @@ export default {
 .section-card,
 .score-card,
 .preview-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -1497,13 +1427,13 @@ export default {
 .v-theme--dark .section-card,
 .v-theme--dark .score-card,
 .v-theme--dark .preview-card {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 /* Custom Tabs */
 .custom-tabs {
-  border-bottom: 2px solid #E5E7EB;
+  border-bottom: 2px solid #e5e7eb;
 }
 
 .v-theme--dark .custom-tabs {
@@ -1518,7 +1448,7 @@ export default {
 }
 
 :deep(.v-tab--selected) {
-  color: #3B82F6 !important;
+  color: #3b82f6 !important;
   background: linear-gradient(to bottom, rgba(59, 130, 246, 0.05), transparent);
 }
 
@@ -1531,7 +1461,7 @@ export default {
   max-height: 600px;
   overflow-y: auto;
   overflow-x: auto;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   width: 100%;
   max-width: 100%;
@@ -1543,8 +1473,8 @@ export default {
 }
 
 .bubbles-table :deep(thead th) {
-  background: linear-gradient(to bottom, #F9FAFB, #F3F4F6) !important;
-  color: #64748B !important;
+  background: linear-gradient(to bottom, #f9fafb, #f3f4f6) !important;
+  color: #64748b !important;
   font-weight: 600 !important;
   text-transform: uppercase;
   font-size: 0.75rem;
@@ -1555,8 +1485,8 @@ export default {
 }
 
 .v-theme--dark .bubbles-table :deep(thead th) {
-  background: linear-gradient(to bottom, #0F172A, #1E293B) !important;
-  color: #94A3B8 !important;
+  background: linear-gradient(to bottom, #0f172a, #1e293b) !important;
+  color: #94a3b8 !important;
 }
 
 .bubbles-table :deep(tbody tr) {
@@ -1587,7 +1517,7 @@ export default {
   padding: 12px;
   margin-bottom: 8px;
   border-radius: 8px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   transition: all 0.2s ease;
 }
 
@@ -1597,7 +1527,7 @@ export default {
 
 .mission-row:hover {
   background: rgba(59, 130, 246, 0.05);
-  border-color: #3B82F6;
+  border-color: #3b82f6;
 }
 
 .mission-label {
@@ -1608,7 +1538,7 @@ export default {
 }
 
 .mission-text {
-  color: #3B82F6;
+  color: #3b82f6;
   font-weight: 600;
   text-decoration: underline;
   text-decoration-style: dotted;
@@ -1623,7 +1553,7 @@ export default {
   opacity: 0;
   position: absolute;
   right: 0;
-  color: #3B82F6;
+  color: #3b82f6;
   font-weight: 700;
   font-size: 0.875rem;
   transition: opacity 0.2s ease;
@@ -1636,20 +1566,20 @@ export default {
 .selected-mission-card {
   margin-top: 24px;
   padding: 20px;
-  background: linear-gradient(to bottom, #F9FAFB, #FFFFFF);
-  border: 2px solid #E5E7EB;
+  background: linear-gradient(to bottom, #f9fafb, #ffffff);
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
 }
 
 .v-theme--dark .selected-mission-card {
-  background: linear-gradient(to bottom, #0F172A, #1E293B);
+  background: linear-gradient(to bottom, #0f172a, #1e293b);
   border-color: #334155;
 }
 
 .mission-card-title {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #3B82F6;
+  color: #3b82f6;
   margin-bottom: 16px;
 }
 
@@ -1660,19 +1590,19 @@ export default {
 
 .answer-item {
   padding: 10px 14px;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   font-size: 0.875rem;
 }
 
 .v-theme--dark .answer-item {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .answer-item strong {
-  color: #3B82F6;
+  color: #3b82f6;
   margin-right: 8px;
 }
 
@@ -1686,7 +1616,7 @@ export default {
   align-items: center;
   gap: 12px;
   padding: 20px;
-  background: linear-gradient(to right, #3B82F6 0%, #6366F1 100%);
+  background: linear-gradient(to right, #3b82f6 0%, #6366f1 100%);
   color: white;
   border-radius: 12px 12px 0 0;
 }
@@ -1706,16 +1636,16 @@ export default {
 }
 
 .score-table :deep(thead th) {
-  background: #F9FAFB !important;
-  color: #64748B !important;
+  background: #f9fafb !important;
+  color: #64748b !important;
   font-weight: 600 !important;
   text-transform: uppercase;
   font-size: 0.75rem;
 }
 
 .v-theme--dark .score-table :deep(thead th) {
-  background: #0F172A !important;
-  color: #94A3B8 !important;
+  background: #0f172a !important;
+  color: #94a3b8 !important;
 }
 
 .score-table :deep(tbody td) {
@@ -1747,12 +1677,12 @@ export default {
 
 .signin-text {
   font-size: 1.125rem;
-  color: #64748B;
+  color: #64748b;
   margin-bottom: 24px;
 }
 
 .v-theme--dark .signin-text {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .document-viewer {
@@ -1788,7 +1718,7 @@ export default {
 
 .iframe-container,
 .image-container {
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
 }
@@ -1814,11 +1744,11 @@ export default {
   font-size: 1.25rem;
   font-weight: 700;
   padding: 24px 24px 16px;
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 .v-theme--dark .dialog-title {
-  color: #60A5FA;
+  color: #60a5fa;
 }
 
 .dialog-text {
@@ -1828,7 +1758,7 @@ export default {
 }
 
 .v-theme--dark .dialog-text {
-  color: #CBD5E1;
+  color: #cbd5e1;
 }
 
 .dialog-actions {
@@ -1840,13 +1770,13 @@ export default {
   overflow-y: auto;
   margin-top: 16px;
   padding: 16px;
-  background: #F9FAFB;
+  background: #f9fafb;
   border-radius: 8px;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
 }
 
 .v-theme--dark .progress-messages {
-  background: #0F172A;
+  background: #0f172a;
   border-color: #334155;
 }
 
@@ -1857,13 +1787,13 @@ export default {
   padding: 8px;
   margin-bottom: 8px;
   border-radius: 6px;
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   font-size: 0.875rem;
 }
 
 .v-theme--dark .progress-message {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 

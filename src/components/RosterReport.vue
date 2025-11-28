@@ -3,25 +3,21 @@
     <v-card class="modern-dialog">
       <v-card-title class="modern-dialog-header">
         <div class="dialog-header-content">
-          <v-icon class="dialog-header-icon">mdi-file-chart</v-icon>
+          <v-icon class="dialog-header-icon"> mdi-file-chart </v-icon>
           <span class="dialog-header-title">Roster Report</span>
         </div>
-        <v-btn icon="mdi-close" variant="text" @click="close" class="dialog-close-btn" />
+        <v-btn icon="mdi-close" variant="text" class="dialog-close-btn" @click="close" />
       </v-card-title>
       <v-divider />
       <v-card-text class="dialog-content">
         <div v-if="loading" class="loading-state">
-          <v-progress-circular
-            indeterminate
-            color="primary"
-            size="64"
-          ></v-progress-circular>
+          <v-progress-circular indeterminate color="primary" size="64" />
           <div class="mt-4 loading-text">Loading roster report...</div>
         </div>
 
         <div v-else-if="error" class="error-state">
           <p class="text-body-2 text-error text-center py-4">
-            <v-icon size="small" class="mr-1">mdi-alert-circle</v-icon>
+            <v-icon size="small" class="mr-1"> mdi-alert-circle </v-icon>
             {{ error }}
           </p>
         </div>
@@ -29,17 +25,21 @@
         <div v-else-if="rosterData" class="roster-content">
           <div class="info-section">
             <div class="facility-info">
-              <v-icon class="info-icon">mdi-office-building</v-icon>
+              <v-icon class="info-icon"> mdi-office-building </v-icon>
               <div class="info-text">
                 <div class="info-label">Facility</div>
-                <div class="info-value">{{ facilityFacilityId }}</div>
+                <div class="info-value">
+                  {{ facilityFacilityId }}
+                </div>
               </div>
             </div>
             <div class="total-info">
-              <v-icon class="info-icon">mdi-account-group</v-icon>
+              <v-icon class="info-icon"> mdi-account-group </v-icon>
               <div class="info-text">
                 <div class="info-label">Total Mavericks</div>
-                <div class="info-value">{{ rosterData.total_mavericks || 0 }}</div>
+                <div class="info-value">
+                  {{ rosterData.total_mavericks || 0 }}
+                </div>
               </div>
             </div>
           </div>
@@ -53,7 +53,7 @@
                 density="comfortable"
                 class="modern-table"
               >
-                <template v-slot:item.application="{ item }">
+                <template #item.application="{ item }">
                   <v-chip
                     v-if="item.application && item.application.status"
                     size="small"
@@ -65,7 +65,7 @@
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
-                <template v-slot:item.tyh="{ item }">
+                <template #item.tyh="{ item }">
                   <v-chip
                     v-if="item.tyh && item.tyh.status"
                     size="small"
@@ -77,7 +77,7 @@
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
-                <template v-slot:item.preseason="{ item }">
+                <template #item.preseason="{ item }">
                   <v-chip
                     v-if="item.preseason && item.preseason.status"
                     size="small"
@@ -89,7 +89,7 @@
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
-                <template v-slot:item.book_one="{ item }">
+                <template #item.book_one="{ item }">
                   <v-chip
                     v-if="item.book_one && item.book_one.status"
                     size="small"
@@ -101,7 +101,7 @@
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
-                <template v-slot:item.book_two="{ item }">
+                <template #item.book_two="{ item }">
                   <v-chip
                     v-if="item.book_two && item.book_two.status"
                     size="small"
@@ -113,7 +113,7 @@
                   </v-chip>
                   <span v-else class="empty-value">—</span>
                 </template>
-                <template v-slot:item.notes="{ item }">
+                <template #item.notes="{ item }">
                   <span class="notes-text">{{ item.notes || '—' }}</span>
                 </template>
               </v-data-table>
@@ -122,23 +122,23 @@
 
           <div v-else class="empty-state">
             <p class="text-body-2 text-grey text-center py-4">
-              <v-icon size="small" class="mr-1">mdi-information</v-icon>
+              <v-icon size="small" class="mr-1"> mdi-information </v-icon>
               <span>No mavericks found for this facility.</span>
             </p>
           </div>
         </div>
       </v-card-text>
       <v-card-actions class="dialog-actions">
-        <v-btn variant="text" @click="close" class="close-btn">Close</v-btn>
+        <v-btn variant="text" class="close-btn" @click="close"> Close </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
-import api from "@/plugins/axios";
+import api from '@/plugins/axios';
 
 // Props
 const props = defineProps({
@@ -152,7 +152,7 @@ const props = defineProps({
   },
   facilityFacilityId: {
     type: String,
-    default: "",
+    default: '',
   },
 });
 
@@ -161,30 +161,35 @@ const emit = defineEmits(['update:modelValue', 'close']);
 
 // Headers
 const headers = [
-  { title: "First Name", key: "first_name", width: "10%" },
-  { title: "Last Name", key: "last_name", width: "10%" },
-  { title: "Doc Number", key: "doc_number", width: "10%" },
-  { title: "Application", key: "application", width: "10%" },
-  { title: "TYH", key: "tyh", width: "12%" },
-  { title: "Preseason", key: "preseason", width: "12%" },
-  { title: "Book One", key: "book_one", width: "12%" },
-  { title: "Book Two", key: "book_two", width: "12%" },
-  { title: "Notes", key: "notes", width: "12%" },
+  { title: 'First Name', key: 'first_name', width: '10%' },
+  { title: 'Last Name', key: 'last_name', width: '10%' },
+  { title: 'Doc Number', key: 'doc_number', width: '10%' },
+  { title: 'Application', key: 'application', width: '10%' },
+  { title: 'TYH', key: 'tyh', width: '12%' },
+  { title: 'Preseason', key: 'preseason', width: '12%' },
+  { title: 'Book One', key: 'book_one', width: '12%' },
+  { title: 'Book Two', key: 'book_two', width: '12%' },
+  { title: 'Notes', key: 'notes', width: '12%' },
 ];
 
 // TanStack Query for roster report
-const { data: rosterData, isLoading: loading, error: queryError, refetch } = useQuery({
+const {
+  data: rosterData,
+  isLoading: loading,
+  error: queryError,
+  refetch,
+} = useQuery({
   queryKey: ['rosterReport', computed(() => props.facilityId)],
   queryFn: async () => {
     if (!props.facilityId) {
-      throw new Error("Facility ID is required");
+      throw new Error('Facility ID is required');
     }
 
     const payload = {
       instructions: {
-        action: "get_roster_report"
+        action: 'get_roster_report',
       },
-      facility_id: props.facilityId
+      facility_id: props.facilityId,
     };
 
     const response = await api.post('/local-dash', payload);
@@ -199,7 +204,7 @@ const { data: rosterData, isLoading: loading, error: queryError, refetch } = use
 });
 
 const error = computed(() => {
-  if (!props.facilityId) return "Facility ID is required";
+  if (!props.facilityId) return 'Facility ID is required';
   if (queryError.value) return queryError.value.response?.data?.detail || 'Error fetching roster report';
   return null;
 });
@@ -250,7 +255,7 @@ const close = () => {
   align-items: center !important;
   justify-content: space-between !important;
   padding: 20px 24px !important;
-  background: linear-gradient(to right, #3B82F6 0%, #6366F1 100%) !important;
+  background: linear-gradient(to right, #3b82f6 0%, #6366f1 100%) !important;
   color: white !important;
 }
 
@@ -283,7 +288,7 @@ const close = () => {
 
 .dialog-actions {
   padding: 16px 24px !important;
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid #e2e8f0;
   justify-content: flex-end;
 }
 
@@ -309,11 +314,11 @@ const close = () => {
 .loading-text {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #6B7280;
+  color: #6b7280;
 }
 
 .v-theme--dark .loading-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Error State */
@@ -348,25 +353,25 @@ const close = () => {
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
-  border: 1px solid #C7D2FE;
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  border: 1px solid #c7d2fe;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
 }
 
 .v-theme--dark .facility-info,
 .v-theme--dark .total-info {
-  background: linear-gradient(135deg, #312E81, #3730A3);
-  border-color: #4C1D95;
+  background: linear-gradient(135deg, #312e81, #3730a3);
+  border-color: #4c1d95;
 }
 
 .info-icon {
   font-size: 2rem !important;
-  color: #6366F1 !important;
+  color: #6366f1 !important;
 }
 
 .v-theme--dark .info-icon {
-  color: #A5B4FC !important;
+  color: #a5b4fc !important;
 }
 
 .info-text {
@@ -380,11 +385,11 @@ const close = () => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6B7280;
+  color: #6b7280;
 }
 
 .v-theme--dark .info-label {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .info-value {
@@ -394,7 +399,7 @@ const close = () => {
 }
 
 .v-theme--dark .info-value {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 /* Table Section */
@@ -403,14 +408,14 @@ const close = () => {
 }
 
 .table-wrapper {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
 }
 
 .v-theme--dark .table-wrapper {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -419,35 +424,35 @@ const close = () => {
 }
 
 :deep(.modern-table .v-data-table__th) {
-  background: #F9FAFB !important;
-  color: #64748B !important;
+  background: #f9fafb !important;
+  color: #64748b !important;
   font-weight: 600 !important;
   font-size: 0.75rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  border-bottom: 2px solid #E2E8F0 !important;
+  border-bottom: 2px solid #e2e8f0 !important;
 }
 
 :deep(.v-theme--dark .modern-table .v-data-table__th) {
-  background: #0F172A !important;
-  color: #94A3B8 !important;
+  background: #0f172a !important;
+  color: #94a3b8 !important;
   border-bottom-color: #334155 !important;
 }
 
 :deep(.modern-table .v-data-table__td) {
-  border-bottom: 1px solid #F3F4F6 !important;
+  border-bottom: 1px solid #f3f4f6 !important;
 }
 
 :deep(.v-theme--dark .modern-table .v-data-table__td) {
-  border-bottom-color: #1E293B !important;
+  border-bottom-color: #1e293b !important;
 }
 
 :deep(.modern-table tbody tr:hover) {
-  background: #F9FAFB !important;
+  background: #f9fafb !important;
 }
 
 :deep(.v-theme--dark .modern-table tbody tr:hover) {
-  background: #0F172A !important;
+  background: #0f172a !important;
 }
 
 /* Status Chips */
@@ -458,18 +463,18 @@ const close = () => {
 }
 
 .empty-value {
-  color: #9CA3AF;
+  color: #9ca3af;
   font-size: 0.875rem;
 }
 
 .notes-text {
   font-size: 0.875rem;
-  color: #6B7280;
+  color: #6b7280;
   line-height: 1.5;
 }
 
 .v-theme--dark .notes-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Empty State */
@@ -484,16 +489,16 @@ const close = () => {
 }
 
 .dialog-content::-webkit-scrollbar-track {
-  background: #F3F4F6;
+  background: #f3f4f6;
   border-radius: 4px;
 }
 
 .v-theme--dark .dialog-content::-webkit-scrollbar-track {
-  background: #1E293B;
+  background: #1e293b;
 }
 
 .dialog-content::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
@@ -502,11 +507,11 @@ const close = () => {
 }
 
 .dialog-content::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #94a3b8;
 }
 
 .v-theme--dark .dialog-content::-webkit-scrollbar-thumb:hover {
-  background: #64748B;
+  background: #64748b;
 }
 
 /* Responsive */

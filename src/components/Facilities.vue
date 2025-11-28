@@ -5,16 +5,11 @@
       <div class="filters-section">
         <div class="filters-header">
           <div class="filters-title-group">
-            <v-icon size="20" class="filters-icon">mdi-filter-outline</v-icon>
+            <v-icon size="20" class="filters-icon"> mdi-filter-outline </v-icon>
             <h2 class="filters-title">Filters & Actions</h2>
           </div>
-          <v-btn
-            @click="addNewFacility"
-            color="primary"
-            size="large"
-            class="add-btn"
-          >
-            <v-icon start>mdi-plus-circle</v-icon>
+          <v-btn color="primary" size="large" class="add-btn" @click="addNewFacility">
+            <v-icon start> mdi-plus-circle </v-icon>
             Add New Facility
           </v-btn>
         </div>
@@ -30,7 +25,7 @@
                 clearable
                 prepend-inner-icon="mdi-magnify"
                 hide-details
-              ></v-text-field>
+              />
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-select
@@ -52,27 +47,23 @@
               <v-btn
                 color="primary"
                 class="action-btn"
-                @click="openReportDialog"
                 :disabled="reportButtonDisabled"
                 prepend-icon="mdi-file-chart"
                 block
+                @click="openReportDialog"
               >
-                <template v-if="selectedFacilities.length === 1">
-                  Report
-                </template>
-                <template v-else>
-                  Select Single Facility
-                </template>
+                <template v-if="selectedFacilities.length === 1"> Report </template>
+                <template v-else> Select Single Facility </template>
               </v-btn>
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-btn
                 color="primary"
                 class="action-btn"
-                @click="openBulkEmailDraftDialog"
                 :disabled="selectedFacilities.length === 0"
                 prepend-icon="mdi-email-multiple"
                 block
+                @click="openBulkEmailDraftDialog"
               >
                 Make Draft ({{ selectedFacilities.length }})
               </v-btn>
@@ -85,25 +76,12 @@
       <div class="table-section">
         <div class="table-header">
           <div class="table-stats">
-            <v-icon size="20" class="stats-icon">mdi-table</v-icon>
+            <v-icon size="20" class="stats-icon"> mdi-table </v-icon>
             <span class="stats-text">
               {{ filteredItems.length }} {{ filteredItems.length === 1 ? 'Facility' : 'Facilities' }}
             </span>
-            <v-progress-circular
-              v-if="isFetching"
-              indeterminate
-              color="primary"
-              size="20"
-              width="2"
-              class="ml-2"
-            />
-            <v-chip
-              v-if="selectedFacilities.length > 0"
-              size="small"
-              color="primary"
-              variant="flat"
-              class="ml-3"
-            >
+            <v-progress-circular v-if="isFetching" indeterminate color="primary" size="20" width="2" class="ml-2" />
+            <v-chip v-if="selectedFacilities.length > 0" size="small" color="primary" variant="flat" class="ml-3">
               {{ selectedFacilities.length }} Selected
             </v-chip>
           </div>
@@ -111,17 +89,14 @@
 
         <div class="table-content">
           <div v-if="loader" class="loader-container">
-            <v-progress-circular
-              :size="60"
-              :width="6"
-              color="primary"
-              indeterminate
-            ></v-progress-circular>
+            <v-progress-circular :size="60" :width="6" color="primary" indeterminate />
             <p class="loader-text">Loading facilities...</p>
           </div>
 
           <div v-else class="table-wrapper">
             <v-data-table
+              v-model:expanded="expanded"
+              v-model="selectedFacilities"
               :headers="headers"
               :items="filteredItems"
               :loading="loader || isFetching"
@@ -129,69 +104,60 @@
               show-expand
               show-select
               :search="search"
-              v-model:expanded="expanded"
-              v-model="selectedFacilities"
               item-value="id"
               fixed-header
               height="500"
             >
-              <template
-                v-slot:item.data-table-expand="{ internalItem, isExpanded, toggleExpand }"
-              >
+              <template #item.data-table-expand="{ internalItem, isExpanded, toggleExpand }">
                 <v-btn
                   :append-icon="isExpanded(internalItem) ? 'mdi-arrow-collapse' : 'mdi-arrow-expand'"
                   :text="isExpanded(internalItem) ? 'Hide' : 'Show'"
                   variant="text"
                   size="small"
-                  @click="toggleExpand(internalItem)"
                   class="expand-btn"
+                  @click="toggleExpand(internalItem)"
                 />
               </template>
 
-              <template v-slot:item.report_link="{ item }">
+              <template #item.report_link="{ item }">
                 <v-icon
                   v-if="item['Roster Report Google Sheet Link'] && item['Roster Report Google Sheet Link'].trim()"
-                  @click="openReportLink(item['Roster Report Google Sheet Link'])"
                   color="primary"
                   class="report-link-icon"
+                  @click="openReportLink(item['Roster Report Google Sheet Link'])"
                 >
                   mdi-link
                 </v-icon>
-                <v-icon
-                  v-else
-                  color="grey"
-                >
-                  mdi-link-off
-                </v-icon>
+                <v-icon v-else color="grey"> mdi-link-off </v-icon>
               </template>
 
-              <template v-slot:expanded-row="{ columns, item }">
+              <template #expanded-row="{ columns, item }">
                 <tr class="expanded-row">
                   <td :colspan="columns.length" class="expanded-cell">
                     <div class="expanded-content">
                       <!-- Action Buttons -->
                       <div class="expanded-actions">
                         <v-btn
-                          @click="openRosterReportDialogForItem(item)"
                           color="primary"
                           class="expanded-action-btn"
                           prepend-icon="mdi-table-account"
+                          @click="openRosterReportDialogForItem(item)"
                         >
                           Roster Report
                         </v-btn>
                         <v-btn
-                          @click="openEmailDraftDialog(item)"
                           color="primary"
                           class="expanded-action-btn"
                           prepend-icon="mdi-email-edit"
+                          @click="openEmailDraftDialog(item)"
                         >
                           Make Draft
                         </v-btn>
                         <v-btn
-                          @click="editFacility(item)"
                           color="primary"
                           class="expanded-action-btn"
                           prepend-icon="mdi-pencil"
+                          @click="editFacility(item)"
                         >
                           Edit
                         </v-btn>
@@ -249,30 +215,32 @@
     <v-card class="modern-dialog">
       <v-card-title class="modern-dialog-header">
         <div class="dialog-header-content">
-          <v-icon class="dialog-header-icon">mdi-office-building-edit</v-icon>
-          <span class="dialog-header-title">{{ editFacilityData && editFacilityData.id ? 'Edit Facility' : 'Add New Facility' }}</span>
+          <v-icon class="dialog-header-icon"> mdi-office-building-edit </v-icon>
+          <span class="dialog-header-title">{{
+            editFacilityData && editFacilityData.id ? 'Edit Facility' : 'Add New Facility'
+          }}</span>
         </div>
-        <v-btn icon="mdi-close" variant="text" @click="closeEditFacilityDialog" class="dialog-close-btn" />
+        <v-btn icon="mdi-close" variant="text" class="dialog-close-btn" @click="closeEditFacilityDialog" />
       </v-card-title>
       <v-divider />
       <v-card-text>
         <div v-if="editFacilityData">
           <div class="text-subtitle-1 mb-2">Facility Info</div>
           <v-row dense>
-            <v-col cols="12" sm="6" v-for="key in facilityFieldKeys" :key="key">
+            <v-col v-for="key in facilityFieldKeys" :key="key" cols="12" sm="6">
               <template v-if="key === 'Active Customer?'">
                 <v-select
-                  :label="key"
-                  :items="['Yes','No','N/A']"
                   v-model="editFacilityData[key]"
+                  :label="key"
+                  :items="['Yes', 'No', 'N/A']"
                   variant="outlined"
                   density="comfortable"
                 />
               </template>
               <template v-else>
                 <v-text-field
-                  :label="key"
                   v-model="editFacilityData[key]"
+                  :label="key"
                   :readonly="key === 'id' || (key === 'Facility ID' && !!editFacilityData.id)"
                   :disabled="key === 'id' || (key === 'Facility ID' && !!editFacilityData.id)"
                   :required="isRequiredFacilityField(key)"
@@ -287,26 +255,23 @@
           <div class="text-subtitle-1 mt-6 mb-2">Mailing Addresses</div>
           <div v-if="Array.isArray(editFacilityData.mailing_addresses) && editFacilityData.mailing_addresses.length">
             <v-expansion-panels>
-              <v-expansion-panel
-                v-for="(addr, aidx) in editFacilityData.mailing_addresses"
-                :key="aidx"
-              >
+              <v-expansion-panel v-for="(addr, aidx) in editFacilityData.mailing_addresses" :key="aidx">
                 <v-expansion-panel-title>
-                  {{ addr['Mailing Account Name'] || `Address #${aidx+1}` }}
+                  {{ addr['Mailing Account Name'] || `Address #${aidx + 1}` }}
                 </v-expansion-panel-title>
                 <v-expansion-panel-text>
                   <v-row dense>
-                    <v-col cols="12" sm="6" v-for="akey in addressFieldKeys(addr)" :key="akey">
+                    <v-col v-for="akey in addressFieldKeys(addr)" :key="akey" cols="12" sm="6">
                       <v-text-field
                         :label="akey"
                         :model-value="addr[akey]"
-                        @update:model-value="val => handleAddressFieldChange(addr, akey, val)"
                         :readonly="akey === 'id' || akey === 'parent_id' || akey === 'Facility Mailing Account ID'"
                         :disabled="akey === 'id' || akey === 'parent_id' || akey === 'Facility Mailing Account ID'"
                         :required="isRequiredAddressField(akey)"
                         :rules="addressRules(akey)"
                         variant="outlined"
                         density="comfortable"
+                        @update:model-value="(val) => handleAddressFieldChange(addr, akey, val)"
                       />
                     </v-col>
                   </v-row>
@@ -317,12 +282,16 @@
                     <v-btn class="mr-2" color="secondary" variant="tonal" @click="duplicateAddress(addr)">
                       Duplicate
                     </v-btn>
-                    <v-btn class="mr-2" color="primary" variant="tonal" @click="saveAddress(aidx)" :disabled="!isAddressChanged(addr) || !isAddressValid(addr)">
+                    <v-btn
+                      class="mr-2"
+                      color="primary"
+                      variant="tonal"
+                      :disabled="!isAddressChanged(addr) || !isAddressValid(addr)"
+                      @click="saveAddress(aidx)"
+                    >
                       Save
                     </v-btn>
-                    <v-btn variant="text" @click="cancelAddress(aidx, addr)">
-                      Cancel
-                    </v-btn>
+                    <v-btn variant="text" @click="cancelAddress(aidx, addr)"> Cancel </v-btn>
                   </v-row>
                 </v-expansion-panel-text>
               </v-expansion-panel>
@@ -331,9 +300,7 @@
           <div v-else class="text-medium-emphasis">No mailing addresses</div>
           <div class="mt-4 text-right">
             <template v-if="editFacilityData && editFacilityData.id">
-              <v-btn color="primary" variant="outlined" @click="addNewAddress">
-                Add Mailing Address
-              </v-btn>
+              <v-btn color="primary" variant="outlined" @click="addNewAddress"> Add Mailing Address </v-btn>
             </template>
             <template v-else>
               <span class="text-medium-emphasis">Save new Facility before adding address</span>
@@ -342,30 +309,26 @@
         </div>
       </v-card-text>
       <v-card-actions class="justify-end">
-        <v-btn variant="text" @click="closeEditFacilityDialog">Cancel</v-btn>
-        <v-btn color="primary" @click="saveFacilityEdits" :disabled="!isFacilityValid">Save</v-btn>
+        <v-btn variant="text" @click="closeEditFacilityDialog"> Cancel </v-btn>
+        <v-btn color="primary" :disabled="!isFacilityValid" @click="saveFacilityEdits"> Save </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <!-- Bulk Email Draft Dialog -->
-  <v-dialog
-    v-model="bulkEmailDraftDialog"
-    max-width="1000"
-    :persistent="bulkMakeDraftLoading"
-  >
+  <v-dialog v-model="bulkEmailDraftDialog" max-width="1000" :persistent="bulkMakeDraftLoading">
     <v-card class="modern-dialog">
       <v-card-title class="modern-dialog-header">
         <div class="dialog-header-content">
-          <v-icon class="dialog-header-icon">mdi-email-multiple</v-icon>
+          <v-icon class="dialog-header-icon"> mdi-email-multiple </v-icon>
           <span class="dialog-header-title">Create Email Drafts for Multiple Facilities</span>
         </div>
         <v-btn
           icon="mdi-close"
           variant="text"
-          @click="closeBulkEmailDraftDialog"
           :disabled="bulkMakeDraftLoading"
           class="dialog-close-btn"
+          @click="closeBulkEmailDraftDialog"
         />
       </v-card-title>
       <v-divider />
@@ -382,8 +345,8 @@
               :loading="bulkEmailTypesLoading"
               :disabled="bulkMakeDraftLoading"
               clearable
-              @update:model-value="onBulkEmailTypeChange"
               return-object
+              @update:model-value="onBulkEmailTypeChange"
             />
           </v-col>
           <v-col cols="12" sm="2">
@@ -402,11 +365,7 @@
 
         <v-row v-if="bulkMakeDraftLoading">
           <v-col cols="12" class="text-center py-8">
-            <v-progress-circular
-              indeterminate
-              color="primary"
-              size="64"
-            ></v-progress-circular>
+            <v-progress-circular indeterminate color="primary" size="64" />
             <div class="mt-4 text-h6">Creating email drafts... Please wait.</div>
           </v-col>
         </v-row>
@@ -414,25 +373,17 @@
         <template v-if="!bulkMakeDraftLoading">
           <v-row v-if="!isSignedIn">
             <v-col cols="12" class="text-center">
-              <v-btn
-                color="secondary"
-                size="large"
-                @click="signInWithGoogle"
-              >
-                <v-icon left>mdi-google</v-icon>
+              <v-btn color="secondary" size="large" @click="signInWithGoogle">
+                <v-icon left> mdi-google </v-icon>
                 Sign in with Google
               </v-btn>
-              <div class="text-caption mt-2 text-medium-emphasis">
-                Sign in to create email drafts
-              </div>
+              <div class="text-caption mt-2 text-medium-emphasis">Sign in to create email drafts</div>
             </v-col>
           </v-row>
 
           <v-row v-if="validSelectedFacilities.length > 0">
             <v-col cols="12">
-              <div class="text-subtitle-2 mb-2">
-                Selected Facilities ({{ validSelectedFacilities.length }}):
-              </div>
+              <div class="text-subtitle-2 mb-2">Selected Facilities ({{ validSelectedFacilities.length }}):</div>
               <v-chip-group column>
                 <v-chip
                   v-for="facility in validSelectedFacilities"
@@ -451,9 +402,9 @@
           <v-row v-if="selectedFacilities.length > 0 && validSelectedFacilities.length === 0">
             <v-col cols="12">
               <p class="text-body-2 text-warning py-2">
-                <v-icon size="small" class="mr-1">mdi-alert</v-icon>
-                Selected facilities must have both a Report Link and Email address.
-                Please select facilities with complete information.
+                <v-icon size="small" class="mr-1"> mdi-alert </v-icon>
+                Selected facilities must have both a Report Link and Email address. Please select facilities with
+                complete information.
               </p>
             </v-col>
           </v-row>
@@ -467,41 +418,31 @@
                 height="400"
                 frameborder="0"
                 allowfullscreen
-              ></iframe>
+              />
             </v-col>
           </v-row>
         </template>
       </v-card-text>
       <v-card-actions class="justify-end">
-        <v-btn
-          variant="text"
-          @click="closeBulkEmailDraftDialog"
-          :disabled="bulkMakeDraftLoading"
-        >
-          Close
-        </v-btn>
+        <v-btn variant="text" :disabled="bulkMakeDraftLoading" @click="closeBulkEmailDraftDialog"> Close </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <!-- Email Draft Dialog -->
-  <v-dialog
-    v-model="emailDraftDialog"
-    max-width="1200"
-    :persistent="makeDraftLoading"
-  >
+  <v-dialog v-model="emailDraftDialog" max-width="1200" :persistent="makeDraftLoading">
     <v-card class="modern-dialog">
       <v-card-title class="modern-dialog-header">
         <div class="dialog-header-content">
-          <v-icon class="dialog-header-icon">mdi-email-edit</v-icon>
+          <v-icon class="dialog-header-icon"> mdi-email-edit </v-icon>
           <span class="dialog-header-title">Create Email Draft</span>
         </div>
         <v-btn
           icon="mdi-close"
           variant="text"
-          @click="closeEmailDraftDialog"
           :disabled="makeDraftLoading"
           class="dialog-close-btn"
+          @click="closeEmailDraftDialog"
         />
       </v-card-title>
       <v-divider />
@@ -518,8 +459,8 @@
               :loading="emailTypesLoading"
               :disabled="makeDraftLoading"
               clearable
-              @update:model-value="onEmailTypeChange"
               return-object
+              @update:model-value="onEmailTypeChange"
             />
           </v-col>
           <v-col cols="12" sm="2">
@@ -538,11 +479,7 @@
 
         <v-row v-if="makeDraftLoading">
           <v-col cols="12" class="text-center py-8">
-            <v-progress-circular
-              indeterminate
-              color="primary"
-              size="64"
-            ></v-progress-circular>
+            <v-progress-circular indeterminate color="primary" size="64" />
             <div class="mt-4 text-h6">Creating email draft... Please wait.</div>
           </v-col>
         </v-row>
@@ -550,23 +487,17 @@
         <template v-if="!makeDraftLoading">
           <v-row v-if="selectedEmailType && !isSignedIn">
             <v-col cols="12" class="text-center">
-              <v-btn
-                color="secondary"
-                size="large"
-                @click="signInWithGoogle"
-              >
-                <v-icon left>mdi-google</v-icon>
+              <v-btn color="secondary" size="large" @click="signInWithGoogle">
+                <v-icon left> mdi-google </v-icon>
                 Sign in with Google
               </v-btn>
-              <div class="text-caption mt-2 text-medium-emphasis">
-                Sign in to view document and create email drafts
-              </div>
+              <div class="text-caption mt-2 text-medium-emphasis">Sign in to view document and create email drafts</div>
             </v-col>
           </v-row>
           <v-row v-if="selectedEmailType && isSignedIn">
             <v-col cols="12">
               <p class="text-body-2 text-success py-2">
-                <v-icon size="small" class="mr-1">mdi-check-circle</v-icon>
+                <v-icon size="small" class="mr-1"> mdi-check-circle </v-icon>
                 Signed in as Google user - Ready to create drafts
               </p>
             </v-col>
@@ -579,19 +510,13 @@
                 height="600"
                 frameborder="0"
                 allowfullscreen
-              ></iframe>
+              />
             </v-col>
           </v-row>
         </template>
       </v-card-text>
       <v-card-actions class="justify-end">
-        <v-btn
-          variant="text"
-          @click="closeEmailDraftDialog"
-          :disabled="makeDraftLoading"
-        >
-          Close
-        </v-btn>
+        <v-btn variant="text" :disabled="makeDraftLoading" @click="closeEmailDraftDialog"> Close </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -599,8 +524,8 @@
   <!-- Roster Report Dialog -->
   <RosterReport
     v-model="rosterReportDialog"
-    :facilityId="selectedFacilityId"
-    :facilityFacilityId="selectedFacilityFacilityId"
+    :facility-id="selectedFacilityId"
+    :facility-facility-id="selectedFacilityFacilityId"
     @close="closeRosterReportDialog"
   />
 
@@ -611,29 +536,28 @@
     @close="closeReportDialog"
     @export-success="onExportSuccess"
   />
-
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
-import api from "@/plugins/axios";
-import RosterReport from "./RosterReport.vue";
-import ReportExports from "./ReportExports.vue";
+import api from '@/plugins/axios';
+import RosterReport from './RosterReport.vue';
+import ReportExports from './ReportExports.vue';
 
 // Table headers - auto-size columns to content
 const headers = [
-  { title: "Name", key: "Facility Name" },
-  { title: "Facility ID", key: "Facility ID" },
-  { title: "Report Link", key: "report_link", align: "center" },
-  { title: "Active Customer", key: "Active Customer?", align: "center" },
-  { title: "Staff Emails", key: "Staff Emails For Reporting" }
+  { title: 'Name', key: 'Facility Name' },
+  { title: 'Facility ID', key: 'Facility ID' },
+  { title: 'Report Link', key: 'report_link', align: 'center' },
+  { title: 'Active Customer', key: 'Active Customer?', align: 'center' },
+  { title: 'Staff Emails', key: 'Staff Emails For Reporting' },
 ];
 
 // Reactive state
 const expanded = ref([]);
-const search = ref("");
-const activeCustomerFilter = ref("All");
+const search = ref('');
+const activeCustomerFilter = ref('All');
 const editFacilityDialog = ref(false);
 const editFacilityData = ref(null);
 const editFacilityOriginalData = ref(null);
@@ -661,20 +585,26 @@ const reportExportsDialog = ref(false);
 const selectedReportFacility = ref(null);
 
 // TanStack Query - Fetch facilities (smart caching)
-const { data: facilitiesData, isLoading: loader, isFetching, refetch: refetchFacilities, error: facilitiesError } = useQuery({
+const {
+  data: facilitiesData,
+  isLoading: loader,
+  isFetching,
+  refetch: refetchFacilities,
+  error: facilitiesError,
+} = useQuery({
   queryKey: ['facilitiesSupabase'], // UNIQUE KEY - different from DisplayResults
   queryFn: async () => {
-    const res = await api.get("/get-facilities-supabase");
+    const res = await api.get('/get-facilities-supabase');
     const facilities = Array.isArray(res.data)
       ? res.data.map((f) => ({
           ...f,
-          facility_id: f.facility_id || f["Facility ID"],
-          facility_name: f.facility_name || f["Facility Name"],
+          facility_id: f.facility_id || f['Facility ID'],
+          facility_name: f.facility_name || f['Facility Name'],
           mailing_addresses: Array.isArray(f.mailing_addresses)
             ? f.mailing_addresses
             : f.mailing_addresses
-            ? [f.mailing_addresses]
-            : [],
+              ? [f.mailing_addresses]
+              : [],
         }))
       : [];
     console.log('Facilities (Supabase) loaded:', facilities.length);
@@ -693,7 +623,7 @@ const { data: facilitiesData, isLoading: loader, isFetching, refetch: refetchFac
 // Watch for errors
 watch(facilitiesError, (error) => {
   if (error) {
-    console.error("Error fetching facilities");
+    console.error('Error fetching facilities');
   }
 });
 
@@ -714,32 +644,38 @@ const reportButtonDisabled = computed(() => {
 });
 
 const validSelectedFacilities = computed(() => {
-  return items.value.filter(facility =>
-    selectedFacilities.value.includes(facility.id) &&
-    facility['Roster Report Google Sheet Link'] &&
-    facility['Roster Report Google Sheet Link'].trim() &&
-    facility['Staff Emails For Reporting'] &&
-    facility['Staff Emails For Reporting'].trim()
+  return items.value.filter(
+    (facility) =>
+      selectedFacilities.value.includes(facility.id) &&
+      facility['Roster Report Google Sheet Link'] &&
+      facility['Roster Report Google Sheet Link'].trim() &&
+      facility['Staff Emails For Reporting'] &&
+      facility['Staff Emails For Reporting'].trim()
   );
 });
 
 const filteredItems = computed(() => {
-  if (activeCustomerFilter.value === "All" || !activeCustomerFilter.value) {
+  if (activeCustomerFilter.value === 'All' || !activeCustomerFilter.value) {
     return items.value;
   }
   const filter = activeCustomerFilter.value;
   return items.value.filter((it) => {
-    const val = it["Active Customer?"];
-    const isNA = (v) => v === null || v === undefined || String(v).trim() === "" || String(v).trim().toLowerCase() === "n/a" || String(v).trim().toLowerCase() === "na";
-    if (filter === "N/A") {
+    const val = it['Active Customer?'];
+    const isNA = (v) =>
+      v === null ||
+      v === undefined ||
+      String(v).trim() === '' ||
+      String(v).trim().toLowerCase() === 'n/a' ||
+      String(v).trim().toLowerCase() === 'na';
+    if (filter === 'N/A') {
       return isNA(val);
     }
-    const wantYes = filter === "Yes";
-    if (typeof val === "boolean") return wantYes ? val === true : val === false;
+    const wantYes = filter === 'Yes';
+    if (typeof val === 'boolean') return wantYes ? val === true : val === false;
     if (isNA(val)) return false;
     const s = String(val).trim().toLowerCase();
-    if (wantYes) return s === "yes" || s === "true" || s === "1" || s === "y";
-    return s === "no" || s === "false" || s === "0" || s === "n";
+    if (wantYes) return s === 'yes' || s === 'true' || s === '1' || s === 'y';
+    return s === 'no' || s === 'false' || s === '0' || s === 'n';
   });
 });
 
@@ -759,7 +695,7 @@ const isRequiredFacilityField = (key) => {
 
 const facilityRules = (key) => {
   if (isRequiredFacilityField(key)) {
-    return [v => (isNonEmpty(v) || 'Required')];
+    return [(v) => isNonEmpty(v) || 'Required'];
   }
   return [];
 };
@@ -770,7 +706,7 @@ const isRequiredAddressField = (akey) => {
 
 const addressRules = (akey) => {
   if (isRequiredAddressField(akey)) {
-    return [v => (isNonEmpty(v) || 'Required')];
+    return [(v) => isNonEmpty(v) || 'Required'];
   }
   return [];
 };
@@ -798,7 +734,7 @@ const _hasMeaningfulValue = (obj) => {
 
 // Methods
 const editFacility = (item) => {
-  console.log("Editing facility:", item);
+  console.log('Editing facility:', item);
   editFacilityData.value = JSON.parse(JSON.stringify(item));
   editFacilityOriginalData.value = JSON.parse(JSON.stringify(item));
   editFacilityAddressOriginalMap.value = {};
@@ -828,14 +764,14 @@ const addressFieldKeys = (addr) => {
 const duplicateAddress = (addr) => {
   if (!editFacilityData.value) return;
   const copy = JSON.parse(JSON.stringify(addr || {}));
-  copy.id = "";
+  copy.id = '';
   copy.parent_id = editFacilityData.value.id;
-  if (copy["Mailing Account Name"]) {
-    copy["Mailing Account Name"] = `${copy["Mailing Account Name"]} (Copy)`;
+  if (copy['Mailing Account Name']) {
+    copy['Mailing Account Name'] = `${copy['Mailing Account Name']} (Copy)`;
   }
-  const facId = editFacilityData.value && editFacilityData.value["Facility ID"];
-  const name = copy["Mailing Account Name"] || "";
-  copy["Facility Mailing Account ID"] = facId ? `${facId}_${name}` : name;
+  const facId = editFacilityData.value && editFacilityData.value['Facility ID'];
+  const name = copy['Mailing Account Name'] || '';
+  copy['Facility Mailing Account ID'] = facId ? `${facId}_${name}` : name;
   (editFacilityData.value.mailing_addresses ||= []).push(copy);
   if (!editFacilityAddressOriginalByRef.value) editFacilityAddressOriginalByRef.value = new WeakMap();
   const lastRef = editFacilityData.value.mailing_addresses[editFacilityData.value.mailing_addresses.length - 1];
@@ -852,7 +788,10 @@ const saveAddress = async (aidx) => {
     if (!saved) throw new Error('Empty response');
     editFacilityData.value.mailing_addresses.splice(aidx, 1, saved);
     if (!editFacilityAddressOriginalByRef.value) editFacilityAddressOriginalByRef.value = new WeakMap();
-    editFacilityAddressOriginalByRef.value.set(editFacilityData.value.mailing_addresses[aidx], JSON.parse(JSON.stringify(saved)));
+    editFacilityAddressOriginalByRef.value.set(
+      editFacilityData.value.mailing_addresses[aidx],
+      JSON.parse(JSON.stringify(saved))
+    );
     if (saved.id != null) {
       editFacilityAddressOriginalMap.value[saved.id] = JSON.parse(JSON.stringify(saved));
     }
@@ -884,7 +823,10 @@ const cancelAddress = (aidx, addr) => {
     const original = JSON.parse(JSON.stringify(editFacilityAddressOriginalMap.value[id]));
     editFacilityData.value.mailing_addresses.splice(aidx, 1, original);
     if (!editFacilityAddressOriginalByRef.value) editFacilityAddressOriginalByRef.value = new WeakMap();
-    editFacilityAddressOriginalByRef.value.set(editFacilityData.value.mailing_addresses[aidx], JSON.parse(JSON.stringify(editFacilityData.value.mailing_addresses[aidx])));
+    editFacilityAddressOriginalByRef.value.set(
+      editFacilityData.value.mailing_addresses[aidx],
+      JSON.parse(JSON.stringify(editFacilityData.value.mailing_addresses[aidx]))
+    );
   } else {
     editFacilityData.value.mailing_addresses.splice(aidx, 1);
   }
@@ -926,7 +868,7 @@ const addNewAddress = () => {
     'Mailing Account Address_geolocation': '',
   };
 
-  const existing = (editFacilityData.value.mailing_addresses || []).find(a => a && typeof a === 'object');
+  const existing = (editFacilityData.value.mailing_addresses || []).find((a) => a && typeof a === 'object');
 
   const fallbackOrder = [
     'id',
@@ -955,14 +897,14 @@ const addNewAddress = () => {
   const orderedKeys = existing ? Object.keys(existing) : fallbackOrder;
 
   const newAddr = {};
-  orderedKeys.forEach(k => {
+  orderedKeys.forEach((k) => {
     if (Object.prototype.hasOwnProperty.call(baseVals, k)) {
       newAddr[k] = baseVals[k];
     } else {
       newAddr[k] = '';
     }
   });
-  fallbackOrder.forEach(k => {
+  fallbackOrder.forEach((k) => {
     if (!(k in newAddr)) newAddr[k] = baseVals[k];
   });
 
@@ -970,7 +912,6 @@ const addNewAddress = () => {
   if (!editFacilityAddressOriginalByRef.value) editFacilityAddressOriginalByRef.value = new WeakMap();
   const inserted = editFacilityData.value.mailing_addresses[editFacilityData.value.mailing_addresses.length - 1];
   editFacilityAddressOriginalByRef.value.set(inserted, JSON.parse(JSON.stringify(inserted)));
-
 };
 
 const saveFacilityEdits = async () => {
@@ -983,7 +924,7 @@ const saveFacilityEdits = async () => {
 
     if (!prevId || String(prevId).trim() === '' || prevId !== saved.id) {
       if (Array.isArray(editFacilityData.value.mailing_addresses)) {
-        editFacilityData.value.mailing_addresses.forEach(a => {
+        editFacilityData.value.mailing_addresses.forEach((a) => {
           if (a) a.parent_id = saved.id;
         });
       }
@@ -1000,7 +941,6 @@ const saveFacilityEdits = async () => {
     await refetchFacilities();
 
     editFacilityData.value = JSON.parse(JSON.stringify(merged));
-
   } catch (err) {
     console.error('Error saving facility');
   }
@@ -1062,10 +1002,11 @@ const signInWithGoogle = () => {
   console.log('OAuth Config:', {
     clientId,
     redirectUri,
-    currentUrl: window.location.href
+    currentUrl: window.location.href,
   });
 
-  const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+  const authUrl =
+    'https://accounts.google.com/o/oauth2/v2/auth?' +
     `client_id=${encodeURIComponent(clientId)}&` +
     `redirect_uri=${encodeURIComponent(redirectUri)}&` +
     'response_type=token&' +
@@ -1077,11 +1018,7 @@ const signInWithGoogle = () => {
   const left = (window.screen.width - width) / 2;
   const top = (window.screen.height - height) / 2;
 
-  const popup = window.open(
-    authUrl,
-    'Google Sign In',
-    `width=${width},height=${height},left=${left},top=${top}`
-  );
+  const popup = window.open(authUrl, 'Google Sign In', `width=${width},height=${height},left=${left},top=${top}`);
 
   if (!popup) {
     console.error('Popup blocked. Please allow popups for this site.');
@@ -1096,7 +1033,7 @@ const signInWithGoogle = () => {
       isSignedIn.value = true;
 
       const expiresIn = event.data.expires_in || 3600;
-      const expiresAt = Date.now() + (expiresIn * 1000);
+      const expiresAt = Date.now() + expiresIn * 1000;
       localStorage.setItem('google_access_token', event.data.access_token);
       localStorage.setItem('google_token_expires_at', expiresAt.toString());
 
@@ -1144,28 +1081,27 @@ const onEmailTypeChange = (emailType) => {
 };
 
 const makeDraft = async () => {
-      if (!isSignedIn.value || !googleAccessToken.value) {
-        return;
-      }
+  if (!isSignedIn.value || !googleAccessToken.value) {
+    return;
+  }
 
-      if (!selectedEmailTypeData.value) {
-        return;
-      }
+  if (!selectedEmailTypeData.value) {
+    return;
+  }
 
-      try {
-        makeDraftLoading.value = true;
+  try {
+    makeDraftLoading.value = true;
 
-        const payload = {
-          access_token: googleAccessToken.value,
-          email_type: selectedEmailTypeData.value,
-          facility: selectedFacility.value
-        };
+    const payload = {
+      access_token: googleAccessToken.value,
+      email_type: selectedEmailTypeData.value,
+      facility: selectedFacility.value,
+    };
 
-        const res = await api.post('/make-email-draft', payload);
-
-      } catch (err) {
-        console.error('Error creating draft:', err);
-      } finally {
+    const res = await api.post('/make-email-draft', payload);
+  } catch (err) {
+    console.error('Error creating draft:', err);
+  } finally {
     makeDraftLoading.value = false;
     setTimeout(() => {
       closeEmailDraftDialog();
@@ -1180,16 +1116,16 @@ const openReportLink = (link) => {
 };
 
 const openBulkEmailDraftDialog = async () => {
-      bulkEmailDraftDialog.value = true;
-      bulkEmailType.value = null;
-      bulkEmailTypeData.value = null;
+  bulkEmailDraftDialog.value = true;
+  bulkEmailType.value = null;
+  bulkEmailTypeData.value = null;
 
-      try {
-        bulkEmailType.valuesLoading = true;
-        const res = await api.get('/get-email-types');
-        emailTypes.value = res.data.email_types || [];
-      } catch (err) {
-        console.error('Error fetching email types:', err);
+  try {
+    bulkEmailType.value.valuesLoading = true;
+    const res = await api.get('/get-email-types');
+    emailTypes.value = res.data.email_types || [];
+  } catch (err) {
+    console.error('Error fetching email types:', err);
   } finally {
     bulkEmailTypesLoading.value = false;
   }
@@ -1214,35 +1150,35 @@ const removeFacilityFromSelection = (facilityId) => {
 };
 
 const makeBulkDraft = async () => {
-      if (!isSignedIn.value || !googleAccessToken.value) {
-        return;
-      }
+  if (!isSignedIn.value || !googleAccessToken.value) {
+    return;
+  }
 
-      if (!bulkEmailTypeData.value) {
-        return;
-      }
+  if (!bulkEmailTypeData.value) {
+    return;
+  }
 
-      if (validSelectedFacilities.value.length === 0) {
-        return;
-      }
+  if (validSelectedFacilities.value.length === 0) {
+    return;
+  }
 
-      try {
-        bulkMakeDraftLoading.value = true;
+  try {
+    bulkMakeDraftLoading.value = true;
 
-        const payload = {
-          access_token: googleAccessToken.value,
-          email_type: bulkEmailTypeData.value,
-          facilities: validSelectedFacilities.value
-        };
+    const payload = {
+      access_token: googleAccessToken.value,
+      email_type: bulkEmailTypeData.value,
+      facilities: validSelectedFacilities.value,
+    };
 
-        const res = await api.post('/make-email-draft-bulk', payload);
+    const res = await api.post('/make-email-draft-bulk', payload);
 
-        if (res.data && res.data.success) {
-          selectedFacilities.value = [];
-        }
-      } catch (err) {
-        console.error('Error creating bulk drafts:', err);
-      } finally {
+    if (res.data && res.data.success) {
+      selectedFacilities.value = [];
+    }
+  } catch (err) {
+    console.error('Error creating bulk drafts:', err);
+  } finally {
     bulkMakeDraftLoading.value = false;
     setTimeout(() => {
       closeBulkEmailDraftDialog();
@@ -1306,7 +1242,7 @@ const closeRosterReportDialog = () => {
 const openReportDialog = () => {
   if (selectedFacilities.value.length === 1) {
     const facilityId = selectedFacilities.value[0];
-    const facility = items.value.find(f => f.id === facilityId);
+    const facility = items.value.find((f) => f.id === facilityId);
     if (facility) {
       selectedReportFacility.value = facility;
       reportExportsDialog.value = true;
@@ -1334,7 +1270,7 @@ onMounted(() => {
 /* Main Container - Same as Results page */
 .facilities-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
@@ -1345,7 +1281,7 @@ onMounted(() => {
 }
 
 .v-theme--dark .facilities-container {
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
 .facilities-container::-webkit-scrollbar {
@@ -1375,11 +1311,13 @@ onMounted(() => {
 
 /* Filters Section - Same pattern as Results */
 .filters-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
   width: 100%;
   max-width: 100%;
@@ -1387,14 +1325,16 @@ onMounted(() => {
 }
 
 .v-theme--dark .filters-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .filters-section:hover {
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08), 0 4px 8px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 8px 24px rgba(99, 102, 241, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
   transform: translateY(-2px);
 }
 
@@ -1406,17 +1346,17 @@ onMounted(() => {
 
 .filters-header {
   padding: 24px 28px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
 }
 
 .v-theme--dark .filters-header {
   border-bottom-color: #334155;
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
 }
 
 .filters-title-group {
@@ -1426,12 +1366,12 @@ onMounted(() => {
 }
 
 .filters-icon {
-  color: #6366F1;
+  color: #6366f1;
   opacity: 0.7;
 }
 
 .v-theme--dark .filters-icon {
-  color: #818CF8;
+  color: #818cf8;
   opacity: 0.8;
 }
 
@@ -1443,7 +1383,7 @@ onMounted(() => {
 }
 
 .v-theme--dark .filters-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .filters-content {
@@ -1451,12 +1391,12 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background: #FAFBFC;
-  border-top: 1px solid #E2E8F0;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .filters-content {
-  background: #151E2E;
+  background: #151e2e;
   border-top-color: #334155;
 }
 
@@ -1491,11 +1431,13 @@ onMounted(() => {
 
 /* Table Section - Same as Results */
 .table-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
   width: 100%;
   max-width: 100%;
@@ -1503,14 +1445,16 @@ onMounted(() => {
 }
 
 .v-theme--dark .table-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .table-section:hover {
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08), 0 4px 8px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 8px 24px rgba(99, 102, 241, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
   transform: translateY(-2px);
 }
 
@@ -1522,17 +1466,17 @@ onMounted(() => {
 
 .table-header {
   padding: 24px 28px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
 }
 
 .v-theme--dark .table-header {
   border-bottom-color: #334155;
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
 }
 
 .table-stats {
@@ -1542,12 +1486,12 @@ onMounted(() => {
 }
 
 .stats-icon {
-  color: #6366F1;
+  color: #6366f1;
   opacity: 0.7;
 }
 
 .v-theme--dark .stats-icon {
-  color: #818CF8;
+  color: #818cf8;
   opacity: 0.8;
 }
 
@@ -1558,27 +1502,27 @@ onMounted(() => {
 }
 
 .v-theme--dark .stats-text {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .table-stats :deep(.v-chip) {
-  background: linear-gradient(135deg, #EEF2FF, #E0E7FF) !important;
-  color: #4F46E5 !important;
-  border: 1px solid #C7D2FE !important;
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff) !important;
+  color: #4f46e5 !important;
+  border: 1px solid #c7d2fe !important;
   box-shadow: 0 1px 2px rgba(99, 102, 241, 0.1) !important;
   font-weight: 600 !important;
 }
 
 .v-theme--dark .table-stats :deep(.v-chip) {
-  background: linear-gradient(135deg, #312E81, #3730A3) !important;
-  color: #A5B4FC !important;
-  border: 1px solid #4C1D95 !important;
+  background: linear-gradient(135deg, #312e81, #3730a3) !important;
+  color: #a5b4fc !important;
+  border: 1px solid #4c1d95 !important;
 }
 
 .table-content {
   padding: 28px;
-  background: #FAFBFC;
-  border-top: 1px solid #E2E8F0;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
   width: 100%;
   max-width: 100%;
   overflow: hidden;
@@ -1586,7 +1530,7 @@ onMounted(() => {
 }
 
 .v-theme--dark .table-content {
-  background: #151E2E;
+  background: #151e2e;
   border-top-color: #334155;
 }
 
@@ -1598,32 +1542,32 @@ onMounted(() => {
   min-height: 400px;
   gap: 16px;
   padding: 40px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
 }
 
 .v-theme--dark .loader-container {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .loader-text {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .loader-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .table-wrapper {
   width: 100%;
   max-width: 100%;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-sizing: border-box;
   overflow: hidden;
@@ -1633,7 +1577,7 @@ onMounted(() => {
 }
 
 .v-theme--dark .table-wrapper {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -1707,8 +1651,8 @@ onMounted(() => {
 :deep(.v-data-table__th) {
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
-  color: #64748B !important;
-  background: #F9FAFB !important;
+  color: #64748b !important;
+  background: #f9fafb !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
   white-space: nowrap !important;
@@ -1721,8 +1665,8 @@ onMounted(() => {
 }
 
 :deep(.v-theme--dark .v-data-table__th) {
-  color: #94A3B8 !important;
-  background: #0F172A !important;
+  color: #94a3b8 !important;
+  background: #0f172a !important;
 }
 
 /* Force header content to stay on one line */
@@ -1735,8 +1679,8 @@ onMounted(() => {
 }
 
 :deep(.v-data-table__td) {
-  color: #1E293B !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e5e7eb !important;
   font-size: 0.875rem !important;
   white-space: normal !important;
   padding: 12px 16px !important;
@@ -1747,7 +1691,7 @@ onMounted(() => {
 }
 
 :deep(.v-theme--dark .v-data-table__td) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
   border-bottom-color: #334155 !important;
 }
 
@@ -1787,10 +1731,6 @@ onMounted(() => {
   transition: all 0.2s ease !important;
 }
 
-
-
-
-
 :deep(.expand-btn::before) {
   opacity: 0 !important;
 }
@@ -1818,8 +1758,8 @@ onMounted(() => {
 
 /* Expanded Row Styling */
 :deep(.v-data-table__expanded__content) {
-  background: #F9FAFB !important;
-  border-top: 2px solid #E5E7EB !important;
+  background: #f9fafb !important;
+  border-top: 2px solid #e5e7eb !important;
   padding: 20px !important;
   width: 100% !important;
   max-width: 100% !important;
@@ -1839,7 +1779,7 @@ onMounted(() => {
 }
 
 :deep(.v-theme--dark .v-data-table__expanded__content) {
-  background: #0F172A !important;
+  background: #0f172a !important;
   border-top-color: #334155 !important;
 }
 
@@ -1855,11 +1795,11 @@ onMounted(() => {
 }
 
 :deep(.expanded-row) {
-  background: #F9FAFB !important;
+  background: #f9fafb !important;
 }
 
 .v-theme--dark :deep(.expanded-row) {
-  background: #0F172A !important;
+  background: #0f172a !important;
 }
 
 .expanded-cell {
@@ -1872,13 +1812,13 @@ onMounted(() => {
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .v-theme--dark .expanded-content {
-  background: #1E293B;
+  background: #1e293b;
 }
 
 .expanded-actions {
@@ -1887,7 +1827,7 @@ onMounted(() => {
   margin-bottom: 24px;
   flex-wrap: wrap;
   padding-bottom: 16px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .expanded-actions {
@@ -1904,10 +1844,9 @@ onMounted(() => {
   cursor: pointer !important;
   border-radius: 10px !important;
   transition: all 0.2s ease !important;
-  color: #FFFFFF !important;
+  color: #ffffff !important;
   box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2) !important;
 }
-
 
 .expanded-action-btn:hover {
   transform: translateY(-2px) !important;
@@ -1917,20 +1856,20 @@ onMounted(() => {
 .addresses-section {
   margin-top: 24px;
   padding: 20px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
 }
 
 .v-theme--dark .addresses-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .addresses-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #6366F1;
+  color: #6366f1;
   margin: 0 0 16px 0;
   display: flex;
   align-items: center;
@@ -1943,24 +1882,24 @@ onMounted(() => {
 }
 
 .v-theme--dark .addresses-title {
-  color: #818CF8;
+  color: #818cf8;
 }
 
 .addresses-table {
-  background: #FAFBFC !important;
-  border: 1px solid #E2E8F0;
+  background: #fafbfc !important;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .v-theme--dark .addresses-table {
-  background: #0F172A !important;
+  background: #0f172a !important;
   border-color: #334155;
 }
 
 :deep(.addresses-table thead th) {
-  background: linear-gradient(to bottom, #F9FAFB, #F3F4F6) !important;
+  background: linear-gradient(to bottom, #f9fafb, #f3f4f6) !important;
   font-weight: 600 !important;
   font-size: 0.75rem !important;
   text-transform: uppercase !important;
@@ -1969,7 +1908,7 @@ onMounted(() => {
 }
 
 :deep(.v-theme--dark .addresses-table thead th) {
-  background: linear-gradient(to bottom, #1A2332, #151E2E) !important;
+  background: linear-gradient(to bottom, #1a2332, #151e2e) !important;
 }
 
 :deep(.addresses-table tbody td) {
@@ -1978,7 +1917,7 @@ onMounted(() => {
 }
 
 :deep(.v-theme--dark .addresses-table tbody td) {
-  color: #D1D5DB !important;
+  color: #d1d5db !important;
 }
 
 :deep(.addresses-table tbody tr:hover) {
@@ -2002,22 +1941,22 @@ onMounted(() => {
   justify-content: center;
   gap: 12px;
   padding: 32px 20px;
-  color: #6B7280;
+  color: #6b7280;
   font-size: 0.875rem;
-  background: #FAFBFC;
-  border: 2px dashed #E2E8F0;
+  background: #fafbfc;
+  border: 2px dashed #e2e8f0;
   border-radius: 12px;
   margin-top: 20px;
 }
 
 .v-theme--dark .no-addresses {
-  color: #9CA3AF;
-  background: #151E2E;
+  color: #9ca3af;
+  background: #151e2e;
   border-color: #334155;
 }
 
 :deep(.no-addresses .v-icon) {
-  color: #A5B4FC !important;
+  color: #a5b4fc !important;
   font-size: 1.5rem !important;
 }
 
@@ -2061,7 +2000,7 @@ onMounted(() => {
   align-items: center !important;
   justify-content: space-between !important;
   padding: 20px 24px !important;
-  background: linear-gradient(to right, #3B82F6 0% 100%) !important;
+  background: linear-gradient(to right, #3b82f6 0% 100%) !important;
   color: white !important;
 }
 
@@ -2092,7 +2031,7 @@ onMounted(() => {
 
 :deep(.modern-dialog .v-card-actions) {
   padding: 16px 24px !important;
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid #e2e8f0;
 }
 
 :deep(.v-theme--dark .modern-dialog .v-card-actions) {

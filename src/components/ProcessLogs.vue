@@ -1,33 +1,29 @@
 <template>
   <div class="queue-container">
     <div class="content-wrapper">
-      
       <!-- Tabs Section -->
       <div class="tabs-section">
         <div class="tabs-header">
-          <v-tabs
-            v-model="activeTab"
-            class="modern-tabs"
-            color="primary"
-            density="compact"
-          >
+          <v-tabs v-model="activeTab" class="modern-tabs" color="primary" density="compact">
             <v-tab v-for="(tab, index) in tabs" :key="index" :value="index">
-              <v-icon start size="18">{{ tab.icon }}</v-icon>
+              <v-icon start size="18">
+                {{ tab.icon }}
+              </v-icon>
               {{ tab.name }}
             </v-tab>
           </v-tabs>
           <v-btn
-            @click="refetchLogs"
             :loading="isLoading"
             class="refresh-btn"
             prepend-icon="mdi-refresh"
             variant="text"
             color="primary"
+            @click="refetchLogs"
           >
             Refresh
           </v-btn>
         </div>
-        
+
         <div v-if="activeTab === 0" class="filters-content">
           <v-text-field
             v-model="searchQuery"
@@ -38,7 +34,7 @@
             density="comfortable"
             hide-details
             class="search-input"
-          ></v-text-field>
+          />
         </div>
       </div>
 
@@ -46,18 +42,11 @@
       <div class="table-section">
         <div class="table-header">
           <div class="table-stats">
-            <v-icon class="stats-icon">mdi-format-list-bulleted</v-icon>
+            <v-icon class="stats-icon"> mdi-format-list-bulleted </v-icon>
             <span class="stats-text">
               {{ currentTabName }}
             </span>
-            <v-progress-circular
-              v-if="isFetching"
-              indeterminate
-              color="primary"
-              size="20"
-              width="2"
-              class="ml-2"
-            />
+            <v-progress-circular v-if="isFetching" indeterminate color="primary" size="20" width="2" class="ml-2" />
           </div>
         </div>
 
@@ -86,7 +75,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import ProcessLogsTable from './ProcessLogsTable.vue';
@@ -101,7 +90,7 @@ const tabs = [
   { name: 'TYH', icon: 'mdi-school' },
   { name: 'Preseason', icon: 'mdi-calendar-clock' },
   { name: 'Book One', icon: 'mdi-book-open-variant' },
-  { name: 'Book Two', icon: 'mdi-book-open-page-variant' }
+  { name: 'Book Two', icon: 'mdi-book-open-page-variant' },
 ];
 
 const currentTabName = computed(() => {
@@ -110,17 +99,22 @@ const currentTabName = computed(() => {
 });
 
 // Fetch logs using TanStack Query (refetch on tab change)
-const { data: logsData, isLoading, isFetching, refetch } = useQuery({
+const {
+  data: logsData,
+  isLoading,
+  isFetching,
+  refetch,
+} = useQuery({
   queryKey: ['processLogs', currentTabName],
   queryFn: async () => {
     if (currentTabName.value === 'Applications') {
       return [];
     }
-    
+
     const response = await api.post('/local-dash', {
       instructions: {
-        action: `get_${currentTabName.value}`
-      }
+        action: `get_${currentTabName.value}`,
+      },
     });
     return response.data.grouped_logs || [];
   },
@@ -154,7 +148,7 @@ const refetchLogs = () => {
 /* Main Container */
 .queue-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
@@ -165,7 +159,7 @@ const refetchLogs = () => {
 }
 
 .v-theme--dark .queue-container {
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
 .queue-container::-webkit-scrollbar {
@@ -195,11 +189,13 @@ const refetchLogs = () => {
 
 /* Tabs Section */
 .tabs-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
   width: 100%;
   max-width: 100%;
@@ -207,13 +203,15 @@ const refetchLogs = () => {
 }
 
 .tabs-section:hover {
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08), 0 4px 8px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 8px 24px rgba(99, 102, 241, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
   transform: translateY(-2px);
 }
 
 .v-theme--dark .tabs-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -230,11 +228,11 @@ const refetchLogs = () => {
   justify-content: space-between;
   gap: 16px;
   padding: 16px 20px;
-  background: #FFFFFF;
+  background: #ffffff;
 }
 
 .v-theme--dark .tabs-header {
-  background: #1E293B;
+  background: #1e293b;
 }
 
 .modern-tabs {
@@ -249,19 +247,19 @@ const refetchLogs = () => {
   transition: all 0.2s ease;
   padding: 12px 20px !important;
   min-height: 48px !important;
-  color: #64748B !important;
+  color: #64748b !important;
 }
 
 :deep(.modern-tabs .v-tab--selected) {
-  color: #3B82F6 !important;
+  color: #3b82f6 !important;
 }
 
 :deep(.v-theme--dark .modern-tabs .v-tab) {
-  color: #94A3B8 !important;
+  color: #94a3b8 !important;
 }
 
 :deep(.v-theme--dark .modern-tabs .v-tab--selected) {
-  color: #60A5FA !important;
+  color: #60a5fa !important;
 }
 
 :deep(.modern-tabs .v-tab:hover) {
@@ -300,7 +298,7 @@ const refetchLogs = () => {
   padding: 10px 24px !important;
   height: auto !important;
   min-height: 40px !important;
-  color: #3B82F6 !important;
+  color: #3b82f6 !important;
   cursor: pointer !important;
   border-radius: 8px !important;
   letter-spacing: 0 !important;
@@ -315,7 +313,7 @@ const refetchLogs = () => {
 }
 
 .v-theme--dark .refresh-btn {
-  color: #60A5FA !important;
+  color: #60a5fa !important;
 }
 
 .v-theme--dark .refresh-btn:hover {
@@ -324,12 +322,12 @@ const refetchLogs = () => {
 
 .filters-content {
   padding: 28px;
-  background: #FAFBFC;
-  border-top: 1px solid #E2E8F0;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .filters-content {
-  background: #151E2E;
+  background: #151e2e;
   border-top-color: #334155;
 }
 
@@ -339,22 +337,26 @@ const refetchLogs = () => {
 
 /* Table Section */
 .table-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
 }
 
 .table-section:hover {
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08), 0 4px 8px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 8px 24px rgba(99, 102, 241, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
   transform: translateY(-2px);
 }
 
 .v-theme--dark .table-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -367,32 +369,32 @@ const refetchLogs = () => {
 
 .table-header {
   padding: 24px 28px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
 }
 
 .v-theme--dark .table-header {
   border-bottom-color: #334155;
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
 }
 
 /* Table Stats Section */
 .table-stats :deep(.v-chip) {
-  background: linear-gradient(135deg, #EEF2FF, #E0E7FF) !important;
-  color: #4F46E5 !important;
-  border: 1px solid #C7D2FE !important;
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff) !important;
+  color: #4f46e5 !important;
+  border: 1px solid #c7d2fe !important;
   box-shadow: 0 1px 2px rgba(99, 102, 241, 0.1) !important;
   font-weight: 600 !important;
 }
 
 .v-theme--dark .table-stats :deep(.v-chip) {
-  background: linear-gradient(135deg, #312E81, #3730A3) !important;
-  color: #A5B4FC !important;
-  border: 1px solid #4C1D95 !important;
+  background: linear-gradient(135deg, #312e81, #3730a3) !important;
+  color: #a5b4fc !important;
+  border: 1px solid #4c1d95 !important;
 }
 
 .table-stats {
@@ -402,12 +404,12 @@ const refetchLogs = () => {
 }
 
 .stats-icon {
-  color: #6366F1;
+  color: #6366f1;
   opacity: 0.7;
 }
 
 .v-theme--dark .stats-icon {
-  color: #818CF8;
+  color: #818cf8;
   opacity: 0.8;
 }
 
@@ -418,13 +420,13 @@ const refetchLogs = () => {
 }
 
 .v-theme--dark .stats-text {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .table-content {
   padding: 28px;
-  background: #FAFBFC;
-  border-top: 1px solid #E2E8F0;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
   width: 100%;
   max-width: 100%;
   overflow: hidden;
@@ -432,7 +434,7 @@ const refetchLogs = () => {
 }
 
 .v-theme--dark .table-content {
-  background: #151E2E;
+  background: #151e2e;
   border-top-color: #334155;
 }
 
@@ -445,25 +447,25 @@ const refetchLogs = () => {
   min-height: 400px;
   gap: 16px;
   padding: 40px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
 }
 
 .v-theme--dark .loader-container {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .loader-text {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .loader-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Error Container */
@@ -480,8 +482,8 @@ const refetchLogs = () => {
 .table-wrapper {
   width: 100%;
   max-width: 100%;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-sizing: border-box;
   overflow: hidden;
@@ -491,7 +493,7 @@ const refetchLogs = () => {
 }
 
 .v-theme--dark .table-wrapper {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -502,7 +504,7 @@ const refetchLogs = () => {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: #CBD5E1 #F1F5F9;
+  scrollbar-color: #cbd5e1 #f1f5f9;
   touch-action: pan-y pan-x;
   will-change: scroll-position;
   position: relative;
@@ -516,21 +518,21 @@ const refetchLogs = () => {
 }
 
 .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: #f1f5f9;
   border-radius: 4px;
 }
 
 .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #94a3b8;
 }
 
 .v-theme--dark .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-track {
-  background: #1E293B;
+  background: #1e293b;
 }
 
 .v-theme--dark .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-thumb {
@@ -538,7 +540,7 @@ const refetchLogs = () => {
 }
 
 .v-theme--dark .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-thumb:hover {
-  background: #64748B;
+  background: #64748b;
 }
 
 /* Fixed header - Vuetify handles this with fixed-header prop */
@@ -597,8 +599,8 @@ const refetchLogs = () => {
 :deep(.v-data-table__th) {
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
-  color: #64748B !important;
-  background: #F9FAFB !important;
+  color: #64748b !important;
+  background: #f9fafb !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
   white-space: nowrap !important;
@@ -611,13 +613,13 @@ const refetchLogs = () => {
 }
 
 :deep(.v-theme--dark .v-data-table__th) {
-  color: #94A3B8 !important;
-  background: #0F172A !important;
+  color: #94a3b8 !important;
+  background: #0f172a !important;
 }
 
 :deep(.v-data-table__td) {
-  color: #1E293B !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e5e7eb !important;
   font-size: 0.875rem !important;
   white-space: nowrap !important;
   padding: 12px 16px !important;
@@ -628,7 +630,7 @@ const refetchLogs = () => {
 }
 
 :deep(.v-theme--dark .v-data-table__td) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
   border-bottom-color: #334155 !important;
 }
 
@@ -643,13 +645,13 @@ const refetchLogs = () => {
 /* Date Text */
 .date-text {
   font-size: 0.8125rem;
-  color: #6B7280;
+  color: #6b7280;
   font-weight: 400;
   white-space: nowrap;
 }
 
 .v-theme--dark .date-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Status Chips */
@@ -674,7 +676,7 @@ const refetchLogs = () => {
 }
 
 .approve-btn {
-  color: #16A34A !important;
+  color: #16a34a !important;
 }
 
 .approve-btn:hover {
@@ -686,7 +688,7 @@ const refetchLogs = () => {
 }
 
 .pending-btn {
-  color: #F59E0B !important;
+  color: #f59e0b !important;
 }
 
 .pending-btn:hover {
@@ -698,12 +700,12 @@ const refetchLogs = () => {
 }
 
 .archive-btn {
-  color: #64748B !important;
+  color: #64748b !important;
 }
 
 .archive-btn:hover {
   background: rgba(239, 68, 68, 0.1) !important;
-  color: #EF4444 !important;
+  color: #ef4444 !important;
 }
 
 .v-theme--dark .archive-btn:hover {
@@ -723,24 +725,24 @@ const refetchLogs = () => {
 .empty-text {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #9CA3AF;
+  color: #9ca3af;
   margin: 0;
 }
 
 .v-theme--dark .empty-text {
-  color: #6B7280;
+  color: #6b7280;
 }
 
 /* Pagination Footer Styling */
 :deep(.v-data-table__footer) {
-  border-top: 1px solid #E5E7EB;
-  background: #F9FAFB;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
   padding: 12px 16px;
 }
 
 :deep(.v-theme--dark .v-data-table__footer) {
   border-top-color: #334155;
-  background: #0F172A;
+  background: #0f172a;
 }
 
 :deep(.v-pagination__item) {

@@ -3,29 +3,24 @@
     <!-- Header -->
     <div class="dialog-header">
       <div class="header-content">
-        <v-icon class="header-icon" size="28">mdi-merge</v-icon>
+        <v-icon class="header-icon" size="28"> mdi-merge </v-icon>
         <div>
           <h2 class="dialog-title">Merge Applicants</h2>
           <p class="dialog-subtitle">Combine {{ selectedApplicants.length }} applicant records into one</p>
         </div>
       </div>
-      <v-btn
-        icon
-        variant="text"
-        @click="closeDialog"
-        class="close-btn"
-      >
+      <v-btn icon variant="text" class="close-btn" @click="closeDialog">
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </div>
 
-    <v-divider></v-divider>
+    <v-divider />
 
     <v-card-text class="dialog-content">
       <!-- Merged Applicant Details -->
       <div class="merged-section">
         <div class="section-header">
-          <v-icon color="primary" size="20">mdi-account-edit</v-icon>
+          <v-icon color="primary" size="20"> mdi-account-edit </v-icon>
           <h3 class="section-title">Merged Applicant Details</h3>
         </div>
 
@@ -36,7 +31,7 @@
             variant="outlined"
             density="comfortable"
             prepend-inner-icon="mdi-account"
-          ></v-text-field>
+          />
 
           <v-text-field
             v-model="mergedApplicant.last_name"
@@ -44,7 +39,7 @@
             variant="outlined"
             density="comfortable"
             prepend-inner-icon="mdi-account"
-          ></v-text-field>
+          />
 
           <v-text-field
             v-model="mergedApplicant.middle_name"
@@ -52,7 +47,7 @@
             variant="outlined"
             density="comfortable"
             prepend-inner-icon="mdi-account"
-          ></v-text-field>
+          />
 
           <v-text-field
             v-model="mergedApplicant.inmate_number"
@@ -60,11 +55,11 @@
             variant="outlined"
             density="comfortable"
             prepend-inner-icon="mdi-numeric"
-          ></v-text-field>
+          />
 
           <v-autocomplete
-            label="Facility Name"
             v-model="mergedApplicant.facility_id"
+            label="Facility Name"
             :items="facilityOptions"
             item-value="facility_id"
             item-title="facility_name"
@@ -74,13 +69,13 @@
             prepend-inner-icon="mdi-domain"
             @update:model-value="updateMailingAddress"
           >
-            <template v-slot:selection="{ item }">
+            <template #selection="{ item }">
               <span v-if="item">
                 {{ item.raw.facility_name }}
               </span>
             </template>
 
-            <template v-slot:item="{ item, props }">
+            <template #item="{ item, props }">
               <v-list-item v-bind="props">
                 <v-list-item-title>{{ item.raw.facility_name }}</v-list-item-title>
                 <v-list-item-subtitle>{{ item.raw.facility_address }}</v-list-item-subtitle>
@@ -94,36 +89,30 @@
             variant="outlined"
             density="comfortable"
             prepend-inner-icon="mdi-map-marker"
-          ></v-text-field>
+          />
         </div>
       </div>
 
-      <v-divider class="my-6"></v-divider>
+      <v-divider class="my-6" />
 
       <!-- Source Applicants -->
       <div class="source-section">
         <div class="section-header">
-          <v-icon color="primary" size="20">mdi-account-multiple</v-icon>
+          <v-icon color="primary" size="20"> mdi-account-multiple </v-icon>
           <h3 class="section-title">Source Applicants (Click to Select Values)</h3>
         </div>
 
         <!-- Loading State -->
         <div v-if="loading" class="loading-container">
-          <v-progress-circular indeterminate color="primary" size="48"></v-progress-circular>
+          <v-progress-circular indeterminate color="primary" size="48" />
           <p class="loading-text">Loading applicant data...</p>
         </div>
 
         <!-- Applicants List -->
         <div v-else-if="applicantsWithDocuments.length > 0" class="applicants-list">
-          <v-card
-            v-for="(applicant, index) in applicantsWithDocuments"
-            :key="index"
-            class="applicant-card"
-          >
+          <v-card v-for="(applicant, index) in applicantsWithDocuments" :key="index" class="applicant-card">
             <div class="applicant-header">
-              <v-chip color="primary" variant="tonal" size="small">
-                Applicant {{ index + 1 }}
-              </v-chip>
+              <v-chip color="primary" variant="tonal" size="small"> Applicant {{ index + 1 }} </v-chip>
             </div>
 
             <div class="applicant-content">
@@ -131,21 +120,21 @@
               <div class="info-section">
                 <div class="info-row">
                   <span class="info-label">First Name:</span>
-                  <span 
-                    class="info-value selectable" 
-                    @click="populateField('first_name', applicant.first_name)"
+                  <span
+                    class="info-value selectable"
                     :title="'Click to use: ' + applicant.first_name"
+                    @click="populateField('first_name', applicant.first_name)"
                   >
                     {{ applicant.first_name }}
                   </span>
                 </div>
-                
+
                 <div class="info-row">
                   <span class="info-label">Last Name:</span>
-                  <span 
-                    class="info-value selectable" 
-                    @click="populateField('last_name', applicant.last_name)"
+                  <span
+                    class="info-value selectable"
                     :title="'Click to use: ' + applicant.last_name"
+                    @click="populateField('last_name', applicant.last_name)"
                   >
                     {{ applicant.last_name }}
                   </span>
@@ -153,10 +142,10 @@
 
                 <div class="info-row">
                   <span class="info-label">Middle Name:</span>
-                  <span 
-                    class="info-value selectable" 
-                    @click="populateField('middle_name', applicant.middle_name)"
+                  <span
+                    class="info-value selectable"
                     :title="'Click to use: ' + applicant.middle_name"
+                    @click="populateField('middle_name', applicant.middle_name)"
                   >
                     {{ applicant.middle_name || 'N/A' }}
                   </span>
@@ -164,10 +153,10 @@
 
                 <div class="info-row">
                   <span class="info-label">Inmate Number:</span>
-                  <span 
-                    class="info-value selectable" 
-                    @click="populateField('inmate_number', applicant.inmate_number)"
+                  <span
+                    class="info-value selectable"
                     :title="'Click to use: ' + applicant.inmate_number"
+                    @click="populateField('inmate_number', applicant.inmate_number)"
                   >
                     {{ applicant.inmate_number }}
                   </span>
@@ -175,10 +164,10 @@
 
                 <div class="info-row">
                   <span class="info-label">Facility:</span>
-                  <span 
-                    class="info-value selectable" 
-                    @click="populateField('facility_name', applicant.facility_name)"
+                  <span
+                    class="info-value selectable"
                     :title="'Click to use: ' + applicant.facility_name"
+                    @click="populateField('facility_name', applicant.facility_name)"
                   >
                     {{ applicant.facility_name }}
                   </span>
@@ -186,10 +175,10 @@
 
                 <div class="info-row">
                   <span class="info-label">Mailing Address:</span>
-                  <span 
-                    class="info-value selectable" 
-                    @click="populateField('mailing_address', applicant.mailing_address)"
+                  <span
+                    class="info-value selectable"
                     :title="'Click to use: ' + applicant.mailing_address"
+                    @click="populateField('mailing_address', applicant.mailing_address)"
                   >
                     {{ applicant.mailing_address }}
                   </span>
@@ -199,20 +188,16 @@
               <!-- Documents Section -->
               <div class="documents-section">
                 <div class="documents-header">
-                  <v-icon size="18" color="primary">mdi-file-document-multiple</v-icon>
+                  <v-icon size="18" color="primary"> mdi-file-document-multiple </v-icon>
                   <span class="documents-title">Documents ({{ applicant.documents?.length || 0 }})</span>
                 </div>
 
                 <div v-if="applicant.documents && applicant.documents.length" class="documents-list">
-                  <div 
-                    v-for="(doc, docIndex) in applicant.documents" 
-                    :key="docIndex" 
-                    class="document-item"
-                  >
+                  <div v-for="(doc, docIndex) in applicant.documents" :key="docIndex" class="document-item">
                     <div class="document-info">
                       <div class="document-details">
                         <div class="document-name">
-                          <v-icon size="16" color="primary">mdi-file-document</v-icon>
+                          <v-icon size="16" color="primary"> mdi-file-document </v-icon>
                           {{ doc.document_name }}
                         </div>
                         <div class="document-meta">
@@ -220,8 +205,8 @@
                             <v-icon size="14">mdi-calendar</v-icon>
                             {{ doc.date_created }}
                           </span>
-                          <v-chip 
-                            :color="doc.status === 'processed' ? 'success' : 'warning'" 
+                          <v-chip
+                            :color="doc.status === 'processed' ? 'success' : 'warning'"
                             size="x-small"
                             variant="flat"
                           >
@@ -233,10 +218,12 @@
                         icon
                         size="small"
                         variant="text"
-                        @click="toggleIframe(index, docIndex)"
                         :color="expandedDocument === `${index}-${docIndex}` ? 'primary' : ''"
+                        @click="toggleIframe(index, docIndex)"
                       >
-                        <v-icon>{{ expandedDocument === `${index}-${docIndex}` ? 'mdi-eye-off' : 'mdi-eye-outline' }}</v-icon>
+                        <v-icon>{{
+                          expandedDocument === `${index}-${docIndex}` ? 'mdi-eye-off' : 'mdi-eye-outline'
+                        }}</v-icon>
                       </v-btn>
                     </div>
 
@@ -248,14 +235,14 @@
                           height="600"
                           frameborder="0"
                           allowfullscreen
-                        ></iframe>
+                        />
                       </div>
                     </v-expand-transition>
                   </div>
                 </div>
 
                 <div v-else class="no-documents">
-                  <v-icon size="24" color="grey">mdi-file-document-remove-outline</v-icon>
+                  <v-icon size="24" color="grey"> mdi-file-document-remove-outline </v-icon>
                   <p>No documents available</p>
                 </div>
               </div>
@@ -265,31 +252,18 @@
 
         <!-- Empty State -->
         <div v-else class="empty-state">
-          <v-icon size="64" color="grey">mdi-account-alert-outline</v-icon>
+          <v-icon size="64" color="grey"> mdi-account-alert-outline </v-icon>
           <p class="empty-text">No applicants selected for merging</p>
         </div>
       </div>
     </v-card-text>
 
-    <v-divider></v-divider>
+    <v-divider />
 
     <v-card-actions class="dialog-actions">
-      <v-spacer></v-spacer>
-      <v-btn
-        variant="outlined"
-        @click="closeDialog"
-        class="cancel-btn"
-        prepend-icon="mdi-close"
-      >
-        Cancel
-      </v-btn>
-      <v-btn
-        color="primary"
-        variant="flat"
-        @click="mergeApplicants"
-        prepend-icon="mdi-merge"
-        class="merge-btn"
-      >
+      <v-spacer />
+      <v-btn variant="outlined" class="cancel-btn" prepend-icon="mdi-close" @click="closeDialog"> Cancel </v-btn>
+      <v-btn color="primary" variant="flat" prepend-icon="mdi-merge" class="merge-btn" @click="mergeApplicants">
         Merge Applicants
       </v-btn>
     </v-card-actions>
@@ -297,10 +271,10 @@
 </template>
 
 <script>
-import api from "@/plugins/axios";
+import api from '@/plugins/axios';
 
 export default {
-  name: "MergeApplicants",
+  name: 'MergeApplicants',
   props: {
     selectedApplicants: {
       type: Array,
@@ -312,33 +286,61 @@ export default {
       loading: true,
       applicantsWithDocuments: [], // Stores applicants with their document details
       mergedApplicant: {
-        first_name: "",
-        last_name: "",
-        middle_name: "",
-        inmate_number: "",
-        facility_name: "",
-        mailing_address: "",
+        first_name: '',
+        last_name: '',
+        middle_name: '',
+        inmate_number: '',
+        facility_name: '',
+        mailing_address: '',
       },
       facilityOptions: [], // Stores facility names for the autocomplete
       expandedDocument: null, // Tracks the currently expanded document (applicantIndex + docIndex)
     };
   },
+  watch: {
+    'mergedApplicant.first_name'(newValue) {
+      this.mergedApplicant.first_name = this.formatName(newValue);
+    },
+    'mergedApplicant.last_name'(newValue) {
+      this.mergedApplicant.last_name = this.formatName(newValue);
+    },
+    'mergedApplicant.middle_name'(newValue) {
+      this.mergedApplicant.middle_name = this.formatName(newValue);
+    },
+  },
+  async mounted() {
+    await this.loadApplicantsWithDocuments();
+
+    // Auto-populate mergedApplicant with the first applicant's details
+    if (this.selectedApplicants.length > 0) {
+      console.log('Selected Applicants:', this.applicantsWithDocuments[0]);
+      const firstApplicant = this.applicantsWithDocuments[0];
+      this.mergedApplicant = {
+        first_name: this.formatName(firstApplicant.first_name),
+        last_name: this.formatName(firstApplicant.last_name),
+        middle_name: this.formatName(firstApplicant.middle_name),
+        inmate_number: firstApplicant.inmate_number || '',
+        facility_name: firstApplicant.facility_name || '',
+        mailing_address: firstApplicant.mailing_address || '',
+      };
+    }
+  },
   methods: {
     async getFacilities() {
       try {
-        const res = await api.get("/get-facilities");
+        const res = await api.get('/get-facilities');
         this.facilityOptions = res.data; // Store the full facility objects
       } catch (err) {
-        console.error("Error fetching facilities:", err);
+        console.error('Error fetching facilities:', err);
         this.facilityOptions = [];
       }
     },
     closeDialog() {
-      this.$emit("closeDialog");
+      this.$emit('closeDialog');
     },
     async fetchApplicantDetails(applicant) {
       try {
-        const res = await api.get("/get-applicant-details", {
+        const res = await api.get('/get-applicant-details', {
           params: {
             first_name: applicant.first_name,
             last_name: applicant.last_name,
@@ -355,25 +357,20 @@ export default {
           return { ...applicant, documents: [] };
         }
       } catch (err) {
-        console.error(
-          `Error fetching details for ${applicant.first_name} ${applicant.last_name}:`,
-          err
-        );
+        console.error(`Error fetching details for ${applicant.first_name} ${applicant.last_name}:`, err);
         return { ...applicant, documents: [] };
       }
     },
     async loadApplicantsWithDocuments() {
       try {
         this.loading = true;
-        console.log("Loading applicants... Selected:", this.selectedApplicants);
-        const promises = this.selectedApplicants.map((applicant) =>
-          this.fetchApplicantDetails(applicant)
-        );
+        console.log('Loading applicants... Selected:', this.selectedApplicants);
+        const promises = this.selectedApplicants.map((applicant) => this.fetchApplicantDetails(applicant));
         this.applicantsWithDocuments = await Promise.all(promises);
-        console.log("Loaded applicants with documents:", this.applicantsWithDocuments);
+        console.log('Loaded applicants with documents:', this.applicantsWithDocuments);
         await this.getFacilities();
       } catch (error) {
-        console.error("Error loading applicants:", error);
+        console.error('Error loading applicants:', error);
       } finally {
         this.loading = false;
       }
@@ -382,7 +379,7 @@ export default {
       this.mergedApplicant[field] = this.formatName(value);
     },
     formatName(name) {
-      if (!name) return "";
+      if (!name) return '';
       return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
     },
     toggleIframe(applicantIndex, docIndex) {
@@ -390,39 +387,11 @@ export default {
       this.expandedDocument = this.expandedDocument === expandedKey ? null : expandedKey;
     },
     mergeApplicants() {
-      api.post("/merge-applicants", {
+      api.post('/merge-applicants', {
         mergedApplicant: this.mergedApplicant,
         applicants: this.applicantsWithDocuments,
       });
     },
-  },
-  watch: {
-    "mergedApplicant.first_name"(newValue) {
-      this.mergedApplicant.first_name = this.formatName(newValue);
-    },
-    "mergedApplicant.last_name"(newValue) {
-      this.mergedApplicant.last_name = this.formatName(newValue);
-    },
-    "mergedApplicant.middle_name"(newValue) {
-      this.mergedApplicant.middle_name = this.formatName(newValue);
-    },
-  },
-  async mounted() {
-    await this.loadApplicantsWithDocuments();
-  
-    // Auto-populate mergedApplicant with the first applicant's details
-    if (this.selectedApplicants.length > 0) {
-      console.log("Selected Applicants:", this.applicantsWithDocuments[0]);
-      const firstApplicant = this.applicantsWithDocuments[0];
-      this.mergedApplicant = {
-        first_name: this.formatName(firstApplicant.first_name),
-        last_name: this.formatName(firstApplicant.last_name),
-        middle_name: this.formatName(firstApplicant.middle_name),
-        inmate_number: firstApplicant.inmate_number || "",
-        facility_name: firstApplicant.facility_name || "",
-        mailing_address: firstApplicant.mailing_address || "",
-      };
-    }
   },
 };
 </script>
@@ -443,12 +412,12 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .dialog-header {
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
   border-bottom-color: #334155;
 }
 
@@ -459,7 +428,7 @@ export default {
 }
 
 .header-icon {
-  color: #3B82F6;
+  color: #3b82f6;
   margin-top: 2px;
 }
 
@@ -472,17 +441,17 @@ export default {
 }
 
 .v-theme--dark .dialog-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .dialog-subtitle {
   font-size: 0.9375rem;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .dialog-subtitle {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .close-btn {
@@ -501,38 +470,38 @@ export default {
 }
 
 .dialog-content::-webkit-scrollbar-track {
-  background: #F3F4F6;
+  background: #f3f4f6;
   border-radius: 4px;
 }
 
 .v-theme--dark .dialog-content::-webkit-scrollbar-track {
-  background: #1F2937;
+  background: #1f2937;
 }
 
 .dialog-content::-webkit-scrollbar-thumb {
-  background: #D1D5DB;
+  background: #d1d5db;
   border-radius: 4px;
 }
 
 .v-theme--dark .dialog-content::-webkit-scrollbar-thumb {
-  background: #4B5563;
+  background: #4b5563;
 }
 
 .dialog-content::-webkit-scrollbar-thumb:hover {
-  background: #9CA3AF;
+  background: #9ca3af;
 }
 
 /* Merged Section */
 .merged-section {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 24px;
 }
 
 .v-theme--dark .merged-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -551,7 +520,7 @@ export default {
 }
 
 .v-theme--dark .section-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .form-grid {
@@ -580,37 +549,37 @@ export default {
 }
 
 .applicants-list::-webkit-scrollbar-track {
-  background: #F3F4F6;
+  background: #f3f4f6;
   border-radius: 4px;
 }
 
 .v-theme--dark .applicants-list::-webkit-scrollbar-track {
-  background: #1F2937;
+  background: #1f2937;
 }
 
 .applicants-list::-webkit-scrollbar-thumb {
-  background: #D1D5DB;
+  background: #d1d5db;
   border-radius: 4px;
 }
 
 .v-theme--dark .applicants-list::-webkit-scrollbar-thumb {
-  background: #4B5563;
+  background: #4b5563;
 }
 
 .applicants-list::-webkit-scrollbar-thumb:hover {
-  background: #9CA3AF;
+  background: #9ca3af;
 }
 
 /* Applicant Card */
 .applicant-card {
-  border: 1px solid #E2E8F0 !important;
+  border: 1px solid #e2e8f0 !important;
   border-radius: 12px !important;
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
 .applicant-card:hover {
-  border-color: #C7D2FE !important;
+  border-color: #c7d2fe !important;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1) !important;
 }
 
@@ -625,12 +594,12 @@ export default {
 
 .applicant-header {
   padding: 16px 20px;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .applicant-header {
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
   border-bottom-color: #334155;
 }
 
@@ -657,23 +626,23 @@ export default {
 .info-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6B7280;
+  color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .v-theme--dark .info-label {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .info-value {
   font-size: 0.9375rem;
-  color: #1F2937;
+  color: #1f2937;
   word-wrap: break-word;
 }
 
 .v-theme--dark .info-value {
-  color: #F3F4F6;
+  color: #f3f4f6;
 }
 
 .selectable {
@@ -685,15 +654,15 @@ export default {
 }
 
 .selectable:hover {
-  background: #EFF6FF;
-  color: #3B82F6;
-  border-color: #BFDBFE;
+  background: #eff6ff;
+  color: #3b82f6;
+  border-color: #bfdbfe;
   transform: translateX(4px);
 }
 
 .v-theme--dark .selectable:hover {
-  background: #1E293B;
-  color: #93C5FD;
+  background: #1e293b;
+  color: #93c5fd;
   border-color: #475569;
 }
 
@@ -709,7 +678,7 @@ export default {
   align-items: center;
   gap: 8px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .documents-header {
@@ -723,7 +692,7 @@ export default {
 }
 
 .v-theme--dark .documents-title {
-  color: #D1D5DB;
+  color: #d1d5db;
 }
 
 .documents-list {
@@ -733,26 +702,26 @@ export default {
 }
 
 .document-item {
-  background: #F9FAFB;
-  border: 1px solid #E5E7EB;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 12px;
   transition: all 0.2s ease;
 }
 
 .document-item:hover {
-  border-color: #C7D2FE;
-  background: #FEFEFF;
+  border-color: #c7d2fe;
+  background: #fefeff;
 }
 
 .v-theme--dark .document-item {
-  background: #0F172A;
-  border-color: #1E293B;
+  background: #0f172a;
+  border-color: #1e293b;
 }
 
 .v-theme--dark .document-item:hover {
   border-color: #334155;
-  background: #1A2332;
+  background: #1a2332;
 }
 
 .document-info {
@@ -772,14 +741,14 @@ export default {
 .document-name {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #1F2937;
+  color: #1f2937;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .v-theme--dark .document-name {
-  color: #F3F4F6;
+  color: #f3f4f6;
 }
 
 .document-meta {
@@ -791,14 +760,14 @@ export default {
 
 .meta-item {
   font-size: 0.8125rem;
-  color: #6B7280;
+  color: #6b7280;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 .v-theme--dark .meta-item {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .no-documents {
@@ -807,7 +776,7 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 32px;
-  color: #9CA3AF;
+  color: #9ca3af;
   text-align: center;
 }
 
@@ -819,26 +788,26 @@ export default {
 /* Iframe Container */
 .iframe-container {
   margin-top: 12px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   overflow: hidden;
-  background: #F9FAFB;
+  background: #f9fafb;
 }
 
 .v-theme--dark .iframe-container {
   border-color: #334155;
-  background: #0F172A;
+  background: #0f172a;
 }
 
 /* Dialog Actions */
 .dialog-actions {
   padding: 20px 28px !important;
-  background: #FAFBFC;
-  border-top: 1px solid #E2E8F0;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .dialog-actions {
-  background: #151E2E;
+  background: #151e2e;
   border-top-color: #334155;
 }
 
@@ -865,12 +834,12 @@ export default {
 
 .loading-text {
   font-size: 0.9375rem;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .loading-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Empty State */
@@ -885,12 +854,12 @@ export default {
 
 .empty-text {
   font-size: 0.9375rem;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .empty-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Responsive */

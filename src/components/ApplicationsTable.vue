@@ -1,34 +1,34 @@
 <template>
   <div>
     <v-data-table
+      v-model:page="page"
       :headers="headers"
       :items="items"
       :loading="loading"
       :items-per-page="itemsPerPage"
-      v-model:page="page"
       class="elevation-1"
       :footer-props="{
-        'items-per-page-options': [10, 20, 50, 100]
+        'items-per-page-options': [10, 20, 50, 100],
       }"
-      @update:items-per-page="(val) => itemsPerPage = val"
+      @update:items-per-page="(val) => (itemsPerPage = val)"
     >
       <!-- Full Name -->
-      <template v-slot:item.full_name="{ item }">
+      <template #item.full_name="{ item }">
         <span class="font-weight-medium">{{ item.full_name || 'N/A' }}</span>
       </template>
 
       <!-- First Name -->
-      <template v-slot:item.first_name="{ item }">
+      <template #item.first_name="{ item }">
         {{ item.first_name || 'N/A' }}
       </template>
 
       <!-- Last Name -->
-      <template v-slot:item.last_name="{ item }">
+      <template #item.last_name="{ item }">
         {{ item.last_name || 'N/A' }}
       </template>
 
       <!-- DOC Number -->
-      <template v-slot:item.doc_number="{ item }">
+      <template #item.doc_number="{ item }">
         <v-chip v-if="item.doc_number" x-small outlined color="primary">
           {{ item.doc_number }}
         </v-chip>
@@ -36,77 +36,59 @@
       </template>
 
       <!-- Facility Name -->
-      <template v-slot:item.facility_name="{ item }">
-        <div class="text-truncate" style="max-width: 200px;">
+      <template #item.facility_name="{ item }">
+        <div class="text-truncate" style="max-width: 200px">
           {{ item.facility_name || 'N/A' }}
         </div>
       </template>
 
       <!-- Document Type -->
-      <template v-slot:item.document_type="{ item }">
+      <template #item.document_type="{ item }">
         <v-chip x-small>
           {{ item.document_type || 'N/A' }}
         </v-chip>
       </template>
 
       <!-- Maverick Profile ID -->
-      <template v-slot:item.maverick_profile_id="{ item }">
-        <v-chip
-          v-if="item.maverick_profile_id"
-          x-small
-          outlined
-          color="success"
-        >
+      <template #item.maverick_profile_id="{ item }">
+        <v-chip v-if="item.maverick_profile_id" x-small outlined color="success">
           {{ item.maverick_profile_id }}
         </v-chip>
-        <v-chip v-else x-small outlined color="grey">
-          None
-        </v-chip>
+        <v-chip v-else x-small outlined color="grey"> None </v-chip>
       </template>
 
       <!-- Facility ID -->
-      <template v-slot:item.facility_id="{ item }">
-        <v-chip
-          v-if="item.facility_id"
-          x-small
-          outlined
-          color="info"
-        >
+      <template #item.facility_id="{ item }">
+        <v-chip v-if="item.facility_id" x-small outlined color="info">
           {{ item.facility_id }}
         </v-chip>
         <span v-else class="grey--text">N/A</span>
       </template>
 
       <!-- Mailing Address -->
-      <template v-slot:item.mailing_address="{ item }">
+      <template #item.mailing_address="{ item }">
         <v-btn
           v-if="item.mailing_address"
           icon
           size="small"
           variant="text"
-          @click="showMailingAddressDialog(item.mailing_address)"
           class="action-icon-btn"
+          @click="showMailingAddressDialog(item.mailing_address)"
         >
-          <v-icon color="primary">mdi-map-marker-outline</v-icon>
+          <v-icon color="primary"> mdi-map-marker-outline </v-icon>
         </v-btn>
         <span v-else class="grey--text">N/A</span>
       </template>
 
       <!-- Created At -->
-      <template v-slot:item.created_at="{ item }">
+      <template #item.created_at="{ item }">
         <span class="text-caption">{{ formatDate(item.created_at) }}</span>
       </template>
 
       <!-- Actions -->
-      <template v-slot:item.actions="{ item }">
-        <v-btn
-          icon
-          size="small"
-          variant="text"
-          @click="viewDetails(item)"
-          class="action-icon-btn"
-        >
-          <v-icon color="primary">mdi-eye-outline</v-icon>
+      <template #item.actions="{ item }">
+        <v-btn icon size="small" variant="text" class="action-icon-btn" @click="viewDetails(item)">
+          <v-icon color="primary"> mdi-eye-outline </v-icon>
         </v-btn>
       </template>
     </v-data-table>
@@ -116,33 +98,26 @@
       <v-card class="modern-dialog">
         <div class="dialog-header">
           <div class="header-content">
-            <v-icon class="header-icon" size="24">mdi-map-marker-radius</v-icon>
+            <v-icon class="header-icon" size="24"> mdi-map-marker-radius </v-icon>
             <div>
               <h2 class="dialog-title">Mailing Address</h2>
               <p class="dialog-subtitle">View complete mailing address details</p>
             </div>
           </div>
-          <v-btn
-            icon
-            variant="text"
-            @click="mailingAddressDialog = false"
-            class="close-btn"
-          >
+          <v-btn icon variant="text" class="close-btn" @click="mailingAddressDialog = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
 
-        <v-divider></v-divider>
+        <v-divider />
 
-        <v-card-text class="dialog-content" v-if="selectedMailingAddress">
+        <v-card-text v-if="selectedMailingAddress" class="dialog-content">
           <div class="address-details">
-            <div
-              v-for="(value, key) in selectedMailingAddress"
-              :key="key"
-              class="address-row"
-            >
+            <div v-for="(value, key) in selectedMailingAddress" :key="key" class="address-row">
               <div class="address-label">{{ key }}:</div>
-              <div class="address-value">{{ value || 'N/A' }}</div>
+              <div class="address-value">
+                {{ value || 'N/A' }}
+              </div>
             </div>
           </div>
         </v-card-text>
@@ -154,35 +129,30 @@
       <v-card class="modern-dialog details-dialog">
         <div class="dialog-header">
           <div class="header-content">
-            <v-icon class="header-icon" size="24">mdi-account-details</v-icon>
+            <v-icon class="header-icon" size="24"> mdi-account-details </v-icon>
             <div>
               <h2 class="dialog-title">Applicant Details</h2>
               <p class="dialog-subtitle">View complete applicant information and documents</p>
             </div>
           </div>
-          <v-btn
-            icon
-            variant="text"
-            @click="detailsDialog = false"
-            class="close-btn"
-          >
+          <v-btn icon variant="text" class="close-btn" @click="detailsDialog = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
 
-        <v-divider></v-divider>
+        <v-divider />
 
         <v-card-text class="details-dialog-content">
           <!-- Loading State -->
           <div v-if="loadingDocuments" class="loading-state">
-            <v-progress-circular indeterminate color="primary" size="48"></v-progress-circular>
+            <v-progress-circular indeterminate color="primary" size="48" />
             <p class="loading-text">Loading documents...</p>
           </div>
 
           <!-- Document URLs Section -->
           <div v-if="!loadingDocuments && documentUrls" class="documents-section">
             <div class="section-title-group">
-              <v-icon size="20" color="primary">mdi-file-document-multiple-outline</v-icon>
+              <v-icon size="20" color="primary"> mdi-file-document-multiple-outline </v-icon>
               <h3 class="section-title">Documents</h3>
             </div>
 
@@ -191,45 +161,41 @@
               <div v-if="documentUrls.questions && documentUrls.questions.length > 0" class="edovo-table-container">
                 <div class="table-header-section">
                   <div class="header-content">
-                    <v-icon size="20" color="primary">mdi-comment-question-outline</v-icon>
+                    <v-icon size="20" color="primary"> mdi-comment-question-outline </v-icon>
                     <h4 class="table-section-title">Edovo Questions & Answers</h4>
                   </div>
                   <v-chip size="small" color="primary" variant="flat">
                     {{ documentUrls.questions.length }} Questions
                   </v-chip>
                 </div>
-                
+
                 <v-data-table
                   :headers="questionHeaders"
                   :items="documentUrls.questions"
                   :items-per-page="10"
                   class="edovo-questions-table"
                   :footer-props="{
-                    'items-per-page-options': [10, 25, 50, -1]
+                    'items-per-page-options': [10, 25, 50, -1],
                   }"
                 >
-                  <template v-slot:item.question_number="{ item }">
+                  <template #item.question_number="{ item }">
                     <v-chip size="small" color="primary" variant="flat" class="question-chip">
                       Q{{ item.question_number }}
                     </v-chip>
                   </template>
 
-                  <template v-slot:item.lesson="{ item }">
+                  <template #item.lesson="{ item }">
                     <span class="lesson-text">{{ item.lesson || 'N/A' }}</span>
                   </template>
 
-                  <template v-slot:item.question="{ item }">
-                    <div class="question-text">{{ item.question }}</div>
+                  <template #item.question="{ item }">
+                    <div class="question-text">
+                      {{ item.question }}
+                    </div>
                   </template>
 
-                  <template v-slot:item.answer="{ item }">
-                    <v-chip
-                      v-if="item.answer"
-                      size="small"
-                      variant="flat"
-                      color="success"
-                      class="answer-chip"
-                    >
+                  <template #item.answer="{ item }">
+                    <v-chip v-if="item.answer" size="small" variant="flat" color="success" class="answer-chip">
                       {{ item.answer }}
                     </v-chip>
                     <span v-else class="no-answer-text">No answer</span>
@@ -238,7 +204,7 @@
               </div>
 
               <p v-else class="text-body-2 text-grey text-center py-4">
-                <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
+                <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
                 No questions found for this Edovo document.
               </p>
             </div>
@@ -246,14 +212,14 @@
             <!-- Non-Edovo Documents - Show Document/Image Previews -->
             <div v-else class="document-previews">
               <v-row>
-                <v-col cols="12" md="6" v-if="documentUrls.document_url">
+                <v-col v-if="documentUrls.document_url" cols="12" md="6">
                   <div class="preview-section">
                     <div class="section-header">
-                      <v-icon size="20" color="primary">mdi-file-pdf-box</v-icon>
+                      <v-icon size="20" color="primary"> mdi-file-pdf-box </v-icon>
                       <h3 class="section-title">Document</h3>
                     </div>
                     <div class="iframe-wrapper">
-                      <iframe :src="documentUrls.document_url" frameborder="0"></iframe>
+                      <iframe :src="documentUrls.document_url" frameborder="0" />
                     </div>
                     <div class="section-actions">
                       <v-btn
@@ -269,14 +235,14 @@
                   </div>
                 </v-col>
 
-                <v-col cols="12" md="6" v-if="documentUrls.image_url">
+                <v-col v-if="documentUrls.image_url" cols="12" md="6">
                   <div class="preview-section">
                     <div class="section-header">
-                      <v-icon size="20" color="primary">mdi-image-outline</v-icon>
+                      <v-icon size="20" color="primary"> mdi-image-outline </v-icon>
                       <h3 class="section-title">Image</h3>
                     </div>
                     <div class="iframe-wrapper">
-                      <iframe :src="documentUrls.image_url" frameborder="0"></iframe>
+                      <iframe :src="documentUrls.image_url" frameborder="0" />
                     </div>
                     <div class="section-actions">
                       <v-btn
@@ -292,9 +258,9 @@
                   </div>
                 </v-col>
 
-                <v-col cols="12" v-if="!documentUrls.document_url && !documentUrls.image_url">
+                <v-col v-if="!documentUrls.document_url && !documentUrls.image_url" cols="12">
                   <p class="text-body-2 text-grey text-center py-4">
-                    <v-icon size="small" class="mr-1">mdi-information-outline</v-icon>
+                    <v-icon size="small" class="mr-1"> mdi-information-outline </v-icon>
                     No documents available for this applicant.
                   </p>
                 </v-col>
@@ -302,12 +268,12 @@
             </div>
           </div>
 
-          <v-divider class="section-divider"></v-divider>
+          <v-divider class="section-divider" />
 
           <!-- Applicant Data -->
           <div class="applicant-data-section">
             <div class="section-title-group">
-              <v-icon size="20" color="primary">mdi-code-json</v-icon>
+              <v-icon size="20" color="primary"> mdi-code-json </v-icon>
               <h3 class="section-title">Applicant Data</h3>
             </div>
             <div class="json-preview-wrapper">
@@ -320,7 +286,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
@@ -329,8 +295,8 @@ import api from '@/plugins/axios';
 const props = defineProps({
   searchProp: {
     type: String,
-    default: ''
-  }
+    default: '',
+  },
 });
 
 // State
@@ -358,36 +324,44 @@ const headers = [
   { title: 'Facility ID', key: 'facility_id', width: 100 },
   { title: 'Mailing', key: 'mailing_address', width: 100 },
   { title: 'Created', key: 'created_at', width: 150 },
-  { title: 'Actions', key: 'actions', sortable: false, width: 100 }
+  { title: 'Actions', key: 'actions', sortable: false, width: 100 },
 ];
 
 const questionHeaders = [
   { title: '#', key: 'question_number', width: 80 },
   { title: 'Lesson', key: 'lesson', width: 150 },
   { title: 'Question', key: 'question', width: 400 },
-  { title: 'Answer', key: 'answer', width: 150 }
+  { title: 'Answer', key: 'answer', width: 150 },
 ];
 
 // Debounce search
-watch(() => props.searchProp, (newVal) => {
-  clearTimeout(searchTimeout.value);
-  searchTimeout.value = setTimeout(() => {
-    searchDebounced.value = newVal;
-    page.value = 1; // Reset to first page on search
-  }, 500);
-});
+watch(
+  () => props.searchProp,
+  (newVal) => {
+    clearTimeout(searchTimeout.value);
+    searchTimeout.value = setTimeout(() => {
+      searchDebounced.value = newVal;
+      page.value = 1; // Reset to first page on search
+    }, 500);
+  }
+);
 
 // TanStack Query for applicants
-const { data: applicantsData, isLoading: loading, isFetching, refetch } = useQuery({
+const {
+  data: applicantsData,
+  isLoading: loading,
+  isFetching,
+  refetch,
+} = useQuery({
   queryKey: ['applicants', page, itemsPerPage, searchDebounced],
   queryFn: async () => {
     const response = await api.post('/local-dash', {
       instructions: {
-        action: 'get_new_applicants'
+        action: 'get_new_applicants',
       },
       page: page.value,
       itemsPerPage: itemsPerPage.value,
-      search: searchDebounced.value || ''
+      search: searchDebounced.value || '',
     });
     return response.data;
   },
@@ -406,12 +380,12 @@ const totalItems = computed(() => applicantsData.value?.totalItems || 0);
 const options = computed({
   get: () => ({
     page: page.value,
-    itemsPerPage: itemsPerPage.value
+    itemsPerPage: itemsPerPage.value,
   }),
   set: (val) => {
     if (val.page !== undefined) page.value = val.page;
     if (val.itemsPerPage !== undefined) itemsPerPage.value = val.itemsPerPage;
-  }
+  },
 });
 
 // Methods
@@ -455,10 +429,10 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
   try {
     const response = await api.post('/local-dash', {
       instructions: {
-        action: 'get_document'
+        action: 'get_document',
       },
       document_parent_id: String(documentParentId),
-      document_type: documentType
+      document_type: documentType,
     });
 
     documentUrls.value = response.data;
@@ -466,7 +440,7 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
     console.error('Error fetching document URLs:', error);
     documentUrls.value = {
       document_url: null,
-      image_url: null
+      image_url: null,
     };
   } finally {
     loadingDocuments.value = false;
@@ -495,36 +469,36 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 :deep(.v-data-table .v-data-table__wrapper::-webkit-scrollbar-track) {
-  background: #F3F4F6;
+  background: #f3f4f6;
   border-radius: 4px;
 }
 
 :deep(.v-theme--dark .v-data-table .v-data-table__wrapper::-webkit-scrollbar-track) {
-  background: #1F2937;
+  background: #1f2937;
 }
 
 :deep(.v-data-table .v-data-table__wrapper::-webkit-scrollbar-thumb) {
-  background: #D1D5DB;
+  background: #d1d5db;
   border-radius: 4px;
 }
 
 :deep(.v-theme--dark .v-data-table .v-data-table__wrapper::-webkit-scrollbar-thumb) {
-  background: #4B5563;
+  background: #4b5563;
 }
 
 :deep(.v-data-table .v-data-table__wrapper::-webkit-scrollbar-thumb:hover) {
-  background: #9CA3AF;
+  background: #9ca3af;
 }
 
 :deep(.v-theme--dark .v-data-table .v-data-table__wrapper::-webkit-scrollbar-thumb:hover) {
-  background: #6B7280;
+  background: #6b7280;
 }
 
 /* Table Headers */
 :deep(.v-data-table thead tr th) {
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
-  color: #64748B !important;
+  color: #64748b !important;
   text-transform: uppercase !important;
   letter-spacing: 0.03em !important;
   padding: 12px 16px !important;
@@ -533,19 +507,19 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
   top: 0 !important;
   z-index: 10 !important;
   line-height: 1.3 !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  border-bottom: 1px solid #e5e7eb !important;
 }
 
 :deep(.v-theme--dark .v-data-table thead tr th) {
-  color: #94A3B8 !important;
-  background: #0F172A !important;
+  color: #94a3b8 !important;
+  background: #0f172a !important;
   border-bottom-color: #334155 !important;
 }
 
 /* Table Cells */
 :deep(.v-data-table tbody tr td) {
-  color: #1E293B !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e5e7eb !important;
   font-size: 0.875rem !important;
   padding: 12px 16px !important;
   vertical-align: top !important;
@@ -555,7 +529,7 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 :deep(.v-theme--dark .v-data-table tbody tr td) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
   border-bottom-color: #334155 !important;
 }
 
@@ -578,8 +552,8 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .details-preview {
-  background-color: #0F172A;
-  color: #E0E7FF;
+  background-color: #0f172a;
+  color: #e0e7ff;
   padding: 20px;
   border-radius: 12px;
   overflow-x: auto;
@@ -591,8 +565,8 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .v-theme--dark .details-preview {
-  background-color: #0C1220;
-  color: #C7D2FE;
+  background-color: #0c1220;
+  color: #c7d2fe;
 }
 
 .question-text {
@@ -623,12 +597,12 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .dialog-header {
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
   border-bottom-color: #334155;
 }
 
@@ -639,7 +613,7 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .header-icon {
-  color: #3B82F6;
+  color: #3b82f6;
   margin-top: 2px;
 }
 
@@ -652,17 +626,17 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .v-theme--dark .dialog-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .dialog-subtitle {
   font-size: 0.875rem;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .dialog-subtitle {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .close-btn {
@@ -675,21 +649,21 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 
 /* Address Details */
 .address-details {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
 }
 
 .v-theme--dark .address-details {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .address-row {
   display: flex;
   padding: 16px 20px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   transition: background 0.2s ease;
 }
 
@@ -698,7 +672,7 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .address-row:hover {
-  background: #F9FAFB;
+  background: #f9fafb;
 }
 
 .v-theme--dark .address-row {
@@ -706,30 +680,30 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .v-theme--dark .address-row:hover {
-  background: #0F172A;
+  background: #0f172a;
 }
 
 .address-label {
   min-width: 140px;
   font-weight: 600;
   font-size: 0.875rem;
-  color: #64748B;
+  color: #64748b;
   text-transform: capitalize;
 }
 
 .v-theme--dark .address-label {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .address-value {
   flex: 1;
   font-size: 0.875rem;
-  color: #1E293B;
+  color: #1e293b;
   word-wrap: break-word;
 }
 
 .v-theme--dark .address-value {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 /* Details Dialog */
@@ -751,13 +725,13 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .loading-text {
-  color: #6B7280;
+  color: #6b7280;
   font-size: 0.875rem;
   margin: 0;
 }
 
 .v-theme--dark .loading-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Documents Section */
@@ -781,33 +755,33 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .v-theme--dark .section-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 /* Edovo Table Container */
 .edovo-table-container {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
 }
 
 .v-theme--dark .edovo-table-container {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .table-header-section {
   padding: 20px 24px;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .v-theme--dark .table-header-section {
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
   border-bottom-color: #334155;
 }
 
@@ -825,7 +799,7 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .v-theme--dark .table-section-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 /* Edovo Questions Table */
@@ -836,30 +810,30 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 :deep(.edovo-questions-table thead tr th) {
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
-  color: #64748B !important;
-  background: #F9FAFB !important;
+  color: #64748b !important;
+  background: #f9fafb !important;
   text-transform: uppercase !important;
   letter-spacing: 0.03em !important;
   padding: 12px 16px !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  border-bottom: 1px solid #e5e7eb !important;
 }
 
 :deep(.v-theme--dark .edovo-questions-table thead tr th) {
-  color: #94A3B8 !important;
-  background: #0F172A !important;
+  color: #94a3b8 !important;
+  background: #0f172a !important;
   border-bottom-color: #334155 !important;
 }
 
 :deep(.edovo-questions-table tbody tr td) {
-  color: #1E293B !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e5e7eb !important;
   font-size: 0.875rem !important;
   padding: 12px 16px !important;
   line-height: 1.5 !important;
 }
 
 :deep(.v-theme--dark .edovo-questions-table tbody tr td) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
   border-bottom-color: #334155 !important;
 }
 
@@ -879,11 +853,11 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 
 .lesson-text {
   font-size: 0.8125rem;
-  color: #6B7280;
+  color: #6b7280;
 }
 
 .v-theme--dark .lesson-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .answer-chip {
@@ -894,12 +868,12 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 
 .no-answer-text {
   font-size: 0.8125rem;
-  color: #9CA3AF;
+  color: #9ca3af;
   font-style: italic;
 }
 
 .v-theme--dark .no-answer-text {
-  color: #6B7280;
+  color: #6b7280;
 }
 
 /* Document Previews */
@@ -909,7 +883,7 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 
 .section-divider {
   margin: 32px 0 !important;
-  border-color: #E2E8F0 !important;
+  border-color: #e2e8f0 !important;
 }
 
 .v-theme--dark .section-divider {
@@ -922,20 +896,20 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .json-preview-wrapper {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
 }
 
 .v-theme--dark .json-preview-wrapper {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .details-preview {
-  background: #0F172A;
-  color: #E0E7FF;
+  background: #0f172a;
+  color: #e0e7ff;
   padding: 24px;
   border-radius: 12px;
   font-family: 'Courier New', monospace;
@@ -949,8 +923,8 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .v-theme--dark .details-preview {
-  background: #0C1220;
-  color: #C7D2FE;
+  background: #0c1220;
+  color: #c7d2fe;
 }
 
 .details-preview::-webkit-scrollbar {
@@ -958,7 +932,7 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .details-preview::-webkit-scrollbar-track {
-  background: #1E293B;
+  background: #1e293b;
   border-radius: 4px;
 }
 
@@ -968,7 +942,7 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .details-preview::-webkit-scrollbar-thumb:hover {
-  background: #64748B;
+  background: #64748b;
 }
 
 .no-data-alert {
@@ -978,14 +952,14 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 
 /* Preview Section (for non-Edovo documents) */
 .preview-section {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
 }
 
 .v-theme--dark .preview-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -994,12 +968,12 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
   align-items: center;
   gap: 8px;
   padding: 16px 20px;
-  background: #F9FAFB;
-  border-bottom: 1px solid #E2E8F0;
+  background: #f9fafb;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .section-header {
-  background: #0F172A;
+  background: #0f172a;
   border-bottom-color: #334155;
 }
 
@@ -1011,17 +985,17 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 }
 
 .v-theme--dark .section-header .section-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .iframe-wrapper {
   width: 100%;
   height: 500px;
-  background: #F3F4F6;
+  background: #f3f4f6;
 }
 
 .v-theme--dark .iframe-wrapper {
-  background: #0F172A;
+  background: #0f172a;
 }
 
 .iframe-wrapper iframe {
@@ -1032,13 +1006,13 @@ const fetchDocumentUrls = async (documentParentId, documentType) => {
 
 .section-actions {
   padding: 16px 20px;
-  border-top: 1px solid #E2E8F0;
-  background: #FAFBFC;
+  border-top: 1px solid #e2e8f0;
+  background: #fafbfc;
 }
 
 .v-theme--dark .section-actions {
   border-top-color: #334155;
-  background: #151E2E;
+  background: #151e2e;
 }
 
 .action-btn {

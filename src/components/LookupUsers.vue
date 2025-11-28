@@ -3,16 +3,10 @@
     <!-- Header -->
     <div class="lookup-header">
       <h2 class="lookup-title">Results Info</h2>
-      <v-btn
-        icon="mdi-close"
-        variant="text"
-        size="small"
-        @click="closeDialog"
-        class="close-btn"
-      ></v-btn>
+      <v-btn icon="mdi-close" variant="text" size="small" class="close-btn" @click="closeDialog" />
     </div>
 
-    <v-divider></v-divider>
+    <v-divider />
 
     <v-card-text class="lookup-content">
       <v-row>
@@ -21,7 +15,9 @@
           <div class="info-section">
             <!-- Status Badge -->
             <div class="status-badge" :class="user.parent_id ? 'status-matched' : 'status-not-found'">
-              <v-icon size="20">{{ user.parent_id ? 'mdi-check-circle' : 'mdi-alert-circle' }}</v-icon>
+              <v-icon size="20">
+                {{ user.parent_id ? 'mdi-check-circle' : 'mdi-alert-circle' }}
+              </v-icon>
               <span>{{ user.parent_id ? 'Matched' : 'Not Found' }}</span>
             </div>
 
@@ -69,17 +65,11 @@
 
             <!-- Help Card (when not found) -->
             <div v-if="!user.parent_id" class="help-card">
-              <v-icon color="#EF4444" size="48" class="mb-3">mdi-account-alert</v-icon>
+              <v-icon color="#EF4444" size="48" class="mb-3"> mdi-account-alert </v-icon>
               <h3 class="help-title">Profile Not Found</h3>
-              <div class="help-text">
-                <strong>Search for Maverick</strong> by clicking "Search Maverick"
-              </div>
-              <div class="help-text">
-                <strong>Create a New Maverick</strong> by clicking "New Mav"
-              </div>
-              <div class="help-text">
-                <strong>Reference a Scanned PDF</strong> by clicking "More Info" below
-              </div>
+              <div class="help-text"><strong>Search for Maverick</strong> by clicking "Search Maverick"</div>
+              <div class="help-text"><strong>Create a New Maverick</strong> by clicking "New Mav"</div>
+              <div class="help-text"><strong>Reference a Scanned PDF</strong> by clicking "More Info" below</div>
             </div>
           </div>
         </v-col>
@@ -93,9 +83,9 @@
                 color="primary"
                 size="large"
                 :disabled="isAnyActionInProgress"
-                @click="openMaverickSearch"
                 prepend-icon="mdi-magnify"
                 class="action-btn flex-grow-1"
+                @click="openMaverickSearch"
               >
                 Search Maverick
               </v-btn>
@@ -103,9 +93,9 @@
                 color="success"
                 size="large"
                 :disabled="isAnyActionInProgress"
-                @click="clearMaverickFields"
                 prepend-icon="mdi-plus"
                 class="action-btn"
+                @click="clearMaverickFields"
               >
                 New Mav
               </v-btn>
@@ -113,14 +103,14 @@
 
             <!-- New Maverick Mode Buttons -->
             <div v-if="!showMaverickSearch && isNewMaverickMode" class="button-row">
-              <div class="flex-spacer"></div>
+              <div class="flex-spacer" />
               <v-btn
                 color="grey"
                 size="large"
                 variant="outlined"
                 :disabled="isAnyActionInProgress"
-                @click="cancelNewMaverick"
                 class="action-btn"
+                @click="cancelNewMaverick"
               >
                 Cancel
               </v-btn>
@@ -129,12 +119,12 @@
             <!-- Search Mode -->
             <div v-if="showMaverickSearch" class="button-row search-row">
               <v-autocomplete
-                label="Search Applicant"
                 v-model="selectedApplicantId"
+                v-model:search="searchQuery"
+                label="Search Applicant"
                 :items="applicantOptions"
                 return-object
                 item-title="display_name"
-                v-model:search="searchQuery"
                 :loading="loading ? 'primary' : false"
                 :disabled="isAnyActionInProgress"
                 placeholder="Type to search..."
@@ -142,29 +132,29 @@
                 hide-details
                 variant="outlined"
                 clearable
+                class="search-input"
                 @update:search="searchApplicants"
                 @update:model-value="handleApplicantSelection"
-                class="search-input"
               >
-                <template v-slot:selection="{ item }">
+                <template #selection="{ item }">
                   <span v-if="item">
-                    {{ item.raw.Name_first }} {{ item.raw.Name_last }} ({{ item.raw["DOC ID Number"] }})
+                    {{ item.raw.Name_first }} {{ item.raw.Name_last }} ({{ item.raw['DOC ID Number'] }})
                   </span>
                 </template>
 
-                <template v-slot:item="{ item, props }">
+                <template #item="{ item, props }">
                   <v-list-item v-bind="props">
                     <v-list-item-title>
-                      {{ item.raw["Last Known Facility Name"] }}
-                      {{ item.raw["Last Known Facility ID"] }}
+                      {{ item.raw['Last Known Facility Name'] }}
+                      {{ item.raw['Last Known Facility ID'] }}
                     </v-list-item-title>
                   </v-list-item>
                 </template>
 
-                <template v-slot:no-data>
+                <template #no-data>
                   <v-list-item>
-                    <v-list-item-title v-if="!loading">No Maverick Found</v-list-item-title>
-                    <v-list-item-title v-else>Loading...</v-list-item-title>
+                    <v-list-item-title v-if="!loading"> No Maverick Found </v-list-item-title>
+                    <v-list-item-title v-else> Loading... </v-list-item-title>
                   </v-list-item>
                 </template>
               </v-autocomplete>
@@ -173,8 +163,8 @@
                 size="large"
                 variant="outlined"
                 :disabled="isAnyActionInProgress"
-                @click="cancelMaverickSearch"
                 class="action-btn"
+                @click="cancelMaverickSearch"
               >
                 Cancel
               </v-btn>
@@ -186,41 +176,41 @@
             <v-row>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  label="First Name"
                   v-model="user.maverick_name_first"
+                  label="First Name"
                   variant="outlined"
                   :readonly="!isNewMaverickMode && !editingMaverick"
                   :disabled="(!isNewMaverickMode && !editingMaverick) || isAnyActionInProgress"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  label="Middle Name"
                   v-model="user.maverick_name_middle"
+                  label="Middle Name"
                   variant="outlined"
                   :readonly="!isNewMaverickMode && !editingMaverick"
                   :disabled="(!isNewMaverickMode && !editingMaverick) || isAnyActionInProgress"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  label="Last Name"
                   v-model="user.maverick_name_last"
+                  label="Last Name"
                   variant="outlined"
                   :readonly="!isNewMaverickMode && !editingMaverick"
                   :disabled="(!isNewMaverickMode && !editingMaverick) || isAnyActionInProgress"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
                 <v-date-input
-                  label="Date of Birth"
                   v-model="dobModel"
+                  label="Date of Birth"
                   variant="outlined"
                   :readonly="!isNewMaverickMode && !editingMaverick"
                   :disabled="(!isNewMaverickMode && !editingMaverick) || isAnyActionInProgress"
@@ -233,13 +223,13 @@
 
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  label="DOC Number"
                   v-model="user.maverick_doc_id"
+                  label="DOC Number"
                   variant="outlined"
                   :readonly="!isNewMaverickMode && !editingMaverick"
                   :disabled="(!isNewMaverickMode && !editingMaverick) || isAnyActionInProgress"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
 
               <v-col cols="12" sm="6" md="4">
@@ -255,11 +245,11 @@
                   />
                   <v-select
                     v-else-if="facilityAddressesV2.length > 1"
+                    v-model="user.maverick_mailing_address_id"
                     :items="facilityAddressesV2"
                     item-title="combined"
                     item-value="id"
                     label="Mailing Address"
-                    v-model="user.maverick_mailing_address_id"
                     variant="outlined"
                     :disabled="isAnyActionInProgress"
                     clearable
@@ -291,8 +281,8 @@
               <v-col cols="12">
                 <v-autocomplete
                   v-if="isNewMaverickMode || editingMaverick"
-                  label="Facility Name"
                   v-model="selectedFacility"
+                  label="Facility Name"
                   :items="facilityOptions"
                   item-value="facility_id"
                   item-title="facility_name"
@@ -302,20 +292,20 @@
                   hide-details
                   @update:model-value="updateMaverickFacility"
                 >
-                  <template v-slot:selection="{ item }">
+                  <template #selection="{ item }">
                     <span v-if="item">{{ item.raw.facility_name }}</span>
                   </template>
                 </v-autocomplete>
 
                 <v-text-field
                   v-else
-                  label="Facility Name"
                   v-model="user.maverick_facility_name"
+                  label="Facility Name"
                   variant="outlined"
                   readonly
                   hide-details
                   disabled
-                ></v-text-field>
+                />
               </v-col>
             </v-row>
 
@@ -327,8 +317,8 @@
                 color="primary"
                 :loading="matchMaverickLoading"
                 :disabled="isAnyActionInProgress"
-                @click="MatchMaverickWithResults()"
                 prepend-icon="mdi-content-save"
+                @click="MatchMaverickWithResults()"
               >
                 Match Maverick with Results
               </v-btn>
@@ -336,19 +326,19 @@
                 v-if="matchMaverickMessage"
                 :color="matchMaverickMessage.type === 'success' ? 'success' : 'error'"
                 closable
-                @click:close="matchMaverickMessage = null"
                 class="message-chip"
+                @click:close="matchMaverickMessage = null"
               >
                 {{ matchMaverickMessage.text }}
               </v-chip>
-              <v-spacer></v-spacer>
+              <v-spacer />
               <v-btn
                 color="primary"
                 size="large"
                 variant="outlined"
                 :disabled="isAnyActionInProgress"
-                @click="EditMaverick"
                 prepend-icon="mdi-pencil"
+                @click="EditMaverick"
               >
                 Edit Maverick
               </v-btn>
@@ -360,8 +350,8 @@
                 color="primary"
                 :disabled="!maverickDataChanged || isAnyActionInProgress"
                 :loading="saveMaverickChangesLoading"
-                @click="SaveMaverickChanges"
                 prepend-icon="mdi-content-save"
+                @click="SaveMaverickChanges"
               >
                 Save Maverick Changes
               </v-btn>
@@ -369,32 +359,32 @@
                 v-if="saveMaverickChangesMessage"
                 :color="saveMaverickChangesMessage.type === 'success' ? 'success' : 'error'"
                 closable
-                @click:close="saveMaverickChangesMessage = null"
                 class="message-chip"
+                @click:close="saveMaverickChangesMessage = null"
               >
                 {{ saveMaverickChangesMessage.text }}
               </v-chip>
-              <v-spacer></v-spacer>
+              <v-spacer />
               <v-btn
                 color="grey"
                 size="large"
                 variant="outlined"
-                @click="CancelEditMaverick"
                 :disabled="isAnyActionInProgress"
+                @click="CancelEditMaverick"
               >
                 Cancel
               </v-btn>
             </div>
 
             <div v-if="isNewMaverickMode" class="action-row">
-              <v-spacer></v-spacer>
+              <v-spacer />
               <v-btn
                 color="primary"
                 size="large"
-                @click="saveNewMaverick"
                 :loading="saveNewMaverickLoading"
                 :disabled="isAnyActionInProgress"
                 prepend-icon="mdi-content-save"
+                @click="saveNewMaverick"
               >
                 Save New Maverick
               </v-btn>
@@ -402,8 +392,8 @@
                 v-if="saveNewMaverickMessage"
                 :color="saveNewMaverickMessage.type === 'success' ? 'success' : 'error'"
                 closable
-                @click:close="saveNewMaverickMessage = null"
                 class="message-chip"
+                @click:close="saveNewMaverickMessage = null"
               >
                 {{ saveNewMaverickMessage.text }}
               </v-chip>
@@ -420,7 +410,7 @@
                 height="800"
                 frameborder="0"
                 allowfullscreen
-              ></iframe>
+              />
             </div>
           </div>
         </v-col>
@@ -430,15 +420,24 @@
 </template>
 
 <script>
-import api from "@/plugins/axios";
-import { VDateInput } from "vuetify/labs/VDateInput";
+import api from '@/plugins/axios';
+import { VDateInput } from 'vuetify/labs/VDateInput';
 
 export default {
-  name: "LookupUsers",
+  name: 'LookupUsers',
   components: {
     VDateInput,
   },
-  emits: ["closeDialog", "update-user"],
+  props: {
+    user: {
+      type: Object,
+    },
+    facilities: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  emits: ['closeDialog', 'update-user'],
   data() {
     return {
       facilityOptions: [],
@@ -463,69 +462,69 @@ export default {
       saveNewMaverickMessage: null,
     };
   },
-  props: {
-    user: {
-      type: Object,
-    },
-    facilities: {
-      type: Array,
-      default: () => [],
-    },
-  },
   computed: {
     isAnyActionInProgress() {
       return this.saveNewMaverickLoading || this.matchMaverickLoading || this.saveMaverickChangesLoading;
     },
     selectedFacilityObj() {
-      return (
-        this.facilityOptions.find(
-          (f) => f.facility_id === this.selectedFacility
-        ) || null
-      );
+      return this.facilityOptions.find((f) => f.facility_id === this.selectedFacility) || null;
     },
     maverickDataChanged() {
-      if (
-        !this.originalMaverickData ||
-        Object.keys(this.originalMaverickData).length === 0
-      ) {
+      if (!this.originalMaverickData || Object.keys(this.originalMaverickData).length === 0) {
         return false;
       }
 
       return (
-        this.user.maverick_name_first !==
-          this.originalMaverickData.maverick_name_first ||
-        this.user.maverick_name_last !==
-          this.originalMaverickData.maverick_name_last ||
-        this.user.maverick_name_middle !==
-          this.originalMaverickData.maverick_name_middle ||
-        this.user.maverick_date_of_birth !==
-          this.originalMaverickData.maverick_date_of_birth ||
-        this.user.maverick_doc_id !==
-          this.originalMaverickData.maverick_doc_id ||
-        this.user.maverick_facility_name !==
-          this.originalMaverickData.maverick_facility_name ||
-        this.user.maverick_facility_id !==
-          this.originalMaverickData.maverick_facility_id ||
+        this.user.maverick_name_first !== this.originalMaverickData.maverick_name_first ||
+        this.user.maverick_name_last !== this.originalMaverickData.maverick_name_last ||
+        this.user.maverick_name_middle !== this.originalMaverickData.maverick_name_middle ||
+        this.user.maverick_date_of_birth !== this.originalMaverickData.maverick_date_of_birth ||
+        this.user.maverick_doc_id !== this.originalMaverickData.maverick_doc_id ||
+        this.user.maverick_facility_name !== this.originalMaverickData.maverick_facility_name ||
+        this.user.maverick_facility_id !== this.originalMaverickData.maverick_facility_id ||
         JSON.stringify(this.user.maverick_facility_mailing_address || []) !==
-          JSON.stringify(
-            this.originalMaverickData.maverick_facility_mailing_address || []
-          ) ||
-        this.user.maverick_mailing_addresses !==
-          this.originalMaverickData.maverick_mailing_addresses ||
-        this.user.maverick_mailing_address_id !==
-          this.originalMaverickData.maverick_mailing_address_id
+          JSON.stringify(this.originalMaverickData.maverick_facility_mailing_address || []) ||
+        this.user.maverick_mailing_addresses !== this.originalMaverickData.maverick_mailing_addresses ||
+        this.user.maverick_mailing_address_id !== this.originalMaverickData.maverick_mailing_address_id
       );
     },
+  },
+  watch: {
+    dobModel(newVal) {
+      this.user.maverick_date_of_birth = newVal ? this.formatMMDDYYYY(newVal) : '';
+      this.changed = true;
+    },
+    selectedFacility() {
+      const addrs = this.facilityAddressesV2 || [];
+      if (addrs.length === 1) {
+        this.user.maverick_mailing_address_id = addrs[0].id;
+        this.user.maverick_mailing_addresses = addrs[0].combined || '';
+      } else if (addrs.length > 1) {
+        this.user.maverick_mailing_address_id = null;
+        this.user.maverick_mailing_addresses = '';
+      }
+    },
+  },
+  mounted() {
+    this.getFacilities();
+    this.getDocumentName();
+    this.getFacilityMailingAddress();
+    if (this.user && this.user.maverick_facility_id) {
+      this.selectedFacility = this.user.maverick_facility_id;
+    }
+
+    this.searchQuery = null;
+    this.applicantOptions = [];
+
+    this.dobModel =
+      this.parseMMDDYYYY(this.user.maverick_date_of_birth) ||
+      (this.user.maverick_date_of_birth ? new Date(this.user.maverick_date_of_birth) : null);
   },
   methods: {
     async getDocumentName() {
       try {
-        if (
-          this.user &&
-          this.user.bubble_sheet_data &&
-          this.user.bubble_sheet_data.document_id
-        ) {
-          const res = await api.get("/get-document-name", {
+        if (this.user && this.user.bubble_sheet_data && this.user.bubble_sheet_data.document_id) {
+          const res = await api.get('/get-document-name', {
             params: {
               document_id: this.user.bubble_sheet_data.document_id,
             },
@@ -536,19 +535,14 @@ export default {
             console.log(`Document name set to: ${this.user.document_name}`);
           } else {
             console.warn(`Failed to get document name: ${res.data.error}`);
-            this.user.document_name =
-              res.data.document_name || "Unknown Document";
+            this.user.document_name = res.data.document_name || 'Unknown Document';
           }
         } else {
-          console.warn("No document_id found in user.bubble_sheet_data");
+          console.warn('No document_id found in user.bubble_sheet_data');
         }
       } catch (err) {
-        console.error("Error getting document name:", err);
-        if (
-          this.user &&
-          this.user.bubble_sheet_data &&
-          this.user.bubble_sheet_data.document_id
-        ) {
+        console.error('Error getting document name:', err);
+        if (this.user && this.user.bubble_sheet_data && this.user.bubble_sheet_data.document_id) {
           this.user.document_name = `Document ${this.user.bubble_sheet_data.document_id}`;
         }
       }
@@ -560,30 +554,19 @@ export default {
       this.editingMaverick = false;
 
       if (this.originalMaverickData) {
-        this.user.maverick_name_first =
-          this.originalMaverickData.maverick_name_first;
-        this.user.maverick_name_last =
-          this.originalMaverickData.maverick_name_last;
-        this.user.maverick_name_middle =
-          this.originalMaverickData.maverick_name_middle;
-        this.user.maverick_date_of_birth =
-          this.originalMaverickData.maverick_date_of_birth;
+        this.user.maverick_name_first = this.originalMaverickData.maverick_name_first;
+        this.user.maverick_name_last = this.originalMaverickData.maverick_name_last;
+        this.user.maverick_name_middle = this.originalMaverickData.maverick_name_middle;
+        this.user.maverick_date_of_birth = this.originalMaverickData.maverick_date_of_birth;
         this.user.maverick_doc_id = this.originalMaverickData.maverick_doc_id;
-        this.user.maverick_facility_name =
-          this.originalMaverickData.maverick_facility_name;
-        this.user.maverick_facility_id =
-          this.originalMaverickData.maverick_facility_id;
-        this.user.maverick_facility_mailing_address =
-          this.originalMaverickData.maverick_facility_mailing_address;
-        this.user.maverick_mailing_addresses =
-          this.originalMaverickData.maverick_mailing_addresses;
-        this.user.maverick_mailing_address_id =
-          this.originalMaverickData.maverick_mailing_address_id;
+        this.user.maverick_facility_name = this.originalMaverickData.maverick_facility_name;
+        this.user.maverick_facility_id = this.originalMaverickData.maverick_facility_id;
+        this.user.maverick_facility_mailing_address = this.originalMaverickData.maverick_facility_mailing_address;
+        this.user.maverick_mailing_addresses = this.originalMaverickData.maverick_mailing_addresses;
+        this.user.maverick_mailing_address_id = this.originalMaverickData.maverick_mailing_address_id;
 
         if (this.originalMaverickData.maverick_facility_id) {
-          const facility = this.allFacilities.find(
-            (f) => f.id === this.originalMaverickData.maverick_facility_id
-          );
+          const facility = this.allFacilities.find((f) => f.id === this.originalMaverickData.maverick_facility_id);
           this.selectedFacility = facility || null;
         } else {
           this.selectedFacility = null;
@@ -603,7 +586,7 @@ export default {
           id: this.user.id,
           parent_id: this.selectedApplicantId?.id,
         };
-        const res = await api.post("/match-maverick-with-results", payload);
+        const res = await api.post('/match-maverick-with-results', payload);
         if (res.data.success) {
           if (this.selectedApplicantId?.id) {
             this.user.parent_id = this.selectedApplicantId.id;
@@ -620,24 +603,22 @@ export default {
 
           this.matchMaverickMessage = {
             type: 'success',
-            text: message
+            text: message,
           };
 
-          this.$emit("update-user", this.user);
+          this.$emit('update-user', this.user);
         } else {
           this.matchMaverickMessage = {
             type: 'error',
-            text: res.data.error || 'Failed to match maverick.'
+            text: res.data.error || 'Failed to match maverick.',
           };
-
         }
       } catch (err) {
-        console.error("Error matching maverick:", err);
+        console.error('Error matching maverick:', err);
         this.matchMaverickMessage = {
           type: 'error',
-          text: 'Error matching maverick.'
+          text: 'Error matching maverick.',
         };
-
       } finally {
         this.matchMaverickLoading = false;
       }
@@ -646,80 +627,65 @@ export default {
     async getFacilityMailingAddress() {
       try {
         if (this.user && this.user.maverick_facility_id) {
-          const res = await api.get("/get-facility-mailing-address", {
+          const res = await api.get('/get-facility-mailing-address', {
             params: { facility_id: this.user.maverick_facility_id },
           });
 
           if (res.data.success) {
-            const v2 = Array.isArray(res.data.mailing_addresses_v2)
-              ? res.data.mailing_addresses_v2
-              : [];
+            const v2 = Array.isArray(res.data.mailing_addresses_v2) ? res.data.mailing_addresses_v2 : [];
             this.facilityAddressesV2 = v2;
             const currentId = this.user.maverick_mailing_address_id;
             if (currentId) {
               const found = v2.find((a) => a.id === currentId);
-              this.user.maverick_mailing_addresses = found?.combined || this.user.maverick_mailing_addresses || "";
+              this.user.maverick_mailing_addresses = found?.combined || this.user.maverick_mailing_addresses || '';
             } else if (v2.length === 1) {
               this.user.maverick_mailing_address_id = v2[0].id;
-              this.user.maverick_mailing_addresses = v2[0].combined || "";
+              this.user.maverick_mailing_addresses = v2[0].combined || '';
             } else {
-              this.user.maverick_mailing_addresses = this.user.maverick_mailing_addresses || "";
+              this.user.maverick_mailing_addresses = this.user.maverick_mailing_addresses || '';
             }
-            console.log(
-              `Facility mailing addresses set to: ${JSON.stringify(
-                this.facilityAddressesV2
-              )}`
-            );
+            console.log(`Facility mailing addresses set to: ${JSON.stringify(this.facilityAddressesV2)}`);
           } else {
-            console.warn(
-              `Failed to get facility mailing address: ${res.data.error}`
-            );
+            console.warn(`Failed to get facility mailing address: ${res.data.error}`);
             this.facilityAddressesV2 = [];
-            this.user.maverick_mailing_addresses = "";
+            this.user.maverick_mailing_addresses = '';
           }
           this.setOriginalMaverickData();
         } else {
           this.setOriginalMaverickData();
-          console.warn("No maverick_facility_id found in user object");
+          console.warn('No maverick_facility_id found in user object');
         }
       } catch (err) {
-        console.error("Error getting facility mailing address:", err);
+        console.error('Error getting facility mailing address:', err);
         this.facilityAddressesV2 = [];
-        this.user.maverick_mailing_addresses = "";
+        this.user.maverick_mailing_addresses = '';
       }
     },
 
     async getFacilityMailingAddressForSelection(facilityId) {
       try {
-        const res = await api.get("/get-facility-mailing-address", {
+        const res = await api.get('/get-facility-mailing-address', {
           params: { facility_id: facilityId },
         });
 
         if (res.data.success) {
-          const v2 = Array.isArray(res.data.mailing_addresses_v2)
-            ? res.data.mailing_addresses_v2
-            : [];
+          const v2 = Array.isArray(res.data.mailing_addresses_v2) ? res.data.mailing_addresses_v2 : [];
           this.facilityAddressesV2 = v2;
           if (v2.length === 1) {
             this.user.maverick_mailing_address_id = v2[0].id;
-            this.user.maverick_mailing_addresses = v2[0].combined || "";
+            this.user.maverick_mailing_addresses = v2[0].combined || '';
           } else {
-            this.user.maverick_mailing_addresses = "";
+            this.user.maverick_mailing_addresses = '';
           }
         } else {
-          console.warn(
-            `Failed to get facility mailing address: ${res.data.error}`
-          );
+          console.warn(`Failed to get facility mailing address: ${res.data.error}`);
           this.facilityAddressesV2 = [];
-          this.user.maverick_mailing_addresses = "";
+          this.user.maverick_mailing_addresses = '';
         }
       } catch (err) {
-        console.error(
-          "Error getting facility mailing address for selection:",
-          err
-        );
+        console.error('Error getting facility mailing address for selection:', err);
         this.facilityAddressesV2 = [];
-        this.user.maverick_mailing_addresses = "";
+        this.user.maverick_mailing_addresses = '';
       }
     },
 
@@ -732,30 +698,28 @@ export default {
             mailing_addresses: Array.isArray(facility.mailing_addresses)
               ? facility.mailing_addresses
               : facility.facility_address
-              ? [facility.facility_address]
-              : [],
+                ? [facility.facility_address]
+                : [],
           }));
-          console.log("Using passed facilities:", this.facilityOptions);
+          console.log('Using passed facilities:', this.facilityOptions);
           return;
         }
 
-        const res = await api.get("/get-facilities");
+        const res = await api.get('/get-facilities');
 
         this.facilityOptions = res.data.map((facility) => ({
           facility_id: facility.facility_id,
           facility_name: facility.facility_name,
-          mailing_addresses: facility.location?.line1
-            ? [facility.location.line1]
-            : [],
+          mailing_addresses: facility.location?.line1 ? [facility.location.line1] : [],
         }));
-        console.log("Facilities fetched:", this.facilityOptions);
+        console.log('Facilities fetched:', this.facilityOptions);
       } catch (err) {
-        console.error("Error fetching facilities:", err);
+        console.error('Error fetching facilities:', err);
       }
     },
 
     async searchApplicants(val) {
-      console.log("Search triggered with value:", val);
+      console.log('Search triggered with value:', val);
       if (this.searchTimeout) clearTimeout(this.searchTimeout);
 
       if (!val || val.length < 2) {
@@ -767,33 +731,33 @@ export default {
 
       this.searchTimeout = setTimeout(async () => {
         try {
-          console.log("Making API request for:", val);
-          const res = await api.get("/search-mavericks", {
+          console.log('Making API request for:', val);
+          const res = await api.get('/search-mavericks', {
             params: {
               query: val,
               limit: 20,
             },
           });
 
-          console.log("API response:", res.data);
+          console.log('API response:', res.data);
 
           this.applicantOptions = res.data.map((applicant) => ({
             ...applicant,
-            display_name: `${applicant.Name_first || ""} ${
-              applicant.Name_last || ""
-            } (${applicant["DOC ID Number"] || ""})`,
+            display_name: `${applicant.Name_first || ''} ${
+              applicant.Name_last || ''
+            } (${applicant['DOC ID Number'] || ''})`,
           }));
 
           if (
             this.applicantOptions.length === 1 &&
-            (this.applicantOptions[0]["DOC ID Number"] === val ||
+            (this.applicantOptions[0]['DOC ID Number'] === val ||
               `${this.applicantOptions[0].Name_first} ${this.applicantOptions[0].Name_last}`.toLowerCase() ===
                 val.toLowerCase())
           ) {
             this.selectedApplicant = this.applicantOptions[0];
           }
         } catch (err) {
-          console.error("Error searching applicants:", err);
+          console.error('Error searching applicants:', err);
         } finally {
           this.loading = false;
         }
@@ -802,36 +766,31 @@ export default {
 
     closeDialog() {
       this.cancelMaverickSearch();
-      this.$emit("closeDialog");
+      this.$emit('closeDialog');
     },
     handleApplicantSelection(item) {
       this.changed = true;
       this.isNewMaverickMode = false;
-      console.log("Applicant selected:", item);
+      console.log('Applicant selected:', item);
       if (item) {
-        this.user.maverick_name_first = item.Name_first || "";
-        this.user.maverick_name_last = item.Name_last || "";
-        this.user.maverick_name_middle = item.Name_middle || "";
-        this.user.maverick_date_of_birth = item["Date of Birth"] || "";
-        this.user.maverick_doc_id = item["DOC ID Number"] || "";
-        this.user.maverick_facility_name =
-          item["Last Known Facility Name"] || "";
-        this.user.maverick_facility_id = item["Last Known Facility ID"] || null;
+        this.user.maverick_name_first = item.Name_first || '';
+        this.user.maverick_name_last = item.Name_last || '';
+        this.user.maverick_name_middle = item.Name_middle || '';
+        this.user.maverick_date_of_birth = item['Date of Birth'] || '';
+        this.user.maverick_doc_id = item['DOC ID Number'] || '';
+        this.user.maverick_facility_name = item['Last Known Facility Name'] || '';
+        this.user.maverick_facility_id = item['Last Known Facility ID'] || null;
 
-        this.selectedFacility = item["Last Known Facility ID"] || null;
+        this.selectedFacility = item['Last Known Facility ID'] || null;
 
-        if (item["Last Known Facility ID"]) {
-          this.getFacilityMailingAddressForSelection(
-            item["Last Known Facility ID"]
-          );
+        if (item['Last Known Facility ID']) {
+          this.getFacilityMailingAddressForSelection(item['Last Known Facility ID']);
         } else {
-          this.user.maverick_facility_mailing_address = "";
+          this.user.maverick_facility_mailing_address = '';
         }
         this.dobModel =
           this.parseMMDDYYYY(this.user.maverick_date_of_birth) ||
-          (this.user.maverick_date_of_birth
-            ? new Date(this.user.maverick_date_of_birth)
-            : null);
+          (this.user.maverick_date_of_birth ? new Date(this.user.maverick_date_of_birth) : null);
       }
     },
     openMaverickSearch() {
@@ -846,30 +805,20 @@ export default {
       this.changed = false;
       this.isNewMaverickMode = false;
       if (this.originalMaverickData) {
-        this.user.maverick_name_first =
-          this.originalMaverickData.maverick_name_first;
-        this.user.maverick_name_last =
-          this.originalMaverickData.maverick_name_last;
-        this.user.maverick_name_middle =
-          this.originalMaverickData.maverick_name_middle;
-        this.user.maverick_date_of_birth =
-          this.originalMaverickData.maverick_date_of_birth;
+        this.user.maverick_name_first = this.originalMaverickData.maverick_name_first;
+        this.user.maverick_name_last = this.originalMaverickData.maverick_name_last;
+        this.user.maverick_name_middle = this.originalMaverickData.maverick_name_middle;
+        this.user.maverick_date_of_birth = this.originalMaverickData.maverick_date_of_birth;
         this.user.maverick_doc_id = this.originalMaverickData.maverick_doc_id;
-        this.user.maverick_facility_name =
-          this.originalMaverickData.maverick_facility_name;
-        this.user.maverick_facility_id =
-          this.originalMaverickData.maverick_facility_id;
-        this.user.maverick_facility_mailing_address =
-          this.originalMaverickData.maverick_facility_mailing_address;
-        this.user.maverick_mailing_addresses =
-          this.originalMaverickData.maverick_mailing_addresses;
+        this.user.maverick_facility_name = this.originalMaverickData.maverick_facility_name;
+        this.user.maverick_facility_id = this.originalMaverickData.maverick_facility_id;
+        this.user.maverick_facility_mailing_address = this.originalMaverickData.maverick_facility_mailing_address;
+        this.user.maverick_mailing_addresses = this.originalMaverickData.maverick_mailing_addresses;
 
         this.selectedFacility = this.originalMaverickData.maverick_facility_id;
         this.dobModel =
           this.parseMMDDYYYY(this.user.maverick_date_of_birth) ||
-          (this.user.maverick_date_of_birth
-            ? new Date(this.user.maverick_date_of_birth)
-            : null);
+          (this.user.maverick_date_of_birth ? new Date(this.user.maverick_date_of_birth) : null);
       }
 
       this.searchQuery = null;
@@ -879,57 +828,53 @@ export default {
     },
     setOriginalMaverickData() {
       this.originalMaverickData = {
-        maverick_name_first: this.user.maverick_name_first || "",
-        maverick_name_last: this.user.maverick_name_last || "",
-        maverick_name_middle: this.user.maverick_name_middle || "",
-        maverick_date_of_birth: this.user.maverick_date_of_birth || "",
-        maverick_doc_id: this.user.maverick_doc_id || "",
-        maverick_facility_name: this.user.maverick_facility_name || "",
+        maverick_name_first: this.user.maverick_name_first || '',
+        maverick_name_last: this.user.maverick_name_last || '',
+        maverick_name_middle: this.user.maverick_name_middle || '',
+        maverick_date_of_birth: this.user.maverick_date_of_birth || '',
+        maverick_doc_id: this.user.maverick_doc_id || '',
+        maverick_facility_name: this.user.maverick_facility_name || '',
         maverick_facility_id: this.user.maverick_facility_id || null,
-        maverick_facility_mailing_address: Array.isArray(
-          this.user.maverick_facility_mailing_address
-        )
+        maverick_facility_mailing_address: Array.isArray(this.user.maverick_facility_mailing_address)
           ? this.user.maverick_facility_mailing_address
           : this.user.maverick_facility_mailing_address
-          ? [this.user.maverick_facility_mailing_address]
-          : [],
-        maverick_mailing_addresses: this.user.maverick_mailing_addresses || "",
+            ? [this.user.maverick_facility_mailing_address]
+            : [],
+        maverick_mailing_addresses: this.user.maverick_mailing_addresses || '',
         maverick_mailing_address_id: this.user.maverick_mailing_address_id || null,
       };
-      console.log("Original Maverick Data Set:", this.originalMaverickData);
+      console.log('Original Maverick Data Set:', this.originalMaverickData);
     },
     clearMaverickFields() {
-      this.user.maverick_name_first = "";
-      this.user.maverick_name_last = "";
-      this.user.maverick_name_middle = "";
-      this.user.maverick_date_of_birth = "";
-      this.user.maverick_doc_id = "";
-      this.user.maverick_facility_name = "";
+      this.user.maverick_name_first = '';
+      this.user.maverick_name_last = '';
+      this.user.maverick_name_middle = '';
+      this.user.maverick_date_of_birth = '';
+      this.user.maverick_doc_id = '';
+      this.user.maverick_facility_name = '';
       this.user.maverick_facility_id = null;
       this.user.maverick_facility_mailing_address = [];
       this.selectedFacility = null;
-      this.user.maverick_mailing_addresses = "";
+      this.user.maverick_mailing_addresses = '';
       this.isNewMaverickMode = true;
       this.changed = true;
     },
     updateMaverickFacility(facilityId) {
       if (facilityId) {
-        const selectedFacility = this.facilityOptions.find(
-          (facility) => facility.facility_id === facilityId
-        );
+        const selectedFacility = this.facilityOptions.find((facility) => facility.facility_id === facilityId);
 
         if (selectedFacility) {
           this.user.maverick_facility_name = selectedFacility.facility_name;
           this.user.maverick_facility_id = facilityId;
           this.getFacilityMailingAddressForSelection(facilityId);
           this.user.maverick_mailing_address_id = null;
-          this.user.maverick_mailing_addresses = "";
+          this.user.maverick_mailing_addresses = '';
         }
       } else {
-        this.user.maverick_facility_name = "";
+        this.user.maverick_facility_name = '';
         this.user.maverick_facility_id = null;
         this.facilityAddressesV2 = [];
-        this.user.maverick_mailing_addresses = "";
+        this.user.maverick_mailing_addresses = '';
         this.user.maverick_mailing_address_id = null;
       }
       this.changed = true;
@@ -939,23 +884,15 @@ export default {
       this.changed = false;
 
       if (this.originalMaverickData) {
-        this.user.maverick_name_first =
-          this.originalMaverickData.maverick_name_first;
-        this.user.maverick_name_last =
-          this.originalMaverickData.maverick_name_last;
-        this.user.maverick_name_middle =
-          this.originalMaverickData.maverick_name_middle;
-        this.user.maverick_date_of_birth =
-          this.originalMaverickData.maverick_date_of_birth;
+        this.user.maverick_name_first = this.originalMaverickData.maverick_name_first;
+        this.user.maverick_name_last = this.originalMaverickData.maverick_name_last;
+        this.user.maverick_name_middle = this.originalMaverickData.maverick_name_middle;
+        this.user.maverick_date_of_birth = this.originalMaverickData.maverick_date_of_birth;
         this.user.maverick_doc_id = this.originalMaverickData.maverick_doc_id;
-        this.user.maverick_facility_name =
-          this.originalMaverickData.maverick_facility_name;
-        this.user.maverick_facility_id =
-          this.originalMaverickData.maverick_facility_id;
-        this.user.maverick_facility_mailing_address =
-          this.originalMaverickData.maverick_facility_mailing_address;
-        this.user.maverick_mailing_addresses =
-          this.originalMaverickData.maverick_mailing_addresses;
+        this.user.maverick_facility_name = this.originalMaverickData.maverick_facility_name;
+        this.user.maverick_facility_id = this.originalMaverickData.maverick_facility_id;
+        this.user.maverick_facility_mailing_address = this.originalMaverickData.maverick_facility_mailing_address;
+        this.user.maverick_mailing_addresses = this.originalMaverickData.maverick_mailing_addresses;
 
         this.selectedFacility = this.originalMaverickData.maverick_facility_id;
       }
@@ -972,7 +909,7 @@ export default {
         ) {
           this.saveNewMaverickMessage = {
             type: 'error',
-            text: 'Please fill in required fields: First Name, Last Name, DOC Number, and Facility'
+            text: 'Please fill in required fields: First Name, Last Name, DOC Number, and Facility',
           };
 
           return;
@@ -995,7 +932,7 @@ export default {
           maverick_mailing_address_id: this.user.maverick_mailing_address_id,
         };
 
-        const res = await api.post("/save-new-maverick", payload);
+        const res = await api.post('/save-new-maverick', payload);
         if (res.data && res.data.success) {
           if (res.data.user && res.data.user.id) {
             this.user.parent_id = res.data.user.id;
@@ -1004,10 +941,10 @@ export default {
 
           this.saveNewMaverickMessage = {
             type: 'success',
-            text: `New maverick created successfully! ID: ${res.data.user?.id || 'N/A'}`
+            text: `New maverick created successfully! ID: ${res.data.user?.id || 'N/A'}`,
           };
 
-          this.$emit("update-user", this.user);
+          this.$emit('update-user', this.user);
 
           this.setOriginalMaverickData();
           this.isNewMaverickMode = false;
@@ -1015,17 +952,15 @@ export default {
         } else {
           this.saveNewMaverickMessage = {
             type: 'error',
-            text: res.data?.error || 'Failed to save maverick'
+            text: res.data?.error || 'Failed to save maverick',
           };
-
         }
       } catch (err) {
-        console.error("Error saving new maverick:", err);
+        console.error('Error saving new maverick:', err);
         this.saveNewMaverickMessage = {
           type: 'error',
-          text: 'Error saving new maverick'
+          text: 'Error saving new maverick',
         };
-
       } finally {
         this.saveNewMaverickLoading = false;
       }
@@ -1043,7 +978,7 @@ export default {
         ) {
           this.saveMaverickChangesMessage = {
             type: 'error',
-            text: 'Please fill in required fields: First Name, Last Name, DOC Number, and Facility'
+            text: 'Please fill in required fields: First Name, Last Name, DOC Number, and Facility',
           };
 
           return;
@@ -1065,7 +1000,7 @@ export default {
           maverick_id: this.user.parent_id,
         };
 
-        const res = await api.post("/save-maverick-changes", payload);
+        const res = await api.post('/save-maverick-changes', payload);
         if (res.data && res.data.success) {
           if (res.data.user) {
             Object.assign(this.user, res.data.user);
@@ -1081,10 +1016,10 @@ export default {
 
           this.saveMaverickChangesMessage = {
             type: 'success',
-            text: message
+            text: message,
           };
 
-          this.$emit("update-user", this.user);
+          this.$emit('update-user', this.user);
 
           this.setOriginalMaverickData();
           this.editingMaverick = false;
@@ -1093,27 +1028,25 @@ export default {
         } else {
           this.saveMaverickChangesMessage = {
             type: 'error',
-            text: res.data?.error || 'Failed to save maverick'
+            text: res.data?.error || 'Failed to save maverick',
           };
-
         }
       } catch (err) {
-        console.error("Error saving new maverick:", err);
+        console.error('Error saving new maverick:', err);
         this.saveMaverickChangesMessage = {
           type: 'error',
-          text: 'Error saving new maverick'
+          text: 'Error saving new maverick',
         };
-
       } finally {
         this.saveMaverickChangesLoading = false;
       }
     },
     formatMMDDYYYY(date) {
-      if (!date) return "";
+      if (!date) return '';
       const d = new Date(date);
-      if (isNaN(d)) return "";
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
+      if (isNaN(d)) return '';
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
       const yyyy = d.getFullYear();
       return `${mm}/${dd}/${yyyy}`;
     },
@@ -1139,41 +1072,6 @@ export default {
       return isNaN(d) ? null : d;
     },
   },
-  watch: {
-    dobModel(newVal) {
-      this.user.maverick_date_of_birth = newVal
-        ? this.formatMMDDYYYY(newVal)
-        : "";
-      this.changed = true;
-    },
-    selectedFacility() {
-      const addrs = this.facilityAddressesV2 || [];
-      if (addrs.length === 1) {
-        this.user.maverick_mailing_address_id = addrs[0].id;
-        this.user.maverick_mailing_addresses = addrs[0].combined || "";
-      } else if (addrs.length > 1) {
-        this.user.maverick_mailing_address_id = null;
-        this.user.maverick_mailing_addresses = "";
-      }
-    },
-  },
-  mounted() {
-    this.getFacilities();
-    this.getDocumentName();
-    this.getFacilityMailingAddress();
-    if (this.user && this.user.maverick_facility_id) {
-      this.selectedFacility = this.user.maverick_facility_id;
-    }
-
-    this.searchQuery = null;
-    this.applicantOptions = [];
-
-    this.dobModel =
-      this.parseMMDDYYYY(this.user.maverick_date_of_birth) ||
-      (this.user.maverick_date_of_birth
-        ? new Date(this.user.maverick_date_of_birth)
-        : null);
-  },
 };
 </script>
 
@@ -1190,22 +1088,22 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  background: linear-gradient(to bottom, #F9FAFB, #FFFFFF);
+  background: linear-gradient(to bottom, #f9fafb, #ffffff);
 }
 
 .v-theme--dark .lookup-header {
-  background: linear-gradient(to bottom, #0F172A, #1E293B);
+  background: linear-gradient(to bottom, #0f172a, #1e293b);
 }
 
 .lookup-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1E293B;
+  color: #1e293b;
   margin: 0;
 }
 
 .v-theme--dark .lookup-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .close-btn {
@@ -1235,48 +1133,48 @@ export default {
 
 .status-matched {
   background: rgba(34, 197, 94, 0.1);
-  color: #16A34A;
+  color: #16a34a;
   border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .status-not-found {
   background: rgba(239, 68, 68, 0.1);
-  color: #DC2626;
+  color: #dc2626;
   border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 /* Info Cards */
 .info-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
 }
 
 .v-theme--dark .info-card {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .info-card-title {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #64748B;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 12px;
 }
 
 .v-theme--dark .info-card-title {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .info-item {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .v-theme--dark .info-item {
@@ -1289,47 +1187,47 @@ export default {
 
 .info-label {
   font-weight: 500;
-  color: #64748B;
+  color: #64748b;
   font-size: 0.875rem;
 }
 
 .v-theme--dark .info-label {
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .info-value {
   font-weight: 600;
-  color: #1E293B;
+  color: #1e293b;
   font-size: 0.875rem;
 }
 
 .v-theme--dark .info-value {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 /* Help Card */
 .help-card {
-  background: linear-gradient(to bottom, #FEF2F2, #FFFFFF);
-  border: 2px solid #FEE2E2;
+  background: linear-gradient(to bottom, #fef2f2, #ffffff);
+  border: 2px solid #fee2e2;
   border-radius: 12px;
   padding: 24px;
   text-align: center;
 }
 
 .v-theme--dark .help-card {
-  background: linear-gradient(to bottom, #450A0A, #1E293B);
-  border-color: #7F1D1D;
+  background: linear-gradient(to bottom, #450a0a, #1e293b);
+  border-color: #7f1d1d;
 }
 
 .help-title {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #DC2626;
+  color: #dc2626;
   margin-bottom: 16px;
 }
 
 .v-theme--dark .help-title {
-  color: #FCA5A5;
+  color: #fca5a5;
 }
 
 .help-text {
@@ -1340,16 +1238,16 @@ export default {
 }
 
 .v-theme--dark .help-text {
-  color: #CBD5E1;
+  color: #cbd5e1;
 }
 
 .help-text strong {
-  color: #1E293B;
+  color: #1e293b;
   font-weight: 600;
 }
 
 .v-theme--dark .help-text strong {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 /* Action Buttons */
@@ -1391,15 +1289,15 @@ export default {
 
 /* Form Section */
 .form-section {
-  background: #F9FAFB;
-  border: 1px solid #E2E8F0;
+  background: #f9fafb;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 24px;
 }
 
 .v-theme--dark .form-section {
-  background: #0F172A;
+  background: #0f172a;
   border-color: #334155;
 }
 
@@ -1410,7 +1308,7 @@ export default {
   align-items: center;
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #E2E8F0;
+  border-top: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .action-row {
@@ -1429,24 +1327,24 @@ export default {
 .preview-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #1E293B;
+  color: #1e293b;
   margin-bottom: 12px;
 }
 
 .v-theme--dark .preview-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .iframe-wrapper {
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
-  background: #F9FAFB;
+  background: #f9fafb;
 }
 
 .v-theme--dark .iframe-wrapper {
   border-color: #334155;
-  background: #0F172A;
+  background: #0f172a;
 }
 
 /* Responsive Design */

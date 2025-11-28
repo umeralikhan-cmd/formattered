@@ -1,12 +1,11 @@
 <template>
   <div class="mavericks-page">
     <div class="content-wrapper">
-      
       <!-- Filters Section -->
       <div class="filters-section">
         <div class="filters-header">
           <div class="filters-title-group">
-            <v-icon size="20" class="filters-icon">mdi-filter-outline</v-icon>
+            <v-icon size="20" class="filters-icon"> mdi-filter-outline </v-icon>
             <h2 class="filters-title">Search & Actions</h2>
           </div>
           <div class="header-actions">
@@ -15,11 +14,11 @@
             </v-chip>
             <v-btn
               v-if="selected.length > 1"
-              @click="mergeSelected"
               color="primary"
               variant="flat"
               prepend-icon="mdi-merge"
               class="merge-btn"
+              @click="mergeSelected"
             >
               Merge Selected
             </v-btn>
@@ -38,7 +37,7 @@
                 density="comfortable"
                 hide-details
                 @input="onSearch"
-              ></v-text-field>
+              />
             </v-col>
           </v-row>
         </div>
@@ -48,16 +47,9 @@
       <div class="table-section">
         <div class="table-header">
           <div class="table-stats">
-            <v-icon class="stats-icon">mdi-account-group</v-icon>
+            <v-icon class="stats-icon"> mdi-account-group </v-icon>
             <span class="stats-text">{{ totalItems }} Mavericks</span>
-            <v-progress-circular
-              v-if="isFetching"
-              indeterminate
-              color="primary"
-              size="20"
-              width="2"
-              class="ml-2"
-            />
+            <v-progress-circular v-if="isFetching" indeterminate color="primary" size="20" width="2" class="ml-2" />
           </div>
         </div>
 
@@ -69,26 +61,26 @@
 
           <div v-else class="table-wrapper">
             <v-data-table
+              v-model="selected"
               :headers="headers"
               :items="items"
               :loading="isLoading || isFetching"
               :items-per-page="itemsPerPage"
               item-value="id"
-              v-model="selected"
               return-object
               show-select
               hide-default-footer
               fixed-header
               height="500"
             >
-              <template v-slot:item.action="{ item }">
+              <template #item.action="{ item }">
                 <div class="action-buttons">
                   <v-btn
                     variant="text"
                     size="small"
-                    @click="onRowClick(item)"
                     prepend-icon="mdi-information-outline"
                     class="action-btn info-btn"
+                    @click="onRowClick(item)"
                   >
                     More Info
                   </v-btn>
@@ -96,9 +88,9 @@
                     variant="outlined"
                     size="small"
                     color="primary"
-                    @click="openScholarshipDialog(item)"
                     prepend-icon="mdi-plus-circle-outline"
                     class="action-btn queue-btn"
+                    @click="openScholarshipDialog(item)"
                   >
                     Add to Queue
                   </v-btn>
@@ -116,41 +108,17 @@
             </span>
           </div>
           <div class="pagination-controls">
-            <v-btn
-              icon
-              size="small"
-              variant="text"
-              :disabled="page === 1"
-              @click="changePage(1)"
-            >
+            <v-btn icon size="small" variant="text" :disabled="page === 1" @click="changePage(1)">
               <v-icon>mdi-page-first</v-icon>
             </v-btn>
-            <v-btn
-              icon
-              size="small"
-              variant="text"
-              :disabled="page === 1"
-              @click="changePage(page - 1)"
-            >
+            <v-btn icon size="small" variant="text" :disabled="page === 1" @click="changePage(page - 1)">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
             <span class="page-indicator">Page {{ page }} of {{ totalPages }}</span>
-            <v-btn
-              icon
-              size="small"
-              variant="text"
-              :disabled="page >= totalPages"
-              @click="changePage(page + 1)"
-            >
+            <v-btn icon size="small" variant="text" :disabled="page >= totalPages" @click="changePage(page + 1)">
               <v-icon>mdi-chevron-right</v-icon>
             </v-btn>
-            <v-btn
-              icon
-              size="small"
-              variant="text"
-              :disabled="page >= totalPages"
-              @click="changePage(totalPages)"
-            >
+            <v-btn icon size="small" variant="text" :disabled="page >= totalPages" @click="changePage(totalPages)">
               <v-icon>mdi-page-last</v-icon>
             </v-btn>
           </div>
@@ -162,30 +130,23 @@
               variant="outlined"
               density="compact"
               hide-details
-              @update:model-value="onItemsPerPageChange"
               class="per-page-select"
-            ></v-select>
+              @update:model-value="onItemsPerPageChange"
+            />
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
   <!-- Applicant Details Dialog -->
   <v-dialog v-model="dialog" max-width="1400px" scrollable>
-    <ApplicationCard
-      :selectedApplicant="selectedDocument"
-      @closeDialog="closeDialog"
-    />
+    <ApplicationCard :selected-applicant="selectedDocument" @close-dialog="closeDialog" />
   </v-dialog>
 
   <!-- Merge Dialog -->
   <v-dialog v-model="dialogMerge" max-width="1400px" scrollable>
-    <MergeApplicants
-      :selectedApplicants="selected"
-      @closeDialog="dialogMerge = false"
-    />
+    <MergeApplicants :selected-applicants="selected" @close-dialog="dialogMerge = false" />
   </v-dialog>
 
   <!-- Add to Scholarship Queue Dialog -->
@@ -193,23 +154,18 @@
     <v-card class="modern-dialog">
       <div class="dialog-header">
         <div class="header-content">
-          <v-icon class="header-icon" size="24">mdi-school-outline</v-icon>
+          <v-icon class="header-icon" size="24"> mdi-school-outline </v-icon>
           <div>
             <h2 class="dialog-title">Add to Scholarship Queue</h2>
             <p class="dialog-subtitle">Select document type to add to queue</p>
           </div>
         </div>
-        <v-btn
-          icon
-          variant="text"
-          @click="scholarshipDialog = false"
-          class="close-btn"
-        >
+        <v-btn icon variant="text" class="close-btn" @click="scholarshipDialog = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </div>
 
-      <v-divider></v-divider>
+      <v-divider />
 
       <v-card-text class="dialog-content">
         <v-select
@@ -219,27 +175,21 @@
           variant="outlined"
           density="comfortable"
           prepend-inner-icon="mdi-file-document-outline"
-        ></v-select>
+        />
       </v-card-text>
 
-      <v-divider></v-divider>
+      <v-divider />
 
       <v-card-actions class="dialog-actions">
-        <v-spacer></v-spacer>
-        <v-btn
-          variant="outlined"
-          @click="scholarshipDialog = false"
-          class="cancel-btn"
-        >
-          Cancel
-        </v-btn>
+        <v-spacer />
+        <v-btn variant="outlined" class="cancel-btn" @click="scholarshipDialog = false"> Cancel </v-btn>
         <v-btn
           color="primary"
           variant="flat"
-          @click="addToScholarshipQueue"
           prepend-icon="mdi-check"
           :disabled="!selectedDocumentType"
           class="confirm-btn"
+          @click="addToScholarshipQueue"
         >
           Add to Queue
         </v-btn>
@@ -248,7 +198,7 @@
   </v-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import api from '@/plugins/axios';
@@ -256,10 +206,10 @@ import ApplicationCard from './ApplicantCard.vue';
 import MergeApplicants from './MergeApplicants.vue';
 
 const props = defineProps({
-    refresh: {
-      type: Boolean,
-      default: false,
-    },
+  refresh: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // State
@@ -290,7 +240,12 @@ const documentTypeOptions = ['PRESEASON', 'BOOK ONE', 'BOOK TWO'];
 // Fetch mavericks using TanStack Query
 const queryKey = computed(() => ['mavericks', page.value, itemsPerPage.value, searchQuery.value]);
 
-const { data: mavericksData, isLoading, isFetching, refetch } = useQuery({
+const {
+  data: mavericksData,
+  isLoading,
+  isFetching,
+  refetch,
+} = useQuery({
   queryKey,
   queryFn: async () => {
     const response = await api.post('/get-applicants', {
@@ -315,11 +270,14 @@ const totalItems = computed(() => mavericksData.value?.totalItems || 0);
 const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage.value));
 
 // Watch for refresh prop
-watch(() => props.refresh, (newValue) => {
-      if (newValue) {
-    refetch();
+watch(
+  () => props.refresh,
+  (newValue) => {
+    if (newValue) {
+      refetch();
+    }
   }
-});
+);
 
 // Methods
 const mergeSelected = () => {
@@ -359,23 +317,23 @@ const openScholarshipDialog = (item) => {
 
 const addToScholarshipQueue = async () => {
   if (!selectedDocumentType.value) {
-        return;
-      }
+    return;
+  }
 
-      try {
+  try {
     const res = await api.post('/local-dash', {
       document_type: selectedDocumentType.value,
       maverick_id: selectedMaverick.value.id,
-          instructions: {
-        action: 'add_scholarship_queue'
-          }
-        });
+      instructions: {
+        action: 'add_scholarship_queue',
+      },
+    });
 
-        if (res.data.success) {
+    if (res.data.success) {
       scholarshipDialog.value = false;
-        }
-      } catch (err) {
-        console.error(err);
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 </script>
@@ -410,22 +368,26 @@ const addToScholarshipQueue = async () => {
 
 /* Filters Section */
 .filters-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
 }
 
 .filters-section:hover {
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08), 0 4px 8px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 8px 24px rgba(99, 102, 241, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
   transform: translateY(-2px);
 }
 
 .v-theme--dark .filters-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -438,18 +400,18 @@ const addToScholarshipQueue = async () => {
 
 .filters-header {
   padding: 24px 28px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
   flex-wrap: wrap;
   gap: 16px;
 }
 
 .v-theme--dark .filters-header {
   border-bottom-color: #334155;
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
 }
 
 .filters-title-group {
@@ -459,11 +421,11 @@ const addToScholarshipQueue = async () => {
 }
 
 .filters-icon {
-  color: #6366F1;
+  color: #6366f1;
 }
 
 .v-theme--dark .filters-icon {
-  color: #818CF8;
+  color: #818cf8;
 }
 
 .filters-title {
@@ -475,7 +437,7 @@ const addToScholarshipQueue = async () => {
 }
 
 .v-theme--dark .filters-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .header-actions {
@@ -501,31 +463,35 @@ const addToScholarshipQueue = async () => {
 
 .filters-content {
   padding: 24px 28px;
-  background: #FAFBFC;
+  background: #fafbfc;
 }
 
 .v-theme--dark .filters-content {
-  background: #151E2E;
+  background: #151e2e;
 }
 
 /* Table Section */
 .table-section {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 2px 8px rgba(99, 102, 241, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
 }
 
 .table-section:hover {
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08), 0 4px 8px rgba(0, 0, 0, 0.08);
-  border-color: #C7D2FE;
+  box-shadow:
+    0 8px 24px rgba(99, 102, 241, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe;
   transform: translateY(-2px);
 }
 
 .v-theme--dark .table-section {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -538,16 +504,16 @@ const addToScholarshipQueue = async () => {
 
 .table-header {
   padding: 24px 28px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
 }
 
 .v-theme--dark .table-header {
   border-bottom-color: #334155;
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
 }
 
 .table-stats {
@@ -557,12 +523,12 @@ const addToScholarshipQueue = async () => {
 }
 
 .stats-icon {
-  color: #6366F1;
+  color: #6366f1;
   opacity: 0.7;
 }
 
 .v-theme--dark .stats-icon {
-  color: #818CF8;
+  color: #818cf8;
   opacity: 0.8;
 }
 
@@ -573,13 +539,13 @@ const addToScholarshipQueue = async () => {
 }
 
 .v-theme--dark .stats-text {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .table-content {
   padding: 28px;
-  background: #FAFBFC;
-  border-top: 1px solid #E2E8F0;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
   width: 100%;
   max-width: 100%;
   overflow: hidden;
@@ -587,7 +553,7 @@ const addToScholarshipQueue = async () => {
 }
 
 .v-theme--dark .table-content {
-  background: #151E2E;
+  background: #151e2e;
   border-top-color: #334155;
 }
 
@@ -600,33 +566,33 @@ const addToScholarshipQueue = async () => {
   min-height: 400px;
   gap: 16px;
   padding: 40px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
 }
 
 .v-theme--dark .loader-container {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
 .loader-text {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .loader-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* Table Wrapper */
 .table-wrapper {
   width: 100%;
   max-width: 100%;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-sizing: border-box;
   overflow: hidden;
@@ -636,7 +602,7 @@ const addToScholarshipQueue = async () => {
 }
 
 .v-theme--dark .table-wrapper {
-  background: #1E293B;
+  background: #1e293b;
   border-color: #334155;
 }
 
@@ -647,7 +613,7 @@ const addToScholarshipQueue = async () => {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: #CBD5E1 #F1F5F9;
+  scrollbar-color: #cbd5e1 #f1f5f9;
   touch-action: pan-y pan-x;
   will-change: scroll-position;
   position: relative;
@@ -661,21 +627,21 @@ const addToScholarshipQueue = async () => {
 }
 
 .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: #f1f5f9;
   border-radius: 4px;
 }
 
 .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #94a3b8;
 }
 
 .v-theme--dark .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-track {
-  background: #1E293B;
+  background: #1e293b;
 }
 
 .v-theme--dark .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-thumb {
@@ -683,7 +649,7 @@ const addToScholarshipQueue = async () => {
 }
 
 .v-theme--dark .table-wrapper :deep(.v-data-table__wrapper)::-webkit-scrollbar-thumb:hover {
-  background: #64748B;
+  background: #64748b;
 }
 
 /* Fixed header - Vuetify handles this with fixed-header prop */
@@ -736,8 +702,8 @@ const addToScholarshipQueue = async () => {
 :deep(.v-data-table__th) {
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
-  color: #64748B !important;
-  background: #F9FAFB !important;
+  color: #64748b !important;
+  background: #f9fafb !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
   white-space: nowrap !important;
@@ -750,13 +716,13 @@ const addToScholarshipQueue = async () => {
 }
 
 :deep(.v-theme--dark .v-data-table__th) {
-  color: #94A3B8 !important;
-  background: #0F172A !important;
+  color: #94a3b8 !important;
+  background: #0f172a !important;
 }
 
 :deep(.v-data-table__td) {
-  color: #1E293B !important;
-  border-bottom: 1px solid #E5E7EB !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e5e7eb !important;
   font-size: 0.875rem !important;
   white-space: nowrap !important;
   padding: 12px 16px !important;
@@ -767,7 +733,7 @@ const addToScholarshipQueue = async () => {
 }
 
 :deep(.v-theme--dark .v-data-table__td) {
-  color: #F9FAFB !important;
+  color: #f9fafb !important;
   border-bottom-color: #334155 !important;
 }
 
@@ -795,7 +761,7 @@ const addToScholarshipQueue = async () => {
 }
 
 .info-btn {
-  color: #3B82F6 !important;
+  color: #3b82f6 !important;
 }
 
 .info-btn:hover {
@@ -813,8 +779,8 @@ const addToScholarshipQueue = async () => {
 /* Pagination Footer */
 .pagination-footer {
   padding: 16px 20px;
-  background: #FFFFFF;
-  border-top: 1px solid #E2E8F0;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -823,7 +789,7 @@ const addToScholarshipQueue = async () => {
 }
 
 .v-theme--dark .pagination-footer {
-  background: #1E293B;
+  background: #1e293b;
   border-top-color: #334155;
 }
 
@@ -835,12 +801,12 @@ const addToScholarshipQueue = async () => {
 
 .pagination-text {
   font-size: 0.875rem;
-  color: #6B7280;
+  color: #6b7280;
   font-weight: 500;
 }
 
 .v-theme--dark .pagination-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .pagination-controls {
@@ -857,7 +823,7 @@ const addToScholarshipQueue = async () => {
 }
 
 .v-theme--dark .page-indicator {
-  color: #D1D5DB;
+  color: #d1d5db;
 }
 
 .items-per-page {
@@ -868,12 +834,12 @@ const addToScholarshipQueue = async () => {
 
 .per-page-label {
   font-size: 0.875rem;
-  color: #6B7280;
+  color: #6b7280;
   font-weight: 500;
 }
 
 .v-theme--dark .per-page-label {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .per-page-select {
@@ -895,12 +861,12 @@ const addToScholarshipQueue = async () => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  background: linear-gradient(to bottom, #FAFBFC, #F8FAFC);
-  border-bottom: 1px solid #E2E8F0;
+  background: linear-gradient(to bottom, #fafbfc, #f8fafc);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .dialog-header {
-  background: linear-gradient(to bottom, #1A2332, #151E2E);
+  background: linear-gradient(to bottom, #1a2332, #151e2e);
   border-bottom-color: #334155;
 }
 
@@ -911,7 +877,7 @@ const addToScholarshipQueue = async () => {
 }
 
 .header-icon {
-  color: #3B82F6;
+  color: #3b82f6;
   margin-top: 2px;
 }
 
@@ -924,17 +890,17 @@ const addToScholarshipQueue = async () => {
 }
 
 .v-theme--dark .dialog-title {
-  color: #F9FAFB;
+  color: #f9fafb;
 }
 
 .dialog-subtitle {
   font-size: 0.875rem;
-  color: #6B7280;
+  color: #6b7280;
   margin: 0;
 }
 
 .v-theme--dark .dialog-subtitle {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 .close-btn {
@@ -947,12 +913,12 @@ const addToScholarshipQueue = async () => {
 
 .dialog-actions {
   padding: 20px 28px !important;
-  background: #FAFBFC;
-  border-top: 1px solid #E2E8F0;
+  background: #fafbfc;
+  border-top: 1px solid #e2e8f0;
 }
 
 .v-theme--dark .dialog-actions {
-  background: #151E2E;
+  background: #151e2e;
   border-top-color: #334155;
 }
 

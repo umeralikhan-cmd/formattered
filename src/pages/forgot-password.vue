@@ -16,13 +16,7 @@ meta:
       <p class="page-subtitle">Enter your email to receive reset instructions</p>
 
       <!-- Success Alert -->
-      <v-alert
-        v-if="successMessage"
-        type="success"
-        variant="tonal"
-        density="compact"
-        class="mb-4"
-      >
+      <v-alert v-if="successMessage" type="success" variant="tonal" density="compact" class="mb-4">
         {{ successMessage }}
       </v-alert>
 
@@ -32,9 +26,9 @@ meta:
         type="error"
         variant="tonal"
         closable
-        @click:close="errorMessage = ''"
         density="compact"
         class="mb-4"
+        @click:close="errorMessage = ''"
       >
         {{ errorMessage }}
       </v-alert>
@@ -53,7 +47,7 @@ meta:
           hide-details="auto"
           class="form-field"
           autofocus
-        ></v-text-field>
+        />
 
         <!-- Reset Button -->
         <v-btn
@@ -73,9 +67,9 @@ meta:
           variant="outlined"
           size="large"
           block
-          @click="$router.push('/login')"
           :disabled="loading"
           class="back-btn"
+          @click="$router.push('/login')"
         >
           BACK TO SIGN IN
         </v-btn>
@@ -84,7 +78,7 @@ meta:
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { useAuth } from '@/composables/useAuth';
 
@@ -102,7 +96,7 @@ const rules = {
   email: (value) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return pattern.test(value) || 'Invalid email address';
-  }
+  },
 };
 
 // Handle reset password
@@ -112,9 +106,9 @@ const handleResetPassword = async () => {
 
   errorMessage.value = '';
   successMessage.value = '';
-  
+
   const result = await resetPassword(email.value);
-  
+
   if (result.success) {
     successMessage.value = 'Password reset link has been sent to your email. Please check your inbox.';
   } else {
@@ -129,8 +123,8 @@ const handleResetPassword = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0F172A;
-  background-image: 
+  background: #0f172a;
+  background-image:
     radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
@@ -152,7 +146,7 @@ const handleResetPassword = async () => {
   font-family: 'Poppins', sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0;
   letter-spacing: 0.02em;
 }
@@ -162,7 +156,7 @@ const handleResetPassword = async () => {
   font-family: 'Inter', sans-serif;
   font-size: 1.375rem;
   font-weight: 400;
-  color: #FFFFFF;
+  color: #ffffff;
   text-align: center;
   margin: 0 0 4px 0;
 }
@@ -203,7 +197,7 @@ const handleResetPassword = async () => {
 }
 
 :deep(.v-field__input) {
-  color: #F8FAFC !important;
+  color: #f8fafc !important;
   min-height: 48px !important;
   padding: 14px 16px !important;
   font-size: 1rem !important;
@@ -213,8 +207,8 @@ const handleResetPassword = async () => {
 
 :deep(.v-field__input input) {
   cursor: text !important;
-  color: #FFFFFF !important;
-  -webkit-text-fill-color: #FFFFFF !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 :deep(.v-field__input input::placeholder) {
@@ -222,30 +216,30 @@ const handleResetPassword = async () => {
 }
 
 :deep(.v-label) {
-  color: #CBD5E1 !important;
+  color: #cbd5e1 !important;
   font-size: 1rem !important;
   font-weight: 500 !important;
 }
 
 :deep(.v-field--focused .v-label),
 :deep(.v-field--active .v-label) {
-  color: #60A5FA !important;
+  color: #60a5fa !important;
   font-weight: 600 !important;
 }
 
 :deep(.v-icon) {
-  color: #94A3B8 !important;
+  color: #94a3b8 !important;
 }
 
 :deep(.v-field--focused .v-icon) {
-  color: #60A5FA !important;
+  color: #60a5fa !important;
 }
 
 /* Reset Button */
 .reset-btn {
   height: 44px !important;
-  background: #3B82F6 !important;
-  color: #FFFFFF !important;
+  background: #3b82f6 !important;
+  color: #ffffff !important;
   font-family: 'Inter', sans-serif !important;
   font-size: 0.875rem !important;
   font-weight: 600 !important;
@@ -257,7 +251,7 @@ const handleResetPassword = async () => {
 }
 
 .reset-btn:hover {
-  background: #2563EB !important;
+  background: #2563eb !important;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
   transform: translateY(-1px);
 }
@@ -301,4 +295,3 @@ const handleResetPassword = async () => {
   }
 }
 </style>
-
