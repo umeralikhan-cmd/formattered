@@ -101,6 +101,8 @@ const rules = {
 
 // Handle reset password
 const handleResetPassword = async () => {
+  if (!resetForm.value) return;
+  
   const { valid } = await resetForm.value.validate();
   if (!valid) return;
 

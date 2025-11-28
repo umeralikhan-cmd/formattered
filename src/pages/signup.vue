@@ -176,6 +176,8 @@ const rules = {
 
 // Handle signup
 const handleSignup = async () => {
+  if (!signupForm.value) return;
+  
   const { valid } = await signupForm.value.validate();
   if (!valid) return;
 

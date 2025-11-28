@@ -392,13 +392,13 @@ const options = computed({
 const refreshData = () => {
   refetch();
 };
-const formatDate = (dateString) => {
+const formatDate = (dateString: string) => {
   if (!dateString) return 'N/A';
   const date = new Date(dateString);
   return date.toLocaleString();
 };
 
-const showMailingAddressDialog = (mailingAddress) => {
+const showMailingAddressDialog = (mailingAddress: any) => {
   try {
     if (typeof mailingAddress === 'string') {
       selectedMailingAddress.value = JSON.parse(mailingAddress);
@@ -413,7 +413,7 @@ const showMailingAddressDialog = (mailingAddress) => {
   }
 };
 
-const viewDetails = async (item) => {
+const viewDetails = async (item: any) => {
   selectedApplicant.value = item;
   detailsDialog.value = true;
   documentUrls.value = null;
@@ -424,7 +424,7 @@ const viewDetails = async (item) => {
   }
 };
 
-const fetchDocumentUrls = async (documentParentId, documentType) => {
+const fetchDocumentUrls = async (documentParentId: any, documentType: string) => {
   loadingDocuments.value = true;
   try {
     const response = await api.post('/local-dash', {

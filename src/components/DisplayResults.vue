@@ -336,15 +336,15 @@ const props = defineProps({
 });
 
 // Reactive state
-const selectedFacility = ref(null);
+const selectedFacility = ref<any>(null);
 const selectedQuestionType = ref('All');
 const dateMenu = ref(false);
 const dateRangeArr = ref([]);
 const matchStatus = ref('All');
-const selectedDocumentId = ref(null);
+const selectedDocumentId = ref<string | null>(null);
 const dialog = ref(false);
-const loading = ref([]);
-const expandedDocumentId = ref(null);
+const loading = ref<any[]>([]);
+const expandedDocumentId = ref<string | null>(null);
 const expanded = ref([]);
 const search = ref('');
 const ExportResultsDialog = ref(false);

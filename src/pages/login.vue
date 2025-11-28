@@ -140,6 +140,8 @@ const rules = {
 
 // Handle login
 const handleLogin = async () => {
+  if (!loginForm.value) return;
+  
   const { valid } = await loginForm.value.validate();
   if (!valid) return;
 
