@@ -625,9 +625,9 @@ import ReportExports from "./ReportExports.vue";
 const headers = [
   { title: "Name", key: "Facility Name" },
   { title: "Facility ID", key: "Facility ID" },
-  { title: "Link", key: "report_link", align: "center" },
-  { title: "Active", key: "Active Customer?", align: "center" },
-  { title: "Email", key: "Staff Emails For Reporting" }
+  { title: "Report Link", key: "report_link", align: "center" },
+  { title: "Active Customer", key: "Active Customer?", align: "center" },
+  { title: "Staff Emails", key: "Staff Emails For Reporting" }
 ];
 
 // Reactive state

@@ -18,36 +18,49 @@
 
     <div class="navbar-right">
       <ThemeToggle />
+      
+      <v-btn
+        @click="handleLogout"
+        variant="text"
+        prepend-icon="mdi-logout"
+        class="logout-btn"
+      >
+        Sign Out
+      </v-btn>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ThemeToggle from './ThemeToggle.vue'
+import { useAuth } from '@/composables/useAuth'
 
 const route = useRoute()
+const router = useRouter()
+const { signOut } = useAuth()
 
 const emit = defineEmits(['toggle-mobile-sidebar'])
 
 const pageConfig: Record<string, { title: string; icon: string; badge?: string }> = {
   '/': { 
-    title: 'Document Upload & Processing', 
+    title: 'Upload / Auto Grading', 
     icon: 'mdi-cloud-upload-outline'
   },
-  '/results': { title: 'Results & Analytics', icon: 'mdi-chart-bar' },
-  '/facilities': { title: 'Facilities Management', icon: 'mdi-domain' },
+  '/results': { title: 'Results', icon: 'mdi-chart-bar' },
+  '/facilities': { title: 'Facilities', icon: 'mdi-domain' },
   '/queue': { 
     title: 'Scholarship Queue', 
     icon: 'mdi-format-list-checks'
   },
-  '/mail': { title: 'Mail Management', icon: 'mdi-email-outline' },
-  '/dev': { title: 'Developer Board', icon: 'mdi-console' },
+  '/mail': { title: 'Regular Mail', icon: 'mdi-email-outline' },
+  '/dev': { title: 'Dev Board', icon: 'mdi-console' },
   '/mavericks': { 
-    title: 'Mavericks Directory', 
+    title: 'Mavericks', 
     icon: 'mdi-account-group'
   },
+  '/profile': { title: 'My Profile', icon: 'mdi-account-circle' },
 }
 
 const currentPageTitle = computed(() => {
@@ -64,6 +77,13 @@ const currentPageBadge = computed(() => {
 
 const toggleMobileSidebar = () => {
   emit('toggle-mobile-sidebar')
+}
+
+const handleLogout = async () => {
+  const result = await signOut()
+  if (result.success) {
+    router.push('/login')
+  }
 }
 </script>
 
@@ -156,6 +176,20 @@ const toggleMobileSidebar = () => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.logout-btn {
+  color: #EF4444 !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+}
+
+.v-theme--dark .logout-btn {
+  color: #F87171 !important;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
 }
 
 /* Mobile responsive */

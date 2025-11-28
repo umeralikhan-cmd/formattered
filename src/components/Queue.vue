@@ -179,7 +179,7 @@ const headers = [
   { title: 'Facility Name', key: 'facility_name', sortable: true },
         { title: 'Document Type', key: 'document_type', sortable: true },
         { title: 'Status', key: 'status', sortable: true },
-        { title: 'Created', key: 'created_at', sortable: true },
+        { title: 'Created At', key: 'created_at', sortable: true },
   { title: 'Actions', key: 'actions', sortable: false, align: 'center' }
 ];
 

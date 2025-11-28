@@ -46,18 +46,39 @@
           </transition>
         </router-link>
       </template>
+
     </nav>
 
     <div class="sidebar-footer">
-      <v-btn
-        icon
-        variant="text"
-        size="small"
-        class="collapse-btn"
-        @click="toggleSidebar"
-      >
-        <v-icon size="20">{{ collapsed ? 'mdi-chevron-double-right' : 'mdi-chevron-double-left' }}</v-icon>
-      </v-btn>
+      <template v-if="!collapsed">
+        <router-link to="/profile" class="footer-btn profile-btn" :class="{ active: isActive('/profile') }">
+          <v-icon size="22">mdi-account-circle</v-icon>
+          <span class="footer-label">Profile</span>
+        </router-link>
+
+        <v-btn
+          icon
+          variant="text"
+          size="small"
+          class="collapse-btn"
+          @click="toggleSidebar"
+        >
+          <v-icon size="20">mdi-chevron-double-left</v-icon>
+        </v-btn>
+      </template>
+
+      <template v-else>
+        <v-btn
+          icon
+          variant="text"
+          size="small"
+          class="collapse-btn-full"
+          @click="toggleSidebar"
+          title="Expand sidebar"
+        >
+          <v-icon size="20">mdi-chevron-double-right</v-icon>
+        </v-btn>
+      </template>
     </div>
   </aside>
 </template>
@@ -73,16 +94,16 @@ const devMode = import.meta.env.VITE_DEV_MODE === 'True'
 const emit = defineEmits(['collapse-changed'])
 
 const mainMenuItems = [
-  { label: 'Upload', value: 'upload', icon: 'mdi-file-upload-outline', route: '/' },
+  { label: 'Upload / Auto Grading', value: 'upload', icon: 'mdi-file-upload-outline', route: '/' },
   { label: 'Results', value: 'results', icon: 'mdi-chart-bar', route: '/results' },
   { label: 'Facilities', value: 'facilities', icon: 'mdi-domain', route: '/facilities' },
-  { label: 'Queue', value: 'queue', icon: 'mdi-clock-outline', route: '/queue', badge: '3' },
-  { label: 'Mail', value: 'mail', icon: 'mdi-email-outline', route: '/mail' },
+  { label: 'Scholarship Queue', value: 'queue', icon: 'mdi-clock-outline', route: '/queue', badge: '3' },
+  { label: 'Regular Mail', value: 'mail', icon: 'mdi-email-outline', route: '/mail' },
 ]
 
 const devMenuItems = [
   { label: 'Dev Board', value: 'dev', icon: 'mdi-console', route: '/dev' },
-  { label: 'Mavericks', value: 'mavericks', icon: 'mdi-star-outline', route: '/mavericks' },
+  { label: 'Mavericks', value: 'mavericks', icon: 'mdi-account-group', route: '/mavericks' },
 ]
 
 const toggleSidebar = () => {
@@ -200,13 +221,45 @@ watch(collapsed, (newValue) => {
   padding: 16px;
   border-top: 1px solid #334155;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 .v-theme--light .sidebar-footer {
   border-top: 1px solid #E5E7EB;
 }
+
+.footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #94A3B8;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex: 1;
+}
+
+.footer-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #E2E8F0;
+}
+
+.footer-btn.active {
+  background: #3B82F6;
+  color: #FFFFFF;
+}
+
+.footer-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 
 .collapse-btn {
   color: #94A3B8 !important;
@@ -218,6 +271,22 @@ watch(collapsed, (newValue) => {
 }
 
 .v-theme--light .collapse-btn:hover {
+  color: #1E293B !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+.collapse-btn-full {
+  width: 100% !important;
+  height: 40px !important;
+  color: #94A3B8 !important;
+}
+
+.collapse-btn-full:hover {
+  color: #E2E8F0 !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.v-theme--light .collapse-btn-full:hover {
   color: #1E293B !important;
   background: rgba(0, 0, 0, 0.05) !important;
 }
@@ -284,6 +353,7 @@ watch(collapsed, (newValue) => {
   background: #3B82F6;
   color: #FFFFFF;
 }
+
 
 .nav-label {
   font-size: 0.875rem;
